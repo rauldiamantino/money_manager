@@ -1,5 +1,5 @@
 <section class="container mt-4">
-  <h1>Despesas</h1>
+  <h1>Receitas</h1>
   <table class="table table-dark table-striped-columns">
     <thead>
       <tr>
@@ -10,7 +10,7 @@
       </tr>
     </thead>
     <tbody>
-    <?php foreach($expenses as $value): ?>
+    <?php foreach($incomes as $value): ?>
       <tr>
         <td><?php echo $value['id']; ?></td>
         <td><?php echo $value['description']; ?></td>

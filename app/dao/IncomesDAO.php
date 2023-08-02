@@ -1,14 +1,14 @@
 <?php
 require_once '../app/Database.php';
 
-class ExpensesDAO
+class IncomesDAO
 {
   private $database;
 
-  public function getAllExpenses()
+  public function getAllIncomes()
   {
     $this->database = new Database();
-    $sql = 'SELECT * FROM expenses';
+    $sql = 'SELECT * FROM incomes';
     $result = $this->database->query($sql);
 
     return $result->fetch_all(MYSQLI_ASSOC);
