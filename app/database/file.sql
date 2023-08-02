@@ -21,7 +21,7 @@ CREATE TABLE expenses (
 CREATE TABLE incomes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -44,7 +44,7 @@ INSERT INTO expenses (user_id, description, amount, date) VALUES
 (3, 'Cinema', 40.00, '2023-08-02');
 
 -- Insere os dados na tabela incomes
-INSERT INTO incomes (user_id, title, amount, date) VALUES
+INSERT INTO incomes (user_id, description, amount, date) VALUES
 (1, 'Salário', 3000.00, '2023-08-01'),
 (1, 'Bônus', 500.00, '2023-08-15'),
 (2, 'Renda Extra', 200.00, '2023-08-10'),
