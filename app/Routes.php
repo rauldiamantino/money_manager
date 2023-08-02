@@ -41,12 +41,13 @@ class Router
         $controller = new $controllerName();
 
         if (method_exists($controller, $methodName)) {
-          return call_user_func_array([$controller, $methodName], $params);
+          call_user_func_array([$controller, $methodName], $params);
+          return;
         }
       }
 
       $errorController = new ErrorController();
-      return $errorController->notFound();
+      $errorController->notFound();
     }
   }
 }
