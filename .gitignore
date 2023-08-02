@@ -2,4 +2,3 @@
 config.php
 Database.php
 .htaccess
-/app/database/file.sql
