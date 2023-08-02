@@ -1,13 +1,14 @@
 <?php
 
-require_once '../app/dao/HomeDAO.php';
-
 class HomeModel {
 
   public function getContentHome()
   {
-    $homeDAO = new HomeDAO();
-    $result = $homeDAO->contentHome();
+    $result = [
+      'titulo' => 'Página Inicial',
+      'mensagem' => 'Money Manager',
+    ];
+
     return $result;
   }
 }
