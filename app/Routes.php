@@ -24,30 +24,28 @@ class Router
   private function handleRoutes()
   {
 
-    if (count($this->parts) > 0) {
+    if (count($this->parts) <= 0) {
+      return;
+    }
 
-      // remove controlador e método da rota, deixando somente parâmetros.
-      $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
-      $methodName = strtolower(array_shift($this->parts));
-      $params = $this->parts ?? [];
+    // remove controlador e método da rota, deixando somente parâmetros.
+    $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
+    $methodName = strtolower(array_shift($this->parts));
+    $params = $this->parts ?? [];
 
-      $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
+    $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
+    $controller = '';
 
-      if (file_exists($controllerFilePath)) {
-        require_once $controllerFilePath;
-      }
+    if (file_exists($controllerFilePath)) {
+      require_once $controllerFilePath;
+      $controller = new $controllerName();
+    }
 
-      if (class_exists($controllerName)) {
-        $controller = new $controllerName();
-
-        if (method_exists($controller, $methodName)) {
-          call_user_func_array([$controller, $methodName], $params);
-          return;
-        }
-      }
-
-      $errorController = new ErrorController();
-      $errorController->notFound();
+    if (method_exists($controller, $methodName)) {
+      call_user_func_array([$controller, $methodName], $params);
+    }
+    else {
+      ErrorController::notFound();
     }
   }
 }
