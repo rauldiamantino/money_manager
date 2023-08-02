@@ -1,6 +1,6 @@
 <?php
 require_once '../app/config.php';
-require_once '../app/routes.php';
+require_once '../app/Routes.php';
 
 $rounter = new Router();
 session_start();
