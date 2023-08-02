@@ -9,7 +9,7 @@ class Router
 
   public function __construct()
   {
-    // Ajuste da URL para permitir o projeto ser aberto em qualquer servidor.
+    // Ajuste da URL para permitir o projeto ser aberto em qualquer servidor
     $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
     $this->uri = str_replace($this->base_uri, '', $_SERVER['REQUEST_URI']);
 
@@ -24,14 +24,20 @@ class Router
   private function handleRoutes()
   {
 
-    if (count($this->parts) <= 0) {
-      return;
+    if ($this->uri == '/') {
+      $controllerName = 'HomeController';
+      $methodName = 'index';
     }
 
-    // remove controlador e método da rota, deixando somente parâmetros.
-    $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
-    $methodName = strtolower(array_shift($this->parts));
-    $params = $this->parts ?? [];
+    $params = [];
+
+    if (count($this->parts) > 0) {
+
+      // remove controlador e método da rota, deixando somente parâmetros
+      $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
+      $methodName = strtolower(array_shift($this->parts));
+      $params = $this->parts;
+    }
 
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
     $controller = '';
