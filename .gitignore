@@ -1,4 +1,4 @@
 # Arquivos de configuração
 config.php
 Database.php
-file.sql
+/app/database/file.sql
