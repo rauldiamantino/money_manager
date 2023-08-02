@@ -1,36 +1,52 @@
 <?php
-require_once 'config.php';
-require_once 'controllers/ExpensesController.php';
+require_once 'controllers/ErrorController.php';
 
-// Obtém o caminho da URI da solicitação
-$uri = $_SERVER['REQUEST_URI'];
+class Router
+{
+  private $base_uri;
+  private $uri;
+  private $parts;
 
-// Ajuste da URL para permitir o projeto ser aberto em qualquer servidor.
-$base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
-$uri = str_replace($base_uri, '', $uri);
+  public function __construct()
+  {
+    // Ajuste da URL para permitir o projeto ser aberto em qualquer servidor.
+    $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
+    $this->uri = str_replace($this->base_uri, '', $_SERVER['REQUEST_URI']);
 
-// Devide a URI em partes, e remove partes vazias ou nulas
-$parts = explode('/', $uri);
-$parts = array_filter($parts);
+    // Divide a URI e remove partes vazias ou nulas
+    $this->parts = explode('/', $this->uri);
+    $this->parts = array_filter($this->parts);
 
-// Define as rotas e chama os controladores
-if (count($parts) > 0) {
+    $this->handleRoutes();
+  }
 
-    $controllerName = ucfirst(array_shift($parts)) . 'Controller';
-    $methodName = strtolower(array_shift($parts));
-    
-    if (class_exists($controllerName) and method_exists($controllerName, $methodName)) {
+  // Recupera a rota e chama o controlador
+  private function handleRoutes()
+  {
+
+    if (count($this->parts) > 0) {
+
+      // remove controlador e método da rota, deixando somente parâmetros.
+      $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
+      $methodName = strtolower(array_shift($this->parts));
+      $params = $this->parts ?? [];
+
+      $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
+
+      if (file_exists($controllerFilePath)) {
+        require_once $controllerFilePath;
+      }
+
+      if (class_exists($controllerName)) {
         $controller = new $controllerName();
-        $controller->$methodName();
-    } 
-    else {
-      // Caso contrário, redirecione para uma página de erro ou trate de outra forma
-      // Exemplo: header("Location: /error_page");
-      exit;
+
+        if (method_exists($controller, $methodName)) {
+          return call_user_func_array([$controller, $methodName], $params);
+        }
+      }
+
+      $errorController = new ErrorController();
+      return $errorController->notFound();
     }
-} 
-else {
-    // Caso não haja partes, defina uma rota padrão, se necessário
-    // Exemplo: header("Location: /default_route");
-    exit;
+  }
 }
