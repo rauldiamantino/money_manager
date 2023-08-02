@@ -4,9 +4,9 @@ class ExpensesController {
   
   public function __construct()
   {
-    require_once '../app/models/Expense.php';
+    require_once '../app/models/ExpensesModel.php';
 
-    $this->expensesModel = new Expense();
+    $this->expensesModel = new ExpensesModel();
   }
 
   public function display_expenses()

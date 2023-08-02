@@ -1,7 +1,7 @@
 <?php
 require_once '../app/Database.php';
 
-class ExpenseDAO
+class ExpensesDAO
 {
   private $database;
 
