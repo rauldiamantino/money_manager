@@ -36,7 +36,7 @@ class Router
       // remove controlador e método da rota, deixando somente parâmetros
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
       $methodName = strtolower(array_shift($this->parts));
-      $params = $this->parts;
+      $params = $this->parts ?? '';
     }
 
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';

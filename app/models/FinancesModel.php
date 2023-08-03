@@ -4,10 +4,11 @@ require_once '../app/dao/FinancesDAO.php';
 
 class FinancesModel {
 
-  public function getFinancesCombined()
+  public function get_finances()
   {
+    $user = 0;
     $financesDAO = new FinancesDAO();
-    $result = $financesDAO->getFinancesCombinedDb();
+    $result = $financesDAO->get_finances_db($user);
     return $result;
   }
 }
