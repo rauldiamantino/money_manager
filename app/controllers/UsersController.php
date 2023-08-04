@@ -20,10 +20,14 @@ class UsersController
       'confirm_user_password' => $_POST['confirm_user_password'] ?? '',
     ];
 
-    $message = ['error_password' => 'Digite a mesma senha nos dois campos'];
+    $message = [];
     $response = [];
 
-    if ($data['user_password'] == $data['confirm_user_password']) {
+    if ($_POST) {
+      $message = ['error_password' => 'Digite a mesma senha nos dois campos'];
+    }
+
+    if ($data['user_password'] == $data['confirm_user_password'] and $_POST) {
       $response = $this->usersModel->register_user($data);
     }
 
@@ -34,6 +38,7 @@ class UsersController
     if (isset($response['success_register'])) {
       $_SESSION['alert_message'] = $response['success_register'];
       $message = ['success_register' => $_SESSION['alert_message']];
+
       header('Location: ' . $this->base_uri);
     }
 
