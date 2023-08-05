@@ -16,7 +16,7 @@ class UsersController
     $user_name = $_POST['user_name'] ?? '';
     $user_email = $_POST['user_email'] ?? '';
     $user_password = $_POST['user_password'] ?? '';
-    $user_confirm_password = $_POST['confirm_user_password'] ?? '';
+    $user_confirm_password = $_POST['user_confirm_password'] ?? '';
 
     $data = [
       'user_name' => $user_name,
@@ -41,10 +41,10 @@ class UsersController
 
     if (isset($response['success_register'])) {
       $_SESSION['alert_message'] = $response['success_register'];
-      $_SESSION['user'] = ['name' => $user_name, 'email' => $user_email];
+      // $_SESSION['user'] = ['name' => $user_name, 'email' => $user_email];
       $message = ['success_register' => $_SESSION['alert_message']];
 
-      header('Location: ' . $this->base_uri);
+      // header('Location: ' . $this->base_uri . '/users/login');
     }
 
     require_once '../app/views/user_register.php';
@@ -52,6 +52,6 @@ class UsersController
 
   public function login()
   {
-
+    require_once '../app/views/user_login.php';
   }
 }
