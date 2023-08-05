@@ -48,8 +48,9 @@ class Database2
     try {
       $this->connection = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
       $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-      die("Erro na conexão: " . $e->getMessage());
+    } 
+    catch (PDOException $e) {
+      die("Error connection: " . $e->getMessage());
     }
   }
 
@@ -81,7 +82,13 @@ class Database2
     }
 
     $stmt = $this->connection->prepare($sql);
-    $stmt->execute($params);
+    
+    try {
+      $stmt->execute();
+    } 
+    catch (PDOException $e) {
+      echo 'Error: ' . $e->getMessage();
+    }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }

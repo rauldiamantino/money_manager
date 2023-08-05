@@ -12,6 +12,7 @@ class UsersModel {
 
   public function register_user($data)
   {
+    // print_r($data);
     $this->user_email = $data['user_email'] ?? '';
     $get_user = $this->get_user();
 
