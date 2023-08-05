@@ -7,45 +7,45 @@ CREATE TABLE users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE SCHEMA money_manager_user_1;
+  CREATE SCHEMA money_manager_user_1;
 
-USE money_manager_use_1;
+  USE money_manager_user_1;
 
-CREATE TABLE categories (
-	id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
+  CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL
+  );
 
-CREATE TABLE accounts (
-	id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
+  CREATE TABLE accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL
+  );
 
-CREATE TABLE expenses (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  description VARCHAR(255) NOT NULL,
-  amount DECIMAL(10, 2) NOT NULL,
-  category_id INT,
-  account_id INT,
-  date DATE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (category_id) REFERENCES categories(id),
-  FOREIGN KEY (account_id) REFERENCES accounts(id)
-);
+  CREATE TABLE expenses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    category_id INT,
+    account_id INT,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (account_id) REFERENCES accounts(id)
+  );
 
-CREATE TABLE incomes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  description VARCHAR(255) NOT NULL,
-  amount DECIMAL(10, 2) NOT NULL,
-  category_id INT,
-  account_id INT,
-  date DATE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (category_id) REFERENCES categories(id),
-  FOREIGN KEY (account_id) REFERENCES accounts(id)
-);
+  CREATE TABLE incomes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    category_id INT,
+    account_id INT,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (account_id) REFERENCES accounts(id)
+  );
 
 -- Insere os dados na tabela users
 INSERT INTO users (name, email, password) VALUES
