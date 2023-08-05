@@ -15,12 +15,14 @@ class UsersDAO
     $params = ['where' => 'email = \'' . $email . '\''];
     $result = $this->database->select($params);
     return $result;
+
   }
 
   public function register_user_db($user_data)
   {
     $user = [
-      'name' => $user_data['user_name'],
+      'first_name' => $user_data['user_first_name'],
+      'last_name' => $user_data['user_last_name'],
       'email' => $user_data['user_email'],
       'password' => password_hash($user_data['user_password'], PASSWORD_DEFAULT),
     ];

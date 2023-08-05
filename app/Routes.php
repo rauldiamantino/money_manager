@@ -25,7 +25,7 @@ class Router
   {
 
     if ($this->uri == '/') {
-      $controllerName = 'HomeController';
+      $controllerName = 'homeController';
       $methodName = 'index';
     }
 

@@ -13,16 +13,24 @@ class UsersController
 
   public function registration()
   {
-    $user_name = $_POST['user_name'] ?? '';
+    if ($_SESSION['user']) {
+      header('Location: ' . $this->base_uri . '/panel/display');
+      exit();
+    }
+
+    $user_first_name = $_POST['user_first_name'] ?? '';
+    $user_last_name = $_POST['user_last_name'] ?? '';
     $user_email = $_POST['user_email'] ?? '';
     $user_password = $_POST['user_password'] ?? '';
     $user_confirm_password = $_POST['user_confirm_password'] ?? '';
 
     $data = [
-      'user_name' => $user_name,
+      'user_first_name' => $user_first_name,
+      'user_last_name' => $user_last_name,
       'user_email' => $user_email,
       'user_password' => $user_password,
     ];
+
 
     $message = [];
     $response = [];
@@ -31,7 +39,7 @@ class UsersController
       $message = ['error_password' => 'Digite a mesma senha nos dois campos'];
     }
 
-    if ($user_password == $user_confirm_password and $_POST) {
+    if ($user_password == $user_confirm_password and $_POST['user_first_name']) {
       $response = $this->usersModel->register_user($data);
     }
 
@@ -40,11 +48,7 @@ class UsersController
     }
 
     if (isset($response['success_register'])) {
-      $_SESSION['alert_message'] = $response['success_register'];
-      // $_SESSION['user'] = ['name' => $user_name, 'email' => $user_email];
-      $message = ['success_register' => $_SESSION['alert_message']];
-
-      // header('Location: ' . $this->base_uri . '/users/login');
+      $message = ['success_register' => $response['success_register']];
     }
 
     require_once '../app/views/user_register.php';
@@ -52,6 +56,40 @@ class UsersController
 
   public function login()
   {
+    if ($_SESSION['user']) {
+      header('Location: ' . $this->base_uri . '/panel/display');
+      exit();
+    }
+
+    $user_email = $_POST['user_email'] ?? '';
+    $user_password = $_POST['user_password'] ?? '';
+
+    $data = [
+      'user_email' => $user_email,
+      'user_password' => $user_password,
+    ];
+
+    $message = [];
+    $response = $this->usersModel->login_user($data);
+
+    if (isset($response['error_login']) and $_POST['user_email']) {
+      $message = ['error_login' => $response['error_login']];
+    }
+
+    if (isset($response['success_login']) and empty($_SESSION['user'])) {
+      $message = ['success_login' => $response['success_login']['message']];
+
+      $_SESSION['user'] = [
+        'user_id' => $response['success_login']['user_id'],
+        'user_first_name' => $response['success_login']['user_first_name'],
+        'user_last_name' => $response['success_login']['user_last_name'],
+        'user_email' => $response['success_login']['user_email'],
+      ];
+
+      header('Location: ' . $this->base_uri . '/panel/display');
+      exit();
+    }
+
     require_once '../app/views/user_login.php';
   }
 }

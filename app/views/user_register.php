@@ -1,23 +1,30 @@
 <section class="container-fluid">
   <div class="row h-100 align-items-center px-4 col-md-8 col-lg-6 col-xl-4 mx-auto">
     <div>
-
       <?php if (empty($message['success_register'])) { ?>
         <form class="border rounded p-4 shadow-sm" action="registration" method="POST">
           <h1 class="text-center h4 mb-4">Cadastro de Usuário</h1>
           <fieldset class="form-group">
-            <div class="input-group mb-3">
-              <span class="input-group-text">@</span>
-              <div class="form-floating">
-                <input class="form-control" type="text" name="user_name" id="user_name" placeholder="username" required autocomplete="off" autofocus value=<?php echo $_POST['user_name'] ?? '' ?>>
-                <label for="user_name" class="small">Nome completo</label>
+            
+            <?php if (isset($message['error_password'])) { ?>
+              <div class="alert alert-danger text-center small p-1 rounded-0" id="alert_error_password">
+                <?php echo $message['error_password'] ?>
               </div>
-            </div>
+            <?php } ?>
             <?php if (isset($message['error_register'])) { ?>
-              <div class="alert alert-warning text-center small" id="password-error">
+              <div class="alert alert-warning text-center small p-1 rounded-0" id="alert_error_register">
                 <?php echo $message['error_register'] ?>
               </div>
             <?php } ?>
+
+            <div class="form-floating mb-3">
+              <input class="form-control" type="text" name="user_first_name" id="user_first_name" placeholder="username" required autocomplete="off" autofocus value=<?php echo $_POST['user_first_name'] ?? '' ?>>
+              <label for="user_first_name" class="small">Nome</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" type="text" name="user_last_name" id="user_last_name" placeholder="username" required autocomplete="off" autofocus value=<?php echo $_POST['user_last_name'] ?? '' ?>>
+              <label for="user_last_name" class="small">Sobrenome</label>
+            </div>
             <div class="input-group mb-3">
               <span class="input-group-text">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
@@ -47,21 +54,18 @@
           <div class="col-12 text-center">
             <button class="w-100 btn btn-primary" type="submit">Cadastrar</button>
           </div>
-        <?php } ?>
         </form>
-        <?php if (isset($message['error_password'])) { ?>
-          <div class="alert alert-danger text-center small" id="password-error">
-            <?php echo $message['error_password'] ?>
+        <p class="text-center">Já tem cadastro? <a class="link-offset-2" href="login">Faça login</a></p>
+      <?php } ?>
+
+      <?php if (isset($message['success_register'])) { ?>
+        <form class="border rounded p-4 shadow-sm" action="login" method="POST">
+          <p class="mb-4 small text-center"><?php echo $message['success_register'] ?></p>
+          <div class="col-12 text-center">
+            <button class="w-100 btn bg-success text-white" type="submit">Faça o login</button>
           </div>
-        <?php } ?>
-        <?php if (isset($message['success_register'])) { ?>
-          <form class="border rounded p-4 shadow-sm" action="login" method="POST">
-            <p class="mb-4 small text-center"><?php echo $message['success_register'] ?></p>
-            <div class="col-12 text-center">
-              <button class="w-100 btn bg-success text-white" type="submit">Faça o login</button>
-            </div>
-          </form>
-        <?php } ?>
+        </form>
+      <?php } ?>
     </div>
   </div>
 </section>

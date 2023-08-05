@@ -3,7 +3,7 @@
 class HomeController
 {
   private $homeModel;
-  
+
   public function __construct()
   {
     require_once '../app/models/HomeModel.php';
