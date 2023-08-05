@@ -37,8 +37,8 @@
           </div>
           <div class="input-group mb-2">
             <div class="form-floating">
-              <input class="form-control mb-2" type="password" name="confirm_user_password" placeholder="confirm_user_password" id="confirm_user_password" required autocomplete="off">
-              <label for="confirm_user_password" class="small">Confirme sua Senha</label>
+              <input class="form-control mb-2" type="password" name="user_confirm_password" placeholder="user_confirm_password" id="user_confirm_password" required autocomplete="off">
+              <label for="user_confirm_password" class="small">Confirme sua Senha</label>
             </div>
           </div>
         </fieldset>

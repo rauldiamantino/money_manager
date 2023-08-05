@@ -13,11 +13,15 @@ class UsersController
 
   public function registration()
   {
+    $user_name = $_POST['user_name'] ?? '';
+    $user_email = $_POST['user_email'] ?? '';
+    $user_password = $_POST['user_password'] ?? '';
+    $user_confirm_password = $_POST['confirm_user_password'] ?? '';
+
     $data = [
-      'user_name' => $_POST['user_name'] ?? '',
-      'user_email' => $_POST['user_email'] ?? '',
-      'user_password' => $_POST['user_password'] ?? '',
-      'confirm_user_password' => $_POST['confirm_user_password'] ?? '',
+      'user_name' => $user_name,
+      'user_email' => $user_email,
+      'user_password' => $user_password,
     ];
 
     $message = [];
@@ -27,7 +31,7 @@ class UsersController
       $message = ['error_password' => 'Digite a mesma senha nos dois campos'];
     }
 
-    if ($data['user_password'] == $data['confirm_user_password'] and $_POST) {
+    if ($user_password == $user_confirm_password and $_POST) {
       $response = $this->usersModel->register_user($data);
     }
 
@@ -37,11 +41,17 @@ class UsersController
 
     if (isset($response['success_register'])) {
       $_SESSION['alert_message'] = $response['success_register'];
+      $_SESSION['user'] = ['name' => $user_name, 'email' => $user_email];
       $message = ['success_register' => $_SESSION['alert_message']];
 
       header('Location: ' . $this->base_uri);
     }
 
     require_once '../app/views/user_register.php';
+  }
+
+  public function login()
+  {
+
   }
 }
