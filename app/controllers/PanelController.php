@@ -23,7 +23,7 @@ class PanelController
       exit();
     }
 
-    if ($_POST['logout']) {
+    if (isset($_POST['logout']) and $_POST['logout']) {
       unset($_SESSION['user']);
       session_destroy();
 

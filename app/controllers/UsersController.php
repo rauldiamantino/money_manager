@@ -13,7 +13,7 @@ class UsersController
 
   public function registration()
   {
-    if ($_SESSION['user']) {
+    if (isset($_SESSION['user']) and $_SESSION['user']) {
       header('Location: ' . $this->base_uri . '/panel/display');
       exit();
     }
@@ -39,7 +39,7 @@ class UsersController
       $message = ['error_password' => 'Digite a mesma senha nos dois campos'];
     }
 
-    if ($user_password == $user_confirm_password and $_POST['user_first_name']) {
+    if ($user_password == $user_confirm_password and $_POST) {
       $response = $this->usersModel->register_user($data);
     }
 
@@ -56,7 +56,7 @@ class UsersController
 
   public function login()
   {
-    if ($_SESSION['user']) {
+    if (isset($_SESSION['user']) and $_SESSION['user']) {
       header('Location: ' . $this->base_uri . '/panel/display');
       exit();
     }
@@ -72,7 +72,7 @@ class UsersController
     $message = [];
     $response = $this->usersModel->login_user($data);
 
-    if (isset($response['error_login']) and $_POST['user_email']) {
+    if (isset($response['error_login']) and $user_email) {
       $message = ['error_login' => $response['error_login']];
     }
 

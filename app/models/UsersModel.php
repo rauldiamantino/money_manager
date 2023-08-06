@@ -5,6 +5,7 @@ class UsersModel
 {
   protected $user_email;
   protected $usersDao;
+  protected $database_user;
 
   public function __construct()
   {
@@ -23,7 +24,23 @@ class UsersModel
     }
 
     if (empty($get_user) and $this->usersDao->register_user_db($data)) {
+      $user = $this->get_user();
+      $database_user = 'm_user_' . $user[0]['id'];
+      $this->create_database_user($database_user);
+
       $response = ['success_register' => 'Cadastro realizado com sucesso!'];
+    }
+
+    return $response;
+  }
+
+  private function create_database_user($database_user)
+  {
+    $result = $this->usersDao->create_database_user($database_user);
+    $response = ['error_register' => $result];
+
+    if ($result) {
+      $response = ['success_create' => 'Database criado com sucesso'];
     }
 
     return $response;
@@ -33,6 +50,10 @@ class UsersModel
   {
     $this->user_email = $data['user_email'] ?? '';
     $get_user = $this->get_user();
+
+    if (empty($get_user)) {
+      return ['error_login' => 'Dados inválidos'];
+    }
 
     $validation_user = ['user_email' => false, 'user_password' => false];
 
@@ -54,11 +75,9 @@ class UsersModel
       ],
     ];
     foreach ($validation_user as $linha) :
-
       if (empty($linha)) {
         $response = ['error_login' => 'Dados inválidos'];
       }
-
     endforeach;
 
     return $response;

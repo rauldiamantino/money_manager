@@ -15,7 +15,6 @@ class UsersDAO
     $params = ['where' => 'email = \'' . $email . '\''];
     $result = $this->database->select($params);
     return $result;
-
   }
 
   public function register_user_db($user_data)
@@ -28,6 +27,12 @@ class UsersDAO
     ];
 
     $result = $this->database->insert('users', $user);
+    return $result;
+  }
+
+  public function create_database_user($database)
+  {
+    $result = $this->database->create_user_tables($database);
     return $result;
   }
 }
