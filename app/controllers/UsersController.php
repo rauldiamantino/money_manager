@@ -70,7 +70,10 @@ class UsersController
     ];
 
     $message = [];
-    $response = $this->usersModel->login_user($data);
+
+    if (isset($_POST['user_email']) and $_POST['user_email']) {
+      $response = $this->usersModel->login_user($data);
+    }
 
     if (isset($response['error_login']) and $user_email) {
       $message = ['error_login' => $response['error_login']];

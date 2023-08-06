@@ -38,16 +38,22 @@ class Database
     return $stmt->execute();
   }
 
-  public function select($params = [])
+  public function select($params = [], $database_name = '')
   {
     $columns = $params['columns'] ?? '*';
     $table = $params['table'] ?? 'users';
     $where = $params['where'] ?? '';
+    $sql_param = $params['sql_param'] ?? '';
 
     $sql = 'SELECT ' . $columns . ' FROM ' . $table;
 
     if ($where) {
       $sql .= ' WHERE ' . $where;
+    }
+
+    if ($sql_param) {
+      $sql = $sql_param;
+      $this->connection->exec('USE ' . $database_name);
     }
 
     $stmt = $this->connection->prepare($sql);
@@ -69,8 +75,7 @@ class Database
       $stmt = $this->connection->prepare($sql);
       $stmt->execute();
       return $stmt;
-    } 
-    catch (PDOException $e) {
+    } catch (PDOException $e) {
       die('Error creating database: ' . $e->getMessage());
     }
   }
@@ -123,8 +128,7 @@ class Database
       $this->connection->exec($create_incomes_table);
 
       return true;
-    } 
-    catch (PDOException $e) {
+    } catch (PDOException $e) {
       die('Error creating user tables: ' . $e->getMessage());
       return false;
     }

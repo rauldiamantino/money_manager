@@ -1,14 +1,20 @@
 <?php
 require_once '../app/Database.php';
 
-class FinancesDAO
+class PanelDAO
 {
   private $database;
 
-  public function get_finances_db($data)
+  public function __construct()
   {
-    $user = $data;
-    $this->database = new Database($user);
+    $this->database = new Database();
+  }
+
+  public function get_transactions_db($user_id)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $this->database = new Database();
+
     $sql = 'SELECT 
                 expenses.id, 
                 expenses.description, 
@@ -37,8 +43,8 @@ class FinancesDAO
             ORDER BY date;
             ';
 
-    $result = $this->database->query($sql);
+    $result = $this->database->select(['sql_param' => $sql], $database_name);
 
-    return $result->fetch_all(MYSQLI_ASSOC);
+    return $result;
   }
 }

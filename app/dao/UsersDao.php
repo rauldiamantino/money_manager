@@ -7,7 +7,7 @@ class UsersDAO
 
   public function __construct()
   {
-    $this->database = new Database(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $this->database = new Database();
   }
 
   public function get_user_db($email)
