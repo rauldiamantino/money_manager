@@ -12,9 +12,9 @@
       <form class="border rounded p-4 shadow-sm" action="login" method="POST">
         <h1 class="text-center h4 mb-4">Login</h1>
         <fieldset class="form-group">
-          <?php if (isset($message['error_login'])) { ?>
+          <?php if (isset($data['message']['error_login'])) { ?>
             <div class="alert alert-danger text-center small p-1 rounded-0" id="alert_login_error">
-              <?php echo $message['error_login'] ?>
+              <?php echo $data['message']['error_login'] ?>
             </div>
           <?php } ?>
           <div class="input-group mb-3">

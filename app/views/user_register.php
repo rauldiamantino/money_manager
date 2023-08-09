@@ -9,19 +9,19 @@
           </svg>
         </a>
       </div>
-      <?php if (empty($message['success_register'])) { ?>
+      <?php if (empty($data['message']['success_register'])) { ?>
         <form class="border rounded p-4 shadow-sm" action="registration" method="POST">
           <h1 class="text-center h4 mb-4">Cadastro de Usuário</h1>
           <fieldset class="form-group">
             
-            <?php if (isset($message['error_password'])) { ?>
+            <?php if (isset($data['message']['error_password'])) { ?>
               <div class="alert alert-danger text-center small p-1 rounded-0" id="alert_error_password">
-                <?php echo $message['error_password'] ?>
+                <?php echo $data['message']['error_password'] ?>
               </div>
             <?php } ?>
-            <?php if (isset($message['error_register'])) { ?>
+            <?php if (isset($data['message']['error_register'])) { ?>
               <div class="alert alert-warning text-center small p-1 rounded-0" id="alert_error_register">
-                <?php echo $message['error_register'] ?>
+                <?php echo $data['message']['error_register'] ?>
               </div>
             <?php } ?>
 
@@ -66,9 +66,9 @@
         <p class="text-center">Já tem cadastro? <a class="link-offset-2" href="login">Faça login</a></p>
       <?php } ?>
 
-      <?php if (isset($message['success_register'])) { ?>
+      <?php if (isset($data['message']['success_register'])) { ?>
         <form class="border rounded p-4 shadow-sm" action="login" method="POST">
-          <p class="mb-4 small text-center"><?php echo $message['success_register'] ?></p>
+          <p class="mb-4 small text-center"><?php echo $data['message']['success_register'] ?></p>
           <div class="col-12 text-center">
             <button class="w-100 btn bg-success text-white" type="submit">Faça o login</button>
           </div>
