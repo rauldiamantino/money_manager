@@ -1,5 +1,6 @@
 <?php
 require_once '../app/models/PanelModel.php';
+require_once '../app/helpers/ViewRenderes.php';
 
 class PanelController
 {
@@ -15,7 +16,8 @@ class PanelController
   public function __construct()
   {
     $this->panelModel = new PanelModel();
-    $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
+    // $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
+    $this->base_uri = dirname($_SERVER['SCRIPT_NAME']);
     $this->user_id = $_SESSION['user']['user_id'] ?? '';
     $this->user_first_name = $_SESSION['user']['user_first_name'] ?? '';
     $this->user_last_name = $_SESSION['user']['user_last_name'] ?? '';
@@ -32,9 +34,17 @@ class PanelController
       $this->active_tab = 'overview';
       $this->action_route = '../panel/display';
 
-      require_once '../app/views/panel/templates/nav.php';
-      require_once '../app/views/panel/panel.php';
-    } 
+      ViewRenderer::render('panel/templates/nav', [
+        'user_id' => $this->user_id,
+        'active_tab' => $this->active_tab,
+        'action_route' => $this->action_route,
+        'user_first_name' => $this->user_first_name,
+        'user_last_name' => $this->user_last_name,
+        'base_uri' => $this->base_uri,
+        ]);
+
+      ViewRenderer::render('panel/panel');
+    }
     catch (Exception $e) {
       $error_message = 'Erro ao buscar conteúdo: ' . $e->getMessage();
     }
@@ -50,8 +60,16 @@ class PanelController
       $transactions = $this->panelModel->getTransactions($user_id);
       $this->active_tab = 'transactions';
 
-      require_once '../app/views/panel/templates/nav.php';
-      require_once '../app/views/panel/transactions.php';
+      ViewRenderer::render('panel/templates/nav', [
+        'user_id' => $this->user_id,
+        'active_tab' => $this->active_tab,
+        'action_route' => $this->action_route,
+        'user_first_name' => $this->user_first_name,
+        'user_last_name' => $this->user_last_name,
+        'base_uri' => $this->base_uri,
+        ]);
+
+      ViewRenderer::render('panel/transactions');
     } 
     catch (Exception $e) {
       $error_message = 'Erro ao buscar transações: ' . $e->getMessage();

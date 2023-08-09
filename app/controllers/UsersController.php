@@ -1,4 +1,7 @@
 <?php
+require_once '../app/helpers/ViewRenderes.php';
+require_once '../app/models/UsersModel.php';
+
 class UsersController
 {
   protected $usersModel;
@@ -6,7 +9,6 @@ class UsersController
 
   public function __construct()
   {
-    require_once '../app/models/UsersModel.php';
     $this->usersModel = new UsersModel();
     $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
   }
@@ -50,7 +52,7 @@ class UsersController
       }
     }
 
-    require_once '../app/views/user_register.php';
+    ViewRenderer::render('user_register', ['message' => $message ]);
   }
 
   public function login()
@@ -91,7 +93,7 @@ class UsersController
       }
     }
 
-    require_once '../app/views/user_login.php';
+    ViewRenderer::render('user_login', ['message' => $message ]);
   }
 
   private function check_session()
