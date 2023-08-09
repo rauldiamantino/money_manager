@@ -13,8 +13,6 @@ class PanelDAO
   public function get_transactions_db($user_id)
   {
     $database_name = 'm_user_' . $user_id;
-    $this->database = new Database();
-
     $sql = 'SELECT 
                 expenses.id, 
                 expenses.description, 
@@ -40,10 +38,9 @@ class PanelDAO
             FROM incomes
             LEFT JOIN categories ON incomes.category_id = categories.id
             LEFT JOIN accounts ON incomes.account_id = accounts.id
-            ORDER BY date;
-            ';
+            ORDER BY date;';
 
-    $result = $this->database->select(['sql_param' => $sql], $database_name);
+    $result = $this->database->select($sql, ['database_name' => $database_name ]);
 
     return $result;
   }

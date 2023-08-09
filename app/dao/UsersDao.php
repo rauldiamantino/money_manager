@@ -12,21 +12,26 @@ class UsersDAO
 
   public function get_user_db($email)
   {
-    $params = ['where' => 'email = \'' . $email . '\''];
-    $result = $this->database->select($params);
+    $sql = 'SELECT * FROM users WHERE email = :email';
+    $params = ['email' => $email];
+    $result = $this->database->select($sql, ['params' => $params ]);
+
     return $result;
   }
 
   public function register_user_db($user_data)
   {
-    $user = [
+    $sql = 'INSERT INTO users (first_name, last_name, email, password) 
+            VALUES (:first_name, :last_name, :email, :password)';
+
+    $params = [
       'first_name' => $user_data['user_first_name'],
       'last_name' => $user_data['user_last_name'],
       'email' => $user_data['user_email'],
       'password' => password_hash($user_data['user_password'], PASSWORD_DEFAULT),
     ];
 
-    $result = $this->database->insert('users', $user);
+    $result = $this->database->insert($sql, $params);
     return $result;
   }
 

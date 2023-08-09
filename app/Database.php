@@ -19,49 +19,49 @@ class Database
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
       $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-      die('Error connection: ' . $e->getMessage());
+      die('Database Error: ' . $e->getMessage());
     }
   }
 
-  public function insert($table, $data)
+  public function insert($sql, $params = [])
   {
-    $columns = implode(", ", array_keys($data));
-    $placeholders = ":" . implode(", :", array_keys($data));
-
-    $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
     $stmt = $this->connection->prepare($sql);
 
-    foreach ($data as $key => &$value) {
+    foreach ($params as $key => &$value) {
       $stmt->bindParam(":$key", $value);
     }
 
-    return $stmt->execute();
+    try {
+      return $stmt->execute();
+    }
+    catch (PDOException $e) {
+      die('Database Error: ' . $e->getMessage());
+    }
   }
 
-  public function select($params = [], $database_name = '')
+  public function select($sql, $params = [])
   {
-    $columns = $params['columns'] ?? '*';
-    $table = $params['table'] ?? 'users';
-    $where = $params['where'] ?? '';
-    $sql_param = $params['sql_param'] ?? '';
-
-    $sql = 'SELECT ' . $columns . ' FROM ' . $table;
-
-    if ($where) {
-      $sql .= ' WHERE ' . $where;
-    }
-
-    if ($sql_param) {
-      $sql = $sql_param;
-      $this->connection->exec('USE ' . $database_name);
-    }
+    $params_consult = $params['params'] ?? '';
+    $database_name = $params['database_name'] ?? '';
 
     $stmt = $this->connection->prepare($sql);
 
+    if ($params_consult) {
+      foreach ($params_consult as $key => &$value) {
+        $stmt->bindParam(":$key", $value);
+      }
+    }
+
     try {
+
+      if ($database_name) {
+        $this->connection->exec('USE ' . $database_name);
+      }
+ 
       $stmt->execute();
-    } catch (PDOException $e) {
-      die('Error: ' . $e->getMessage());
+    }
+    catch (PDOException $e) {
+      die('Database Error: ' . $e->getMessage());
     }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -69,14 +69,15 @@ class Database
 
   public function create_database($database)
   {
-    $sql = 'CREATE DATABASE ' . $database;
+    $sql = 'CREATE DATABASE IF NOT EXISTS ' . $database;
 
     try {
       $stmt = $this->connection->prepare($sql);
       $stmt->execute();
       return $stmt;
-    } catch (PDOException $e) {
-      die('Error creating database: ' . $e->getMessage());
+    } 
+    catch (PDOException $e) {
+      die('Database Error: ' . $e->getMessage());
     }
   }
 
@@ -128,8 +129,9 @@ class Database
       $this->connection->exec($create_incomes_table);
 
       return true;
-    } catch (PDOException $e) {
-      die('Error creating user tables: ' . $e->getMessage());
+    } 
+    catch (PDOException $e) {
+      die('Database Error: ' . $e->getMessage());
       return false;
     }
   }
