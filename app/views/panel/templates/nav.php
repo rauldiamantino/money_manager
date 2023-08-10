@@ -1,9 +1,9 @@
 <ul class="nav nav-tabs justify-content-end pe-2 pt-2">
   <li class="nav-item">
-    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="<?php echo $data['base_uri'] . '/panel/display' ?>">Visão geral</a>
+    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="<?php echo BASE . '/panel/display' ?>">Visão geral</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'transactions') echo 'active'; ?>" aria-current="page" href="<?php echo $data['base_uri'] . '/panel/transactions/' . $data['user_id'] ?>">Transações</a>
+    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'transactions') echo 'active'; ?>" aria-current="page" href="<?php echo BASE . '/panel/transactions/' . $data['user_id'] ?>">Transações</a>
   </li>
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle py-3 text-black" data-bs-toggle="dropdown" role="button" aria-expanded="false">

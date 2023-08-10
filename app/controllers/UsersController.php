@@ -5,18 +5,18 @@ require_once '../app/models/UsersModel.php';
 class UsersController
 {
   protected $usersModel;
-  protected $base_uri;
 
   public function __construct()
   {
     $this->usersModel = new UsersModel();
-    $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
   }
 
   public function registration()
   {
+    // verifica se o usuário está logado
     $this->check_session();
 
+    // somente se o formulário for submetido
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       try {
         $user_first_name = $_POST['user_first_name'] ?? '';
@@ -33,7 +33,7 @@ class UsersController
           'user_email' => $user_email,
           'user_password' => $user_password,
           ];
-
+          
           $response = $this->usersModel->register_user($data);
         }
         else {
@@ -46,7 +46,7 @@ class UsersController
         elseif (isset($response['success_register'])) {
           $message = ['success_register' => $response['success_register']];
         }
-      } 
+      }
       catch (Exception $e) {
         $message = ['error_password' => $e->getMessage()];
       }
@@ -57,8 +57,10 @@ class UsersController
 
   public function login()
   {
+    // verifica se o usuário está logado
     $this->check_session();
 
+    // somente se o formulário for submetido
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       try {
         $user_email = $_POST['user_email'] ?? '';
@@ -84,7 +86,8 @@ class UsersController
             'user_email' => $response['success_login']['user_email'],
           ];
 
-          header('Location: ' . $this->base_uri . '/panel/display');
+          // se o usuário for localizado, redireciona para o painel
+          header('Location: ' . BASE . '/panel/display');
           exit();
         }
       }
@@ -99,7 +102,7 @@ class UsersController
   private function check_session()
   {
     if (isset($_SESSION['user']) and $_SESSION['user']) {
-      header('Location: ' . $this->base_uri . '/panel/display');
+      header('Location: ' . BASE . '/panel/display');
       exit();
     }
   }
