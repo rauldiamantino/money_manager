@@ -68,6 +68,7 @@
 
       <?php if (isset($data['message']['success_register'])) { ?>
         <form class="border rounded p-4 shadow-sm" action="login" method="POST">
+          <input type="hidden" name="user_email" value="<?php echo $data['user_email'] ?>">
           <p class="mb-4 small text-center"><?php echo $data['message']['success_register'] ?></p>
           <div class="col-12 text-center">
             <button class="w-100 btn bg-success text-white" type="submit">Faça o login</button>

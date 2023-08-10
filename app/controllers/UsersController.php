@@ -52,7 +52,7 @@ class UsersController
       }
     }
 
-    ViewRenderer::render('user_register', ['message' => $message ?? [] ]);
+    ViewRenderer::render('user_register', ['message' => $message ?? [], 'user_email' => $user_email ?? []]);
   }
 
   public function login()
@@ -61,7 +61,7 @@ class UsersController
     $this->check_session();
 
     // somente se o formulário for submetido
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' and isset($_POST['user_email'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' and isset($_POST['user_password'])) {
       try {
         $user_email = $_POST['user_email'] ?? '';
         $user_password = $_POST['user_password'] ?? '';
