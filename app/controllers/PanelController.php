@@ -66,7 +66,7 @@ class PanelController
         'user_last_name' => $this->user_last_name,
         ]);
 
-      ViewRenderer::render('panel/transactions');
+      ViewRenderer::render('panel/transactions', ['transactions' => $transactions ]);
     } 
     catch (Exception $e) {
       $error_message = 'Erro ao buscar transações: ' . $e->getMessage();

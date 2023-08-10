@@ -17,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($transactions as $value) : ?>
+      <?php foreach ($data['transactions'] as $value) : ?>
         <tr>
           <td><?php echo $value['id']; ?></td>
           <td><?php echo $value['description']; ?></td>
