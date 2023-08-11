@@ -55,12 +55,18 @@ class PanelController
     // renderiza e passa as variáveis para a view
     try {
 
-      if (isset($_POST['transaction_amount'])) {
-        $this->add_income($user_id);
+      if (isset($_POST['add_income'])) {
+        $message = $this->add_income($user_id);
+      }
+
+      if (isset($_POST['add_expense'])) {
+        $message = $this->add_expense($user_id);
       }
 
       $this->action_route = '../transactions/' . $user_id;
       $transactions = $this->panelModel->get_transactions($user_id);
+      $categories = $this->panelModel->get_categories($user_id);
+      $accounts = $this->panelModel->get_accounts($user_id);
       $this->active_tab = 'transactions';
 
       ViewRenderer::render('panel/templates/nav', [
@@ -71,7 +77,13 @@ class PanelController
         'user_last_name' => $this->user_last_name,
         ]);
 
-      ViewRenderer::render('panel/transactions', ['transactions' => $transactions, 'user_id' => $this->user_id]);
+      ViewRenderer::render('panel/transactions', [
+        'transactions' => $transactions, 
+        'user_id' => $this->user_id, 
+        'categories' => $categories ?? [], 
+        'accounts' => $accounts ?? [],
+        'message' => $message ?? [],
+        ]);
     } 
     catch (Exception $e) {
       $error_message = 'Erro ao buscar transações: ' . $e->getMessage();
@@ -150,7 +162,22 @@ class PanelController
       'date' => $_POST['transaction_date'],
     ];
 
-    $this->panelModel->add_income($user_id, $income);
+    $response = $this->panelModel->add_income($user_id, $income);
+    return $response;
+  }
+
+  public function add_expense($user_id)
+  {
+    $expense = [
+      'description' => $_POST['transaction_description'],
+      'amount' => -1 * $_POST['transaction_amount'],
+      'category_id' => $_POST['transaction_category'],
+      'account_id' => $_POST['transaction_account'],
+      'date' => $_POST['transaction_date'],
+    ];
+
+    $response = $this->panelModel->add_expense($user_id, $expense);
+    return $response;
   }
 
   public function add_account($user_id)

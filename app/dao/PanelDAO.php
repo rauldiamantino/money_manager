@@ -30,6 +30,26 @@ class PanelDAO
     return $result;
   }
 
+  public function add_expense_db($user_id, $expense)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'INSERT INTO expenses (description, amount, category_id, account_id, date)
+            VALUES (:description, :amount, :category_id, :account_id, :date);';
+
+    $params = [
+      'description' => $expense['description'],
+      'amount' => $expense['amount'],
+      'category_id' => $expense['category_id'],
+      'account_id' => $expense['account_id'],
+      'date' => $expense['date'],
+    ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    return $result;
+  }
+
   public function get_transactions_db($user_id)
   {
     $database_name = 'm_user_' . $user_id;

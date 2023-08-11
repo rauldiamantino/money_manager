@@ -36,7 +36,23 @@ class PanelModel {
   public function add_income($user_id, $income)
   {
     $result = $this->panelDAO->add_income_db($user_id, $income);
-    return $result;
+    $response = ['success' => 'Receita adicionada com sucesso!'];
+
+    if (empty($result)) {
+      $response = ['error_income' => 'Erro ao cadastrar receita'];
+    }
+    return $response;
+  }
+  
+  public function add_expense($user_id, $expense)
+  {
+    $result = $this->panelDAO->add_expense_db($user_id, $expense);
+    $response = ['success' => 'Despesa adicionada com sucesso!'];
+
+    if (empty($result)) {
+      $response = ['error_expense' => 'Erro ao cadastrar despesa'];
+    }
+    return $response;
   }
 
   public function add_account($user_id, $account)

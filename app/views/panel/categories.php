@@ -20,13 +20,13 @@
     </div>
   <?php } ?>
 
-  <table class="table table-dark table-striped-columns">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th>Name</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="table-group-divider">
       <?php foreach ($data['categories'] as $value) : ?>
         <tr>
           <td><?php echo $value['name']; ?></td>

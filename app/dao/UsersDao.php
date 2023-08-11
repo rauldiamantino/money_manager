@@ -38,6 +38,26 @@ class UsersDAO
   public function create_database_user($database)
   {
     $result = $this->database->create_user_tables($database);
+
+    if ($result) {
+      $this->add_default_category($database);
+      $this->add_default_account($database);
+    }
+
     return $result;
+  }
+
+  private function add_default_account($database)
+  {
+    $sql = 'INSERT INTO accounts (name) VALUES (:name)';
+    $params = ['name' => 'Conta Corrente'];
+    $this->database->insert($sql, $params);
+  }
+
+  private function add_default_category($database)
+  {
+    $sql = 'INSERT INTO categories (name) VALUES (:name)';
+    $params = ['name' => 'Geral'];
+    $this->database->insert($sql, $params);
   }
 }
