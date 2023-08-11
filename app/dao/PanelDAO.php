@@ -10,6 +10,26 @@ class PanelDAO
     $this->database = new Database();
   }
 
+  public function add_income_db($user_id, $income)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'INSERT INTO incomes (description, amount, category_id, account_id, date)
+            VALUES (:description, :amount, :category_id, :account_id, :date);';
+
+    $params = [
+      'description' => $income['description'],
+      'amount' => $income['amount'],
+      'category_id' => $income['category_id'],
+      'account_id' => $income['account_id'],
+      'date' => $income['date'],
+    ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    return $result;
+  }
+
   public function get_transactions_db($user_id)
   {
     $database_name = 'm_user_' . $user_id;

@@ -54,8 +54,13 @@ class PanelController
 
     // renderiza e passa as variáveis para a view
     try {
+
+      if (isset($_POST['transaction_amount'])) {
+        $this->add_income($user_id);
+      }
+
       $this->action_route = '../transactions/' . $user_id;
-      $transactions = $this->panelModel->getTransactions($user_id);
+      $transactions = $this->panelModel->get_transactions($user_id);
       $this->active_tab = 'transactions';
 
       ViewRenderer::render('panel/templates/nav', [
@@ -66,11 +71,24 @@ class PanelController
         'user_last_name' => $this->user_last_name,
         ]);
 
-      ViewRenderer::render('panel/transactions', ['transactions' => $transactions ]);
+      ViewRenderer::render('panel/transactions', ['transactions' => $transactions, 'user_id' => $this->user_id]);
     } 
     catch (Exception $e) {
       $error_message = 'Erro ao buscar transações: ' . $e->getMessage();
     }
+  }
+
+  public function add_income($user_id)
+  {
+    $income = [
+      'description' => $_POST['transaction_description'],
+      'amount' => $_POST['transaction_amount'],
+      'category_id' => $_POST['transaction_category'],
+      'account_id' => $_POST['transaction_account'],
+      'date' => $_POST['transaction_date'],
+    ];
+
+    $this->panelModel->add_income($user_id, $income);
   }
 
   private function check_session()

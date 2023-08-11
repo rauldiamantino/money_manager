@@ -18,8 +18,27 @@ class Database
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
       $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
+    } 
+    catch (PDOException $e) {
       die('Database Error: ' . $e->getMessage());
+    }
+  }
+
+  public function switch_database($database_name)
+  {
+    // encerra conexão atual
+    $this->connection = null;
+
+    // novo database
+    $this->dbname = $database_name;
+    
+    // nova conexão
+    try {
+      $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
+      $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } 
+    catch (PDOException $e) {
+      die('Error connection: ' . $e->getMessage());
     }
   }
 
@@ -105,9 +124,7 @@ class Database
                                   account_id INT,
                                   date DATE NOT NULL,
                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                  FOREIGN KEY (category_id) REFERENCES categories(id),
-                                  FOREIGN KEY (account_id) REFERENCES accounts(id)
+                                  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                                 )';
 
       $create_incomes_table = 'CREATE TABLE incomes (
@@ -118,9 +135,7 @@ class Database
                                 account_id INT,
                                 date DATE NOT NULL,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                FOREIGN KEY (category_id) REFERENCES categories(id),
-                                FOREIGN KEY (account_id) REFERENCES accounts(id)
+                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                               )';
 
       $this->connection->exec($create_categories_table);
