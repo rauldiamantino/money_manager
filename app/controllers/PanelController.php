@@ -78,6 +78,68 @@ class PanelController
     }
   }
 
+  public function accounts($user_id)
+  {
+    $this->check_session();
+    $this->check_logout();
+
+    // renderiza e passa as variáveis para a view
+    try {
+
+      if (isset($_POST['account'])) {
+        $message = $this->add_account($user_id);
+      }
+
+      $this->action_route = '../accounts/' . $user_id;
+      $accounts = $this->panelModel->get_accounts($user_id);
+      $this->active_tab = 'accounts';
+
+      ViewRenderer::render('panel/templates/nav', [
+        'user_id' => $this->user_id,
+        'active_tab' => $this->active_tab,
+        'action_route' => $this->action_route,
+        'user_first_name' => $this->user_first_name,
+        'user_last_name' => $this->user_last_name,
+        ]);
+
+      ViewRenderer::render('panel/accounts', ['accounts' => $accounts, 'user_id' => $this->user_id, 'message' => $message ?? [] ]);
+    } 
+    catch (Exception $e) {
+      $error_message = 'Erro ao buscar contas: ' . $e->getMessage();
+    }
+  }
+
+  public function categories($user_id)
+  {
+    $this->check_session();
+    $this->check_logout();
+
+    // renderiza e passa as variáveis para a view
+    try {
+
+      if (isset($_POST['category'])) {
+        $message = $this->add_category($user_id);
+      }
+
+      $this->action_route = '../categories/' . $user_id;
+      $categories = $this->panelModel->get_categories($user_id);
+      $this->active_tab = 'categories';
+
+      ViewRenderer::render('panel/templates/nav', [
+        'user_id' => $this->user_id,
+        'active_tab' => $this->active_tab,
+        'action_route' => $this->action_route,
+        'user_first_name' => $this->user_first_name,
+        'user_last_name' => $this->user_last_name,
+        ]);
+
+      ViewRenderer::render('panel/categories', ['categories' => $categories, 'user_id' => $this->user_id, 'message' => $message ?? [] ]);
+    } 
+    catch (Exception $e) {
+      $error_message = 'Erro ao buscar categorias: ' . $e->getMessage();
+    }
+  }
+
   public function add_income($user_id)
   {
     $income = [
@@ -89,6 +151,22 @@ class PanelController
     ];
 
     $this->panelModel->add_income($user_id, $income);
+  }
+
+  public function add_account($user_id)
+  {
+    $account = $_POST['account'];
+    $response = $this->panelModel->add_account($user_id, $account);
+    
+    return $response;
+  }
+
+  public function add_category($user_id)
+  {
+    $category = $_POST['category'];
+    $response = $this->panelModel->add_category($user_id, $category);
+    
+    return $response;
   }
 
   private function check_session()

@@ -64,4 +64,58 @@ class PanelDAO
 
     return $result;
   }
+
+  public function get_accounts_db($user_id, $account = '')
+  {
+    $database_name = 'm_user_' . $user_id;
+    $account_name = $account;
+    $sql = 'SELECT * FROM accounts';
+
+    if ($account_name) {
+      $sql .= ' WHERE name = :name';
+    }
+    $params = ['name' => $account];
+
+    $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
+    return $result;
+  }
+
+  public function get_categories_db($user_id, $category = '')
+  {
+    $database_name = 'm_user_' . $user_id;
+    $category_name = $category;
+    $sql = 'SELECT * FROM categories';
+
+    if ($category_name) {
+      $sql .= ' WHERE name = :name';
+    }
+    $params = ['name' => $category];
+
+    $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
+    return $result;
+  }
+
+  public function add_account_db($user_id, $account)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'INSERT INTO accounts (name) VALUES (:name);';
+    $params = ['name' => $account ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    return $result;
+  }
+
+  public function add_category_db($user_id, $category)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'INSERT INTO categories (name) VALUES (:name);';
+    $params = ['name' => $category ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    return $result;
+  }
 }

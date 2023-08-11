@@ -2,11 +2,11 @@
   <h1 class="mb-4">Geral</h1>
 
   <div class="mb-2 d-flex gap-3">
-    <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_receita">
+    <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_income">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Receita
     </a>
-    <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_despesa">
+    <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_expense">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Despesa
     </a>
@@ -37,11 +37,11 @@
 </section>
 
 <!-- modal nova receita -->
-<div class="modal fade" id="modal_receita" tabindex="-1" role="dialog" aria-labelledby="modal_receita_label" aria-hidden="true">
+<div class="modal fade" id="modal_income" tabindex="-1" role="dialog" aria-labelledby="modal_income_label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modal_receita_label">Nova Receita</h5>
+        <h5 class="modal-title" id="modal_income_label">Nova Receita</h5>
       </div>
       <div class="modal-body">
         <form action="<?php echo BASE . '/panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
@@ -93,11 +93,11 @@
 </div>
 
 <!-- modal nova receita -->
-<div class="modal fade" id="modal_despesa" tabindex="-1" role="dialog" aria-labelledby="modal_despesa_label" aria-hidden="true">
+<div class="modal fade" id="modal_expense" tabindex="-1" role="dialog" aria-labelledby="modal_expense_label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modal_despesa_label">Nova Despesa</h5>
+        <h5 class="modal-title" id="modal_expense_label">Nova Despesa</h5>
       </div>
       <div class="modal-body">
         <form action="#" method="POST" id="add_expense">
