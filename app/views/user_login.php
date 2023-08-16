@@ -45,3 +45,5 @@
     </div>
   </div>
 </section>
+
+<script src="<?php echo BASE ?>/js/user.js"></script>

@@ -58,3 +58,4 @@
     </div>
   </div>
 </div>
+<script src="<?php echo BASE ?>/js/categories.js"></script>

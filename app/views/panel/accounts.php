@@ -58,3 +58,5 @@
     </div>
   </div>
 </div>
+
+<script src="<?php echo BASE ?>/js/accounts.js"></script>
