@@ -2,7 +2,7 @@
 
 Após criar sua conta e realizar o login, você pode adicionar receitas e despesas, além de organizá-las por contas e categorias.
 
-## Requisitos:
+## Requisitos e Instalação:
 
 - É muito importante que você já possua um ambiente PHP e MySQL configurado, caso não tenha, recomendo que instale o MAMP ou XAMPP.
 - Clone este repositório no diretório padrão do seu localhost.
