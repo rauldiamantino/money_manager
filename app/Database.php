@@ -20,7 +20,9 @@ class Database
       $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } 
     catch (PDOException $e) {
-      die('Database Error: ' . $e->getMessage());
+      $error_message = 'Database Error: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 
@@ -38,7 +40,9 @@ class Database
       $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } 
     catch (PDOException $e) {
-      die('Error connection: ' . $e->getMessage());
+      $error_message = 'Error connection: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 
@@ -54,7 +58,9 @@ class Database
       return $stmt->execute();
     }
     catch (PDOException $e) {
-      die('Database Error: ' . $e->getMessage());
+      $error_message = 'Database Error: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 
@@ -80,7 +86,9 @@ class Database
       $stmt->execute();
     }
     catch (PDOException $e) {
-      die('Database Error: ' . $e->getMessage());
+      $error_message = 'Database Error: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -96,7 +104,9 @@ class Database
       return $stmt;
     } 
     catch (PDOException $e) {
-      die('Database Error: ' . $e->getMessage());
+      $error_message = 'Database Error: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 
@@ -144,10 +154,11 @@ class Database
       $this->connection->exec($create_incomes_table);
 
       return true;
-    } 
+    }
     catch (PDOException $e) {
-      die('Database Error: ' . $e->getMessage());
-      return false;
+      $error_message = 'Database Error: ' . $e->getMessage();
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 }

@@ -1,10 +1,10 @@
-<?php 
+<?php
+require_once '../app/helpers/ViewRenderes.php';
 
 class ErrorController 
 {
-  public static function notFound()
+  public static function not_found()
   {
-    http_response_code(404);
-    require_once '../app/views/404.php';
+    ViewRenderer::render('404');
   }
 }

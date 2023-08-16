@@ -51,7 +51,7 @@ class Router
       call_user_func_array([$controller, $methodName], $params);
     }
     else {
-      ErrorController::notFound();
+      ErrorController::not_found();
     }
   }
 }
