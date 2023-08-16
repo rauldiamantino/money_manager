@@ -13,15 +13,11 @@
   </div>
 
   <?php if (isset($data['message']['error_income'])) { ?>
-    <div class="alert alert-danger text-center small p-1 rounded-0" id="alert_income_error">
-      <?php echo $data['message']['error_income'] ?>
-    </div>
+    <div class="d-none" id="alert_add_transaction"><?php echo $data['message']['error_income'] ?></div>
   <?php } ?>
 
   <?php if (isset($data['message']['success'])) { ?>
-    <div class="alert alert-success text-center small p-1 rounded-0" id="alert_income_success">
-      <?php echo $data['message']['success'] ?>
-    </div>
+    <div class="d-none" id="alert_add_transaction"><?php echo $data['message']['success'] ?></div>
   <?php } ?>
 
   <table class="table table-hover">
@@ -172,5 +168,3 @@
     </div>
   </div>
 </div>
-
-<script src="../../js/transactions.js"></script>

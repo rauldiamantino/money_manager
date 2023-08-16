@@ -9,15 +9,11 @@
   </div>
 
   <?php if (isset($data['message']['error_category'])) { ?>
-    <div class="alert alert-danger text-center small p-1 rounded-0" id="alert_category_error">
-      <?php echo $data['message']['error_category'] ?>
-    </div>
+    <div class="d-none" id="alert_create_category"><?php echo $data['message']['error_category'] ?></div>
   <?php } ?>
 
   <?php if (isset($data['message']['success'])) { ?>
-    <div class="alert alert-success text-center small p-1 rounded-0" id="alert_category_success">
-      <?php echo $data['message']['success'] ?>
-    </div>
+    <div class="d-none" id="alert_create_category"><?php echo $data['message']['success'] ?></div>
   <?php } ?>
 
   <table class="table table-hover">

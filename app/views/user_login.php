@@ -45,5 +45,3 @@
     </div>
   </div>
 </section>
-
-<script src="../js/user_register.js"></script>
