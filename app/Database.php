@@ -21,12 +21,7 @@ class Database
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
 
       return $error_message;
     }
@@ -47,12 +42,7 @@ class Database
     } 
     catch (PDOException $e) {
       $error_message = 'Error connection: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
       
       return $error_message;
     }
@@ -71,12 +61,7 @@ class Database
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
 
       return $error_message;
     }
@@ -105,12 +90,7 @@ class Database
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
 
       return $error_message;
     }
@@ -129,12 +109,7 @@ class Database
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
 
       return $error_message;
     }
@@ -187,14 +162,18 @@ class Database
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
-      $error_code = $e->getCode();
-
-      if ($error_code == '1049' or $error_code == '42S02') {
-        header('Location: ' . BASE . '/error/not_found');
-        exit();
-      }
+      $this->check_invalid_database($e->getCode());
 
       return $error_message;
+    }
+  }
+
+  private function check_invalid_database($error_code)
+  {
+    // se não existir o database ou a tabela, redireciona para pág de erro
+    if ($error_code == '1049' or $error_code == '42S02') {
+      header('Location: ' . BASE . '/error/not_found');
+      exit();
     }
   }
 }
