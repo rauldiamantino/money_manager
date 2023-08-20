@@ -57,7 +57,7 @@ class UsersController
     $view_name = 'user_login';
     $view_content = [];
 
-    if (empty($_POST['user_email'])) {
+    if (empty($_POST['user_password'])) {
       return [$view_name => $view_content];
     }
 
