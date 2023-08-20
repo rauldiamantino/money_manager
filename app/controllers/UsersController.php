@@ -44,6 +44,7 @@ class UsersController
 
     // Retorna view e seu conteúdo
     $view_content = ['message' => $message, 'user_email' => $user['user_email']];
+
     return [ $view_name => $view_content ];
   }
 
@@ -84,6 +85,7 @@ class UsersController
 
     // Se o usuario não for localizado, retorna  mensagem de erro
     $view_content = ['message' => $message ];
+
     return [$view_name => $view_content];
   }
 

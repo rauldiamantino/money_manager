@@ -34,11 +34,11 @@ class PanelController
     // View e conteúdo para o menu de navegação
     $nav_view_name = 'panel/templates/nav';
     $nav_view_content = [
-        'user_id' => $this->user_id,
-        'active_tab' => $this->active_tab,
-        'action_route' => $this->action_route,
-        'user_first_name' => $this->user_first_name,
-        'user_last_name' => $this->user_last_name,
+      'user_id' => $this->user_id,
+      'active_tab' => $this->active_tab,
+      'action_route' => $this->action_route,
+      'user_first_name' => $this->user_first_name,
+      'user_last_name' => $this->user_last_name,
     ];
 
     // View e conteúdo para o painel
