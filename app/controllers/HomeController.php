@@ -1,6 +1,5 @@
 <?php
 require_once '../app/models/HomeModel.php';
-require_once '../app/helpers/ViewRenderes.php';
 
 class HomeController
 {
@@ -13,7 +12,10 @@ class HomeController
 
   public function index()
   {
-    $content_home = $this->homeModel->getContentHome();
-    ViewRenderer::render('home', ['content_home' => $content_home]);
+    // View e conteúdo para a home
+    $view_name = 'home';
+    $view_content = $this->homeModel->getContentHome();
+
+    return [ $view_name => $view_content ];
   }
 }

@@ -1,11 +1,13 @@
 <?php
 require_once 'controllers/ErrorController.php';
+require_once '../app/helpers/ViewRenderes.php';
 
 class Router
 {
   private $base_uri;
   private $uri;
   private $parts;
+  public $result;
 
   public function __construct()
   {
@@ -31,14 +33,14 @@ class Router
 
     $params = [];
 
+    // Remove controlador e método da rota, deixando somente parâmetros
     if (count($this->parts) > 0) {
-
-      // remove controlador e método da rota, deixando somente parâmetros
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
       $methodName = strtolower(array_shift($this->parts));
       $params = $this->parts ?? '';
     }
 
+    // Chama o controller e se não existir chama a página de erro
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
     $controller = '';
 
@@ -48,10 +50,15 @@ class Router
     }
 
     if (method_exists($controller, $methodName)) {
-      call_user_func_array([$controller, $methodName], $params);
+      $this->result = call_user_func_array([$controller, $methodName], $params);
     }
     else {
-      ErrorController::not_found();
+      $this->result = ErrorController::not_found();
     }
+
+    // Renderiza views
+    foreach($this->result as $view => $content):
+      ViewRenderer::render($view, $content);
+    endforeach;
   }
 }

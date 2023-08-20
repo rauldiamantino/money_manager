@@ -1,5 +1,4 @@
 <?php
-require_once '../app/helpers/ViewRenderes.php';
 require_once '../app/models/UsersModel.php';
 
 class UsersController
@@ -11,94 +10,84 @@ class UsersController
     $this->usersModel = new UsersModel();
   }
 
+  // Cadastro de usuário
   public function registration()
   {
-    // verifica se o usuário está logado
+    // Verifica se o usuário possui sessão ativa
     $this->check_session();
+    
+    // View e conteúdo da página
+    $view_name = 'user_register';
+    $view_content = [];
 
-    // somente se o formulário for submetido
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      try {
-        $user_first_name = $_POST['user_first_name'] ?? '';
-        $user_last_name = $_POST['user_last_name'] ?? '';
-        $user_email = $_POST['user_email'] ?? '';
-        $user_password = $_POST['user_password'] ?? '';
-        $user_confirm_password = $_POST['user_confirm_password'] ?? '';
-        $response = [];
-
-        if ($user_password == $user_confirm_password) {
-          $data = [
-          'user_first_name' => $user_first_name,
-          'user_last_name' => $user_last_name,
-          'user_email' => $user_email,
-          'user_password' => $user_password,
-          ];
-          
-          $response = $this->usersModel->register_user($data);
-        }
-        else {
-          throw new Exception('As senhas não coincidem');
-        }
-
-        if (isset($response['error_register'])) {
-          $message = ['error_register' => $response['error_register']];
-        }
-        elseif (isset($response['success_register'])) {
-          $message = ['success_register' => $response['success_register']];
-        }
-      }
-      catch (Exception $e) {
-        $message = ['error_password' => $e->getMessage()];
-      }
+    if (empty($_POST['user_email'])) {
+      return [ $view_name => $view_content ];
     }
 
-    ViewRenderer::render('user_register', ['message' => $message ?? [], 'user_email' => $user_email ?? []]);
+    // Recupera formulário
+    $user = ['user_first_name' => $_POST['user_first_name'], 'user_last_name' => $_POST['user_last_name'], 'user_email' => $_POST['user_email'], 'user_password' => $_POST['user_password']];
+    $user_confirm_password = $_POST['user_confirm_password'];
+    $message = ['error_password' => 'As senhas não coincidem'];
+
+    // Faz requisição do cadastro
+    if ($user['user_password'] == $user_confirm_password) {
+      $response = $this->usersModel->register_user($user);
+    }
+
+    if (isset($response['error_register'])) {
+      $message = ['error_register' => $response['error_register']];
+    }
+
+    if (isset($response['success_register'])) {
+      $message = ['success_register' => $response['success_register']];
+    }
+
+    // Retorna view e seu conteúdo
+    $view_content = ['message' => $message, 'user_email' => $user['user_email']];
+    return [ $view_name => $view_content ];
   }
 
   public function login()
   {
-    // verifica se o usuário está logado
+    // Verifica se o usuário está logado
     $this->check_session();
 
-    // somente se o formulário for submetido
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' and isset($_POST['user_password'])) {
-      try {
-        $user_email = $_POST['user_email'] ?? '';
-        $user_password = $_POST['user_password'] ?? '';
+    // View e conteúdo da página
+    $view_name = 'user_login';
+    $view_content = [];
 
-        $data = [
-          'user_email' => $user_email,
-          'user_password' => $user_password,
-        ];
-
-        $response = $this->usersModel->login_user($data);
-
-        if (isset($response['error_login'])) {
-          $message = ['error_login' => $response['error_login']];
-        }
-        elseif (isset($response['success_login']) and empty($_SESSION['user'])) {
-          $message = ['success_login' => $response['success_login']['message']];
-
-          $_SESSION['user'] = [
-            'user_id' => $response['success_login']['user_id'],
-            'user_first_name' => $response['success_login']['user_first_name'],
-            'user_last_name' => $response['success_login']['user_last_name'],
-            'user_email' => $response['success_login']['user_email'],
-          ];
-
-          // se o usuário for localizado, redireciona para o painel
-          header('Location: ' . BASE . '/panel/display');
-          exit();
-        }
-      }
-      catch (Exception $e) {
-        $message = ['error_login' => 'Erro ao fazer login: ' . $e->getMessage()];
-      }
+    if (empty($_POST['user_email'])) {
+      return [$view_name => $view_content];
     }
 
-    ViewRenderer::render('user_login', ['message' => $message ?? [] ]);
+    $user = ['user_email' => $_POST['user_email'], 'user_password' => $_POST['user_password']];
+    $response = $this->usersModel->login_user($user);
+
+    if (isset($response['error_login'])) {
+      $message = ['error_login' => $response['error_login']];
+    }
+
+    // Se o usuário for localizado, redireciona para o painel
+    if (isset($response['success_login']) and empty($_SESSION['user'])) {
+      $_SESSION['user'] = [
+        'user_id' => $response['success_login']['user_id'],
+        'user_first_name' => $response['success_login']['user_first_name'],
+        'user_last_name' => $response['success_login']['user_last_name'],
+        'user_email' => $response['success_login']['user_email'],
+      ];
+
+      $message = ['success_login' => $response['success_login']['message']];
+
+      header('Location: ' . BASE . '/panel/display');
+      exit();
+    }
+
+    // Se o usuario não for localizado, retorna  mensagem de erro
+    $view_content = ['message' => $message ];
+    return [$view_name => $view_content];
   }
 
+  // Verifica se o usuário possui sessão ativa
   private function check_session()
   {
     if (isset($_SESSION['user']) and $_SESSION['user']) {
