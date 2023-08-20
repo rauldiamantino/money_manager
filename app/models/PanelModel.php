@@ -1,5 +1,6 @@
 <?php
 require_once '../app/dao/PanelDAO.php';
+require_once '../app/helpers/Logger.php';
 
 class PanelModel {
   public $panelDAO;
@@ -52,6 +53,7 @@ class PanelModel {
     if (empty($result)) {
       $response = ['error_expense' => 'Erro ao cadastrar despesa'];
     }
+
     return $response;
   }
 
@@ -79,5 +81,19 @@ class PanelModel {
     }
 
     return $response;
+  }
+
+  public function check_user_exists($user_id)
+  {
+    $check_user = $this->panelDAO->check_user_db($user_id);
+    $response = ['success' => 'Usuário existe'];
+
+    if (empty($check_user)) {
+      $response = ['error_user' => 'Usuário não existe na tabela users'];
+      Logger::log($response['error_user']);
+    }
+
+    return $response;
+
   }
 }

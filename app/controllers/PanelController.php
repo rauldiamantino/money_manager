@@ -232,15 +232,20 @@ class PanelController
     }
   }
 
-  // Verifica se o usuário está logado
+  // Verifica se o usuário existe e está logado
   private function check_logout()
   {
-    if (isset($_POST['logout']) and $_POST['logout']) {
-      unset($_SESSION['user']);
-      session_destroy();
+    $user_exists = $this->panelModel->check_user_exists($this->user_id);
 
-      header('Location: ' . BASE);
-      exit();
+    if ($user_exists['success'] and empty($_POST['logout'])) {
+      return false;
     }
+
+    // Encerra sessão e redireciona para a home
+    unset($_SESSION['user']);
+    session_destroy();
+
+    header('Location: ' . BASE);
+    exit();
   }
 }

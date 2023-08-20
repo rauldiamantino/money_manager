@@ -152,4 +152,15 @@ class PanelDAO
 
     return $result;
   }
+
+  public function check_user_db($user_id)
+  {
+    $sql = 'SELECT * FROM users WHERE id = :id';
+    $params = ['id' => $user_id ];
+
+    $this->database->switch_database(DB_NAME);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
+
+    return $result;
+  }
 }

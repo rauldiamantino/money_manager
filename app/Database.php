@@ -18,12 +18,15 @@ class Database
 
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
-      return $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+      return true;
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
       return false;
     }
   }
@@ -36,12 +39,16 @@ class Database
 
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
-      return $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+      return true;
     } 
     catch (PDOException $e) {
       $error_message = 'Error connection: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
+      return false;
     }
   }
 
@@ -49,18 +56,20 @@ class Database
   public function insert($sql, $params = [])
   {
     $stmt = $this->connection->prepare($sql);
-
     foreach ($params as $key => &$value) {
       $stmt->bindParam(":$key", $value);
     }
 
     try {
-      return $stmt->execute();
+      $stmt->execute();
+      return true;
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
+      return false;
     }
   }
 
@@ -70,27 +79,31 @@ class Database
     $params_consult = $params['params'] ?? '';
     $database_name = $params['database_name'] ?? '';
 
-    $stmt = $this->connection->prepare($sql);
-
-    if ($params_consult) {
-      foreach ($params_consult as $key => &$value) {
-        $stmt->bindParam(":$key", $value);
-      }
-    }
-
     try {
 
       if ($database_name) {
-        $this->connection->exec('USE ' . $database_name);
+        $this->switch_database($database_name);
+      }
+      
+      $stmt = $this->connection->prepare($sql);
+
+      if ($params_consult) {
+        foreach ($params_consult as $key => &$value) {
+          $stmt->bindParam(":$key", $value);
+        }
       }
  
       $stmt->execute();
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      return $result;
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
+      return false;
     }
   }
 
@@ -102,12 +115,15 @@ class Database
     try {
       $stmt = $this->connection->prepare($sql);
       $stmt->execute();
-      return $stmt;
+
+      return true;
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
+      return false;
     }
   }
 
@@ -161,6 +177,8 @@ class Database
       $error_message = 'Database Error: ' . $e->getMessage();
       Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
+
+      return false;
     }
   }
 
