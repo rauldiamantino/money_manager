@@ -54,14 +54,9 @@ class PanelController
     $this->check_session();
     $this->check_logout();
 
-    // Prepara conteúdo para a View
-    $this->action_route = '../transactions/' . $user_id;
-    $transactions = $this->panelModel->get_transactions($user_id);
-    $categories = $this->panelModel->get_categories($user_id);
-    $accounts = $this->panelModel->get_accounts($user_id);
-    $this->active_tab = 'transactions';
     $message = [];
 
+    // Resultado da tentativa de adicionar transações
     if (isset($_POST['add_income'])) {
       $message = $this->add_income($user_id);
     }
@@ -69,6 +64,13 @@ class PanelController
     if (isset($_POST['add_expense'])) {
       $message = $this->add_expense($user_id);
     }
+
+    // Prepara conteúdo para a View
+    $this->action_route = '../transactions/' . $user_id;
+    $transactions = $this->panelModel->get_transactions($user_id);
+    $categories = $this->panelModel->get_categories($user_id);
+    $accounts = $this->panelModel->get_accounts($user_id);
+    $this->active_tab = 'transactions';
 
     // View e conteúdo para o menu de navegação
     $nav_view_name = 'panel/templates/nav';
@@ -99,15 +101,17 @@ class PanelController
     $this->check_session();
     $this->check_logout();
 
+    $message = [];
+
+    // Resultado da tentativa de adicionar conta
+    if (isset($_POST['account'])) {
+      $message = $this->add_account($user_id);
+    }
+
     // Prepara conteúdo para a View
     $this->action_route = '../accounts/' . $user_id;
     $accounts = $this->panelModel->get_accounts($user_id);
     $this->active_tab = 'accounts';
-    $message = [];
-
-    if (isset($_POST['account'])) {
-      $message = $this->add_account($user_id);
-    }
 
     // View e conteúdo para o menu de navegação
     $nav_view_name = 'panel/templates/nav';
@@ -136,15 +140,17 @@ class PanelController
     $this->check_session();
     $this->check_logout();
 
+    $message = [];
+
+    // Resultado da tentativa de adicionar categoria
+    if (isset($_POST['category'])) {
+      $message = $this->add_category($user_id);
+    }
+
     // Prepara conteúdo para a View
     $this->action_route = '../categories/' . $user_id;
     $categories = $this->panelModel->get_categories($user_id);
     $this->active_tab = 'categories';
-    $message = [];
-
-    if (isset($_POST['category'])) {
-      $message = $this->add_category($user_id);
-    }
 
     // View e conteúdo para o menu de navegação
     $nav_view_name = 'panel/templates/nav';

@@ -10,6 +10,7 @@ class PanelDAO
     $this->database = new Database();
   }
 
+  // Adiciona receita no banco de dados
   public function add_income_db($user_id, $income)
   {
     $database_name = 'm_user_' . $user_id;
@@ -30,6 +31,7 @@ class PanelDAO
     return $result;
   }
 
+  // Adiciona despesa no banco de dados
   public function add_expense_db($user_id, $expense)
   {
     $database_name = 'm_user_' . $user_id;
@@ -50,6 +52,7 @@ class PanelDAO
     return $result;
   }
 
+  // Busca transações no banco de dados
   public function get_transactions_db($user_id)
   {
     $database_name = 'm_user_' . $user_id;
@@ -80,11 +83,13 @@ class PanelDAO
             LEFT JOIN accounts ON incomes.account_id = accounts.id
             ORDER BY date;';
 
+    $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['database_name' => $database_name ]);
 
     return $result;
   }
 
+  // Busca contas no banco de dados
   public function get_accounts_db($user_id, $account = '')
   {
     $database_name = 'm_user_' . $user_id;
@@ -94,13 +99,16 @@ class PanelDAO
 
     if ($account_name) {
       $sql .= ' WHERE name = :name';
-      $params = ['name' => $account_name];
+      $params = ['name' => $account_name ];
     }
 
-    $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
+    $this->database->switch_database($database_name);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
     return $result;
   }
 
+  // Busca categorias no banco de dados
   public function get_categories_db($user_id, $category = '')
   {
     $database_name = 'm_user_' . $user_id;
@@ -110,13 +118,16 @@ class PanelDAO
 
     if ($category_name) {
       $sql .= ' WHERE name = :name';
-      $params = ['name' => $category];
+      $params = ['name' => $category ];
     }
 
-    $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
+    $this->database->switch_database($database_name);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
     return $result;
   }
 
+  // Busca contas no banco de dados
   public function add_account_db($user_id, $account)
   {
     $database_name = 'm_user_' . $user_id;
@@ -129,6 +140,7 @@ class PanelDAO
     return $result;
   }
 
+  // Adiciona categoria no banco de dados
   public function add_category_db($user_id, $category)
   {
     $database_name = 'm_user_' . $user_id;
