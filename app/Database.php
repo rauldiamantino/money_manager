@@ -1,4 +1,5 @@
 <?php
+require_once '../app/helpers/Logger.php';
 
 class Database
 {
@@ -17,37 +18,34 @@ class Database
 
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
-      $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-
-      return $error_message;
+      return false;
     }
   }
 
+  // Encerra conexão atual e alterna banco de dados
   public function switch_database($database_name)
   {
-    // encerra conexão atual
     $this->connection = null;
-
-    // novo database
     $this->dbname = $database_name;
-    
-    // nova conexão
+
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
-      $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } 
     catch (PDOException $e) {
       $error_message = 'Error connection: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-      
-      return $error_message;
     }
   }
 
+  // Adiciona entradas no banco de dados
   public function insert($sql, $params = [])
   {
     $stmt = $this->connection->prepare($sql);
@@ -61,12 +59,12 @@ class Database
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-
-      return $error_message;
     }
   }
 
+  // Realiza buscas no banco de dados
   public function select($sql, $params = [])
   {
     $params_consult = $params['params'] ?? '';
@@ -87,17 +85,16 @@ class Database
       }
  
       $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-
-      return $error_message;
     }
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  // Cria novo banco de dados
   public function create_database($database)
   {
     $sql = 'CREATE DATABASE IF NOT EXISTS ' . $database;
@@ -109,12 +106,12 @@ class Database
     } 
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-
-      return $error_message;
     }
   }
 
+  // Cria tabelas do usuário após se cadastrar
   public function create_user_tables($database)
   {
     try {
@@ -162,16 +159,18 @@ class Database
     }
     catch (PDOException $e) {
       $error_message = 'Database Error: ' . $e->getMessage();
+      Logger::log($error_message);
       $this->check_invalid_database($e->getCode());
-
-      return $error_message;
     }
   }
 
+  // Redireciona para página de erro caso o db não exista
   private function check_invalid_database($error_code)
   {
-    // se não existir o database ou a tabela, redireciona para pág de erro
     if ($error_code == '1049' or $error_code == '42S02') {
+      unset($_SESSION['user']);
+      session_destroy();
+      
       header('Location: ' . BASE . '/error/not_found');
       exit();
     }
