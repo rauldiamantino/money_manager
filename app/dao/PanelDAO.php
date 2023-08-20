@@ -90,11 +90,12 @@ class PanelDAO
     $database_name = 'm_user_' . $user_id;
     $account_name = $account;
     $sql = 'SELECT * FROM accounts';
+    $params = '';
 
     if ($account_name) {
       $sql .= ' WHERE name = :name';
+      $params = ['name' => $account_name];
     }
-    $params = ['name' => $account];
 
     $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
     return $result;
@@ -105,11 +106,12 @@ class PanelDAO
     $database_name = 'm_user_' . $user_id;
     $category_name = $category;
     $sql = 'SELECT * FROM categories';
+    $params = '';
 
     if ($category_name) {
       $sql .= ' WHERE name = :name';
+      $params = ['name' => $category];
     }
-    $params = ['name' => $category];
 
     $result = $this->database->select($sql, ['params' => $params , 'database_name' => $database_name ]);
     return $result;
