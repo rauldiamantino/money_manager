@@ -10,6 +10,7 @@ class UsersDAO
     $this->database = new Database();
   }
 
+  // Busca o usuário no Banco de Dados
   public function get_user_db($email)
   {
     $sql = 'SELECT * FROM users WHERE email = :email';
@@ -19,6 +20,7 @@ class UsersDAO
     return $result;
   }
 
+  // Adiciona usuário no Banco de Dados
   public function register_user_db($user_data)
   {
     $sql = 'INSERT INTO users (first_name, last_name, email, password) 
@@ -35,6 +37,7 @@ class UsersDAO
     return $result;
   }
 
+  // Cria o database para cada usuário adicionado
   public function create_database_user($database)
   {
     $result = $this->database->create_user_tables($database);
@@ -47,6 +50,7 @@ class UsersDAO
     return $result;
   }
 
+  // Cria conta padrão para cada usuário adicionado
   private function add_default_account($database)
   {
     $sql = 'INSERT INTO accounts (name) VALUES (:name)';
@@ -54,6 +58,7 @@ class UsersDAO
     $this->database->insert($sql, $params);
   }
 
+  // Cria categoria padrão para cada usuário adicionado
   private function add_default_category($database)
   {
     $sql = 'INSERT INTO categories (name) VALUES (:name)';

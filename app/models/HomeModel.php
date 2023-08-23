@@ -2,6 +2,7 @@
 
 class HomeModel {
 
+  // Obtém conteúdo a ser exibido na Home
   public function getContentHome()
   {
     $result = [

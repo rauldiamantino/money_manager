@@ -12,6 +12,7 @@ class UsersModel
     $this->usersDao = new UsersDAO();
   }
 
+  // Registra o usuário caso ele ainda não exista
   public function register_user($data)
   {
     $this->user_email = $data['user_email'] ?? '';
@@ -34,6 +35,7 @@ class UsersModel
     return $response;
   }
 
+  // Cria database do usuário após ter sido cadastrado
   private function create_database_user($database_user)
   {
     $result = $this->usersDao->create_database_user($database_user);
@@ -46,6 +48,7 @@ class UsersModel
     return $response;
   }
 
+  // Verifica se o usuário possui conta e faz login
   public function login_user($data)
   {
     $this->user_email = $data['user_email'] ?? '';
@@ -83,6 +86,7 @@ class UsersModel
     return $response;
   }
 
+  // Busca usuário no Banco de Dados
   private function get_user()
   {
     $response = $this->usersDao->get_user_db($this->user_email);

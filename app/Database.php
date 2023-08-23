@@ -9,6 +9,8 @@ class Database
   private $username;
   private $password;
 
+  
+  // Inicia classe e já estabelece a conexão com o database principal, onde os usuários são adicionados 
   public function __construct()
   {
     $this->host = DB_HOST;
@@ -166,6 +168,7 @@ class Database
                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                               )';
 
+      // Cria as tabelas
       $this->connection->exec($create_categories_table);
       $this->connection->exec($create_accounts_table);
       $this->connection->exec($create_expenses_table);
