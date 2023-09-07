@@ -25,6 +25,10 @@ class UsersDAO
     $sql = 'SELECT * FROM users ' . $where;
     $result = $this->database->select($sql, ['params' => $params ]);
 
+    if (empty($result)) {
+      Logger::log('UsersDao->get_user_db: Usuário inexistente');
+    }
+
     return $result;
   }
 
@@ -42,6 +46,11 @@ class UsersDAO
     ];
 
     $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->register_user_db: Falha ao cadastrar usuário');
+    }
+
     return $result;
   }
 
@@ -60,6 +69,11 @@ class UsersDAO
     ];
 
     $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->update_users_db: Falha ao atualizar usuário');
+    }
+
     return $result;
   }
 
@@ -76,6 +90,11 @@ class UsersDAO
     ];
 
     $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->update_password_user_db: Falha ao atualizar senha do usuário');
+    }
+
     return $result;
   }
 
@@ -85,27 +104,39 @@ class UsersDAO
     $result = $this->database->create_user_tables($database);
 
     if ($result) {
-      $this->add_default_category($database);
-      $this->add_default_account($database);
+      $this->add_default_category();
+      $this->add_default_account();
+    }
+
+    if (empty($result)) {
+      Logger::log('UsersDao->create_database_user: Falha ao criar database ' . $database);
     }
 
     return $result;
   }
 
   // Cria conta padrão para cada usuário adicionado
-  private function add_default_account($database)
+  private function add_default_account()
   {
     $sql = 'INSERT INTO accounts (name) VALUES (:name)';
     $params = ['name' => 'Conta Corrente'];
-    $this->database->insert($sql, $params);
+    $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->add_default_account: Falha ao criar conta padrão.');
+    }
   }
 
   // Cria categoria padrão para cada usuário adicionado
-  private function add_default_category($database)
+  private function add_default_category()
   {
     $sql = 'INSERT INTO categories (name) VALUES (:name)';
     $params = ['name' => 'Geral'];
-    $this->database->insert($sql, $params);
+    $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->add_default_category: Falha ao criar categoria padrão.');
+    }
   }
 
   // Busca cadastro do usuário no banco de dados
@@ -117,6 +148,10 @@ class UsersDAO
 
     $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
+    if (empty($result)) {
+      Logger::log('UsersDao->get_myaccount_db: Falha ao buscar dados cadastrais do usuário.');
+    }
 
     return $result;
   }

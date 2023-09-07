@@ -41,6 +41,7 @@ class UsersController
 
     if (isset($response['error_register'])) {
       $message = ['error_register' => $response['error_register']];
+      Logger::log('UsersController->registration: ' . $response['error_register']);
     }
 
     if (isset($response['success_register'])) {
@@ -71,6 +72,7 @@ class UsersController
 
     if (isset($response['error_login'])) {
       $message = ['error_login' => $response['error_login']];
+      Logger::log('UsersController->login: ' . $response['error_login']);
     }
 
     // Se o usuário for localizado, redireciona para o painel
@@ -99,7 +101,9 @@ class UsersController
   {
     if (isset($_SESSION['user']) and $_SESSION['user']) {
       header('Location: ' . BASE . '/panel/display');
-      exit();
+      return true;
     }
+
+    return false;
   }
 }

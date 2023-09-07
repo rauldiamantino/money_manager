@@ -29,8 +29,9 @@ class PanelController
   public function display()
   {
     // Valida se o usuário está logado
-    $this->check_session();
-    $this->check_logout();
+    if ($this->check_session() or $this->check_logout()) {
+      Logger::log('PanelController->display: Usuário desconectado');
+    }
 
     $this->active_tab = 'overview';
     $this->action_route = '../panel/display';
@@ -55,8 +56,10 @@ class PanelController
   // Exibe todas as transações
   public function transactions($user_id)
   {
-    $this->check_session();
-    $this->check_logout();
+    // Valida se o usuário está logado
+    if ($this->check_session() or $this->check_logout()) {
+      Logger::log('PanelController->transactions: Usuário desconectado');
+    }
 
     $message = [];
 
@@ -102,8 +105,10 @@ class PanelController
   // Exibe todas as contas
   public function accounts($user_id)
   {
-    $this->check_session();
-    $this->check_logout();
+    // Valida se o usuário está logado
+    if ($this->check_session() or $this->check_logout()) {
+      Logger::log('PanelController->accounts: Usuário desconectado');
+    }
 
     $message = [];
 
@@ -141,8 +146,10 @@ class PanelController
   // Exibe todas as categorias
   public function categories($user_id)
   {
-    $this->check_session();
-    $this->check_logout();
+    // Valida se o usuário está logado
+    if ($this->check_session() or $this->check_logout()) {
+      Logger::log('PanelController->categories: Usuário desconectado');
+    }
 
     $message = [];
 
@@ -190,6 +197,10 @@ class PanelController
 
     $response = $this->panelModel->add_income($user_id, $income);
 
+    if (empty($response)) {
+      Logger::log('PanelController->add_income: Erro ao cadastrar receita');
+    }
+
     return $response;
   }
 
@@ -206,6 +217,10 @@ class PanelController
 
     $response = $this->panelModel->add_expense($user_id, $expense);
 
+    if (empty($response)) {
+      Logger::log('PanelController->add_expense: Erro ao cadastrar despesa');
+    }
+
     return $response;
   }
 
@@ -214,6 +229,10 @@ class PanelController
   {
     $account = $_POST['account'];
     $response = $this->panelModel->add_account($user_id, $account);
+
+    if (empty($response)) {
+      Logger::log('PanelController->add_account: Erro ao cadastrar conta');
+    }
     
     return $response;
   }
@@ -223,6 +242,10 @@ class PanelController
   {
     $category = $_POST['category'];
     $response = $this->panelModel->add_category($user_id, $category);
+
+    if (empty($response)) {
+      Logger::log('PanelController->add_category: Erro ao cadastrar categoria');
+    }
     
     return $response;
   }
@@ -230,8 +253,10 @@ class PanelController
   // Exibe cadastro do usuário
   public function myaccount($user_id) 
   {
-    $this->check_session();
-    $this->check_logout();
+    // Valida se o usuário está logado
+    if ($this->check_session() or $this->check_logout()) {
+      Logger::log('PanelController->myaccount: Usuário desconectado');
+    }
 
     // Recupera alterações no cadastro
     $user_first_name = $_POST['user_first_name'] ?? '';
@@ -299,8 +324,10 @@ class PanelController
   {
     if (empty($_SESSION['user'])) {
       header('Location: ' . BASE . '/users/login');
-      exit();
+      return true;
     }
+
+    return false;
   }
 
   // Verifica se o usuário existe e está logado
@@ -317,6 +344,6 @@ class PanelController
     session_destroy();
 
     header('Location: ' . BASE);
-    exit();
+    return true;
   }
 }

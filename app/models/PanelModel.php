@@ -1,6 +1,5 @@
 <?php
 require_once '../app/dao/PanelDAO.php';
-require_once '../app/helpers/Logger.php';
 
 class PanelModel {
   public $panelDAO;
@@ -21,6 +20,11 @@ class PanelModel {
   public function get_transactions($user_id)
   {
     $result = $this->panelDAO->get_transactions_db($user_id);
+
+    if (empty($result)) {
+      Logger::log('PanelModel->get_transactions: Erro ao buscar transações');
+    }
+
     return $result;
   }
 
@@ -28,6 +32,11 @@ class PanelModel {
   public function get_accounts($user_id)
   {
     $result = $this->panelDAO->get_accounts_db($user_id);
+
+    if (empty($result)) {
+      Logger::log('PanelModel->get_accounts: Erro ao buscar contas');
+    }
+
     return $result;
   }
 
@@ -46,6 +55,7 @@ class PanelModel {
 
     if (empty($result)) {
       $response = ['error_income' => 'Erro ao cadastrar receita'];
+      Logger::log('PanelModel->add_income: ' . $response['error_income']);
     }
 
     return $response;
@@ -59,6 +69,8 @@ class PanelModel {
 
     if (empty($result)) {
       $response = ['error_expense' => 'Erro ao cadastrar despesa'];
+      Logger::log('PanelModel->add_expense: ' . $response['error_expense']);
+
     }
 
     return $response;
@@ -68,11 +80,14 @@ class PanelModel {
   public function add_account($user_id, $account)
   {
     $get_account = $this->panelDAO->get_accounts_db($user_id, $account);
-    $response = ['error_account' => 'Conta já cadastrada'];
+    $response = ['success' => 'Conta cadastrada com sucesso!', 'account' => $account ];
 
-    if (empty($get_account)) {
+    if ($get_account) {
+      $response = ['error_account' => 'Conta já cadastrada'];
+      Logger::log('PanelModel->add_account: ' . $response['error_account']);
+    }
+    else {
       $account = $this->panelDAO->add_account_db($user_id, $account);
-      $response = ['success' => 'Conta cadastrada com sucesso!', 'account' => $account ];
     }
 
     return $response;
@@ -82,11 +97,14 @@ class PanelModel {
   public function add_category($user_id, $category)
   {
     $get_category = $this->panelDAO->get_categories_db($user_id, $category);
-    $response = ['error_category' => 'Categoria já cadastrada'];
+    $response = ['success' => 'Categoria cadastrada com sucesso!', 'category' => $category ];
 
-    if (empty($get_category)) {
+    if ($get_category) {
+      $response = ['error_category' => 'Categoria já cadastrada'];
+      Logger::log('PanelModel->add_category: ' . $response['error_category']);
+    }
+    else {
       $category = $this->panelDAO->add_category_db($user_id, $category);
-      $response = ['success' => 'Categoria cadastrada com sucesso!', 'category' => $category ];
     }
 
     return $response;
@@ -100,7 +118,7 @@ class PanelModel {
 
     if (empty($check_user)) {
       $response = ['error_user' => 'Usuário não existe na tabela users'];
-      Logger::log($response['error_user']);
+      Logger::log('PanelModel->check_user_exists: ' . $response['error_user']);
     }
 
     return $response;

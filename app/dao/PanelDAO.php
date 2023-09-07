@@ -28,6 +28,10 @@ class PanelDAO
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
 
+    if (empty($result)) {
+      Logger::log('PanelDAO->add_income_db: Erro ao adicionar receita');
+    }
+
     return $result;
   }
 
@@ -48,6 +52,10 @@ class PanelDAO
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->add_expenses_db: Erro ao adicionar despesa');
+    }
 
     return $result;
   }
@@ -86,6 +94,10 @@ class PanelDAO
     $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['database_name' => $database_name ]);
 
+    if (empty($result)) {
+      Logger::log('PanelDAO->get_transactions_db: Erro ao buscar transações');
+    }
+
     return $result;
   }
 
@@ -104,6 +116,10 @@ class PanelDAO
 
     $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->get_accounts_db: Conta inexistente');
+    }
 
     return $result;
   }
@@ -124,10 +140,14 @@ class PanelDAO
     $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
 
+    if (empty($result)) {
+      Logger::log('PanelDAO->get_categories_db: Categoria inexistente');
+    }
+
     return $result;
   }
 
-  // Busca contas no banco de dados
+  // Adiciona conta no banco de dados
   public function add_account_db($user_id, $account)
   {
     $database_name = 'm_user_' . $user_id;
@@ -136,6 +156,10 @@ class PanelDAO
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->add_account_db: Erro ao adicionar conta no banco de dados do usuário');
+    }
 
     return $result;
   }
@@ -150,6 +174,10 @@ class PanelDAO
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
 
+    if (empty($result)) {
+      Logger::log('PanelDAO->add_category_db: Erro ao adicionar categoria no banco de dados do usuário');
+    }
+
     return $result;
   }
 
@@ -160,6 +188,10 @@ class PanelDAO
 
     $this->database->switch_database(DB_NAME);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->check_user_db: Erro ao verificar usuário');
+    }
 
     return $result;
   }

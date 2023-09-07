@@ -22,6 +22,7 @@ class UsersModel
 
     if ($get_user) {
       $response = ['error_register' => 'E-mail já cadastrado'];
+      Logger::log('UsersModel->register_user' . $response);
     }
 
     if (empty($get_user) and $this->usersDao->register_user_db($data)) {
@@ -39,10 +40,11 @@ class UsersModel
   private function create_database_user($database_user)
   {
     $result = $this->usersDao->create_database_user($database_user);
-    $response = ['error_register' => $result];
+    $response = ['success_create' => 'Database criado com sucesso'];
 
-    if ($result) {
-      $response = ['success_create' => 'Database criado com sucesso'];
+    if (empty($result)) {
+      $response = ['error_register' => $result];
+      Logger::log('UsersModel->create_database_user: ' . $response['error_register'] . ' retorno vazio');
     }
 
     return $response;
@@ -53,9 +55,13 @@ class UsersModel
   {
     $this->user_email = $data['user_email'] ?? '';
     $get_user = $this->get_user();
+    $response = [];
 
     if (empty($get_user)) {
-      return ['error_login' => 'Dados inválidos'];
+      $response = ['error_login' => 'Dados inválidos'];
+      Logger::log('UsersModel->login_user: ' . $response['error_login']);
+
+      return $response;
     }
 
     $validation_user = ['user_email' => false, 'user_password' => false];
@@ -80,6 +86,7 @@ class UsersModel
     foreach ($validation_user as $linha) :
       if (empty($linha)) {
         $response = ['error_login' => 'Dados inválidos'];
+        Logger::log('UsersModel->login_user: ' . $response['error_login']);
       }
     endforeach;
 
@@ -90,6 +97,11 @@ class UsersModel
   public function get_myaccount($user_id)
   {
     $result = $this->usersDao->get_myaccount_db($user_id);
+    
+    if (empty($result)) {
+      Logger::log('UsersModel->get_myaccount: Erro ao buscar conta do usuário');
+    }
+
     return $result;
   }
 
@@ -101,6 +113,7 @@ class UsersModel
 
     if (empty($result)) {
       $response = ['error_update' => 'Erro ao atualizar cadastro'];
+      Logger::log('UsersModel->update_myaccount: ' . $response['error_update']);
     }
 
     return $response;
@@ -110,10 +123,13 @@ class UsersModel
   public function update_myaccount_password($new_data)
   {
     $get_user = $this->get_user($new_data['user_id']);
-    $response = ['error_update' => 'Erro ao atualizar cadastro'];
 
     if ($get_user and $this->usersDao->update_password_user_db($new_data)) {
       $response = ['success_update' => 'Cadastro e Senha atualizados com sucesso!'];
+    }
+    else {
+      $response = ['error_update' => 'Erro ao atualizar cadastro'];
+      Logger::log('UsersModel->update_myaccount_password: ' . $response['error_update']);
     }
 
     return $response;
@@ -123,6 +139,10 @@ class UsersModel
   private function get_user($user_id = 0)
   {
     $response = $this->usersDao->get_user_db($this->user_email, $user_id);
+
+    if (empty($response)) {
+      Logger::log('UsersModel->get_user: Erro ao buscar usuário');
+    }
     return $response;
   }
 }

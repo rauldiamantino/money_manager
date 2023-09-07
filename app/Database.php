@@ -25,8 +25,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      $error_message = 'Database Error: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database->__construct: ' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -46,8 +45,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      $error_message = 'Error connection: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database::switch_database: ' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -67,8 +65,7 @@ class Database
       return true;
     }
     catch (PDOException $e) {
-      $error_message = 'Database Error: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database->insert: ' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -101,8 +98,7 @@ class Database
       return $result;
     }
     catch (PDOException $e) {
-      $error_message = 'Database Error: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database->select: ' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -121,8 +117,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      $error_message = 'Database Error: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database->create_database' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -177,8 +172,7 @@ class Database
       return true;
     }
     catch (PDOException $e) {
-      $error_message = 'Database Error: ' . $e->getMessage();
-      Logger::log($error_message);
+      Logger::log('Database->create_user_tables: ' . $e->getMessage());
       $this->check_invalid_database($e->getCode());
 
       return false;
