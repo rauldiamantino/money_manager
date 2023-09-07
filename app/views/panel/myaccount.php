@@ -53,32 +53,3 @@
     </div>
   </form>
 </section>
-
-<!-- modal nova conta -->
-<div class="modal fade" id="modal_account" tabindex="-1" role="dialog" aria-labelledby="modal_account_label" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal_account_label">Nova Conta</h5>
-      </div>
-      <div class="modal-body">
-        <form action="<?php echo BASE . '/panel/myaccount/' . $data['user_id'] ?>" method="POST" id="add_income">
-          <fieldset class="form-group">
-            <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="text" name="account" placeholder="account" id="account" required autocomplete="off">
-                <label for="account" class="small">Conta</label>
-              </div>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success" form="add_income">Criar Conta</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="<?php echo BASE ?>/js/myaccount.js"></script>
