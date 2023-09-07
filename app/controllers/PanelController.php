@@ -1,19 +1,22 @@
 <?php
 require_once '../app/models/PanelModel.php';
+require_once '../app/models/UsersModel.php';
 
 class PanelController
 {
-  private $panelModel;
-  private $user_id;
-  private $user_first_name;
-  private $user_last_name;
-  private $active_tab;
-  private $action_route;
+  public $panelModel;
+  public $usersModel;
+  public $user_id;
+  public $user_first_name;
+  public $user_last_name;
   public $user_email;
+  public $active_tab;
+  public $action_route;
 
   public function __construct()
   {
     $this->panelModel = new PanelModel();
+    $this->usersModel = new UsersModel();
 
     // Recupera dados de sessão do usuário
     $this->user_id = $_SESSION['user']['user_id'] ?? '';
@@ -243,7 +246,7 @@ class PanelController
 
     // Atualiza dados cadastrais
     if ($user_first_name) {
-      $message = $this->panelModel->update_myaccount([
+      $message = $this->usersModel->update_myaccount([
         'user_id' => $user_id,
         'user_first_name' => $user_first_name,
         'user_last_name' => $user_last_name, 
@@ -255,7 +258,7 @@ class PanelController
     if ($user_new_password) {
 
       if ($user_new_password == $user_confirm_new_password) {
-        $message = $this->panelModel->update_myaccount_password([
+        $message = $this->usersModel->update_myaccount_password([
           'user_id' => $user_id,
           'user_new_password' => $user_new_password,
         ]);
@@ -267,7 +270,7 @@ class PanelController
 
     // Prepara conteúdo para a View
     $this->action_route = '../myaccount/' . $user_id;
-    $myaccount = $this->panelModel->get_myaccount($user_id);
+    $myaccount = $this->usersModel->get_myaccount($user_id);
     $this->active_tab = 'myaccount';
 
     // View e conteúdo para o menu de navegação

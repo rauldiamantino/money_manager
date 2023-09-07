@@ -3,9 +3,9 @@ require_once '../app/dao/UsersDAO.php';
 
 class UsersModel
 {
-  protected $user_email;
-  protected $usersDao;
-  protected $database_user;
+  public $user_email;
+  public $usersDao;
+  public $database_user;
 
   public function __construct()
   {
@@ -86,10 +86,43 @@ class UsersModel
     return $response;
   }
 
-  // Busca usuário no Banco de Dados
-  private function get_user()
+  // Obtém os dados da conta do usuário
+  public function get_myaccount($user_id)
   {
-    $response = $this->usersDao->get_user_db($this->user_email);
+    $result = $this->usersDao->get_myaccount_db($user_id);
+    return $result;
+  }
+
+  // Atualiza os dados da conta do usuário
+  public function update_myaccount($new_data)
+  {
+    $result = $this->usersDao->update_users_db($new_data);
+    $response = ['success_update' => 'Cadastro atualizado com sucesso!'];
+
+    if (empty($result)) {
+      $response = ['error_update' => 'Erro ao atualizar cadastro'];
+    }
+
+    return $response;
+  }
+
+  // Atualiza senha do conta do usuário
+  public function update_myaccount_password($new_data)
+  {
+    $get_user = $this->get_user($new_data['user_id']);
+    $response = ['error_update' => 'Erro ao atualizar cadastro'];
+
+    if ($get_user and $this->usersDao->update_password_user_db($new_data)) {
+      $response = ['success_update' => 'Cadastro e Senha atualizados com sucesso!'];
+    }
+
+    return $response;
+  }
+
+  // Busca usuário no Banco de Dados
+  private function get_user($user_id = 0)
+  {
+    $response = $this->usersDao->get_user_db($this->user_email, $user_id);
     return $response;
   }
 }

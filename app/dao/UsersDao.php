@@ -13,14 +13,16 @@ class UsersDAO
   // Busca o usuário no Banco de Dados
   public function get_user_db($email, $user_id = 0)
   {
-    $sql = 'SELECT * FROM users WHERE email = :email';
+    $where = 'WHERE email = :email';
     $params = ['email' => $email];
 
+    // Busca usuãrio por id
     if ($user_id) {
-      $sql = 'SELECT * FROM users WHERE id = :id';
+      $where = 'WHERE id = :id';
       $params = ['id' => $user_id];
     }
 
+    $sql = 'SELECT * FROM users ' . $where;
     $result = $this->database->select($sql, ['params' => $params ]);
 
     return $result;
@@ -104,5 +106,18 @@ class UsersDAO
     $sql = 'INSERT INTO categories (name) VALUES (:name)';
     $params = ['name' => 'Geral'];
     $this->database->insert($sql, $params);
+  }
+
+  // Busca cadastro do usuário no banco de dados
+  public function get_myaccount_db($user_id)
+  {
+    $database_name = DB_NAME;
+    $sql = 'SELECT * FROM users WHERE id = :id';
+    $params = ['id' => $user_id ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
+    return $result;
   }
 }

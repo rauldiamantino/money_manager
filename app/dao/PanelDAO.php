@@ -127,19 +127,6 @@ class PanelDAO
     return $result;
   }
 
-  // Busca cadastro do usuário no banco de dados
-  public function get_myaccount_db($user_id)
-  {
-    $database_name = DB_NAME;
-    $sql = 'SELECT * FROM users WHERE id = :id';
-    $params = ['id' => $user_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
-
-    return $result;
-  }
-
   // Busca contas no banco de dados
   public function add_account_db($user_id, $account)
   {
