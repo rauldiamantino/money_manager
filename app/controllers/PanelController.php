@@ -9,6 +9,7 @@ class PanelController
   private $user_last_name;
   private $active_tab;
   private $action_route;
+  public $user_email;
 
   public function __construct()
   {
@@ -221,6 +222,73 @@ class PanelController
     $response = $this->panelModel->add_category($user_id, $category);
     
     return $response;
+  }
+
+  // Exibe cadastro do usuário
+  public function myaccount($user_id) 
+  {
+    $this->check_session();
+    $this->check_logout();
+
+    // Recupera alterações no cadastro
+    $user_first_name = $_POST['user_first_name'] ?? '';
+    $user_last_name = $_POST['user_last_name'] ?? '';
+    $user_email = $_POST['user_email'] ?? '';
+
+    // Recupera alteração de senha
+    $user_new_password = trim($_POST['user_new_password']) ?? '';
+    $user_confirm_new_password = trim($_POST['user_confirm_new_password']) ?? '';
+
+    $message = [];
+
+    // Atualiza dados cadastrais
+    if ($user_first_name) {
+      $message = $this->panelModel->update_myaccount([
+        'user_id' => $user_id,
+        'user_first_name' => $user_first_name,
+        'user_last_name' => $user_last_name, 
+        'user_email' => $user_email,
+      ]);
+    }
+
+    // Atualiza senha
+    if ($user_new_password) {
+
+      if ($user_new_password == $user_confirm_new_password) {
+        $message = $this->panelModel->update_myaccount_password([
+          'user_id' => $user_id,
+          'user_new_password' => $user_new_password,
+        ]);
+      }
+      else {
+       $message = ['error_update' => 'As senhas não coincidem'];
+      }
+    }
+
+    // Prepara conteúdo para a View
+    $this->action_route = '../myaccount/' . $user_id;
+    $myaccount = $this->panelModel->get_myaccount($user_id);
+    $this->active_tab = 'myaccount';
+
+    // View e conteúdo para o menu de navegação
+    $nav_view_name = 'panel/templates/nav';
+    $nav_view_content = [
+      'user_id' => $this->user_id,
+      'active_tab' => $this->active_tab,
+      'action_route' => $this->action_route,
+      'user_first_name' => $this->user_first_name,
+      'user_last_name' => $this->user_last_name,
+    ];
+
+    // View e conteúdo para a página Minha Conta
+    $myaccount_view_name = 'panel/myaccount';
+    $myaccount_view_content = [
+      'myaccount' => $myaccount, 
+      'user_id' => $this->user_id,
+      'message' => $message,
+    ];
+
+    return [ $nav_view_name => $nav_view_content, $myaccount_view_name => $myaccount_view_content ];
   }
 
   // Verifica se o usuário possui sessão ativa

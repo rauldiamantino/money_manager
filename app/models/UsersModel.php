@@ -64,7 +64,7 @@ class UsersModel
       $validation_user['user_email'] = true;
     }
 
-    if (password_verify($data['user_password'], $get_user[0]['password'])) {
+    if (password_verify(trim($data['user_password']), $get_user[0]['password'])) {
       $validation_user['user_password'] = true;
     }
 

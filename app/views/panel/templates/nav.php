@@ -17,7 +17,7 @@
     </a>
     <ul class="dropdown-menu p-0 w-100">
       <li class="text-center">
-        <a href="#" class="dropdown-item py-3">Minha conta</a>
+        <a href="<?php echo BASE . '/panel/myaccount/' . $data['user_id'] ?>" class="dropdown-item py-3">Minha conta</a>
       </li>
       <li class="nav-item">
         <form action="<?php echo $data['action_route']; ?>" method="POST" id="logout" class="d-none">

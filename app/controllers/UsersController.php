@@ -25,8 +25,13 @@ class UsersController
     }
 
     // Recupera formulário
-    $user = ['user_first_name' => $_POST['user_first_name'], 'user_last_name' => $_POST['user_last_name'], 'user_email' => $_POST['user_email'], 'user_password' => $_POST['user_password']];
-    $user_confirm_password = $_POST['user_confirm_password'];
+    $user = [
+      'user_first_name' => $_POST['user_first_name'],
+      'user_last_name' => $_POST['user_last_name'],
+      'user_email' => $_POST['user_email'],
+      'user_password' => trim($_POST['user_password']),
+      ];
+    $user_confirm_password = trim($_POST['user_confirm_password']);
     $message = ['error_password' => 'As senhas não coincidem'];
 
     // Faz requisição do cadastro
@@ -61,7 +66,7 @@ class UsersController
       return [$view_name => $view_content];
     }
 
-    $user = ['user_email' => $_POST['user_email'], 'user_password' => $_POST['user_password']];
+    $user = ['user_email' => $_POST['user_email'], 'user_password' => trim($_POST['user_password'])];
     $response = $this->usersModel->login_user($user);
 
     if (isset($response['error_login'])) {
