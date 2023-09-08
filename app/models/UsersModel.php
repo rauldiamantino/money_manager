@@ -109,30 +109,34 @@ class UsersModel
   public function update_myaccount($new_data)
   {
     $result = $this->usersDao->update_users_db($new_data);
-    $response = ['success_update' => 'Cadastro atualizado com sucesso!'];
 
     if (empty($result)) {
-      $response = ['error_update' => 'Erro ao atualizar cadastro'];
-      Logger::log('UsersModel->update_myaccount: ' . $response['error_update']);
+      Logger::log(['method' => 'UsersModel->update_myaccount', 'result' => $result ], 'error');
+      return false;
     }
 
-    return $response;
+    return true;
   }
 
   // Atualiza senha do conta do usuário
   public function update_myaccount_password($new_data)
   {
     $get_user = $this->get_user($new_data['user_id']);
+    $result_update = '';
 
-    if ($get_user and $this->usersDao->update_password_user_db($new_data)) {
-      $response = ['success_update' => 'Cadastro e Senha atualizados com sucesso!'];
-    }
-    else {
-      $response = ['error_update' => 'Erro ao atualizar cadastro'];
-      Logger::log('UsersModel->update_myaccount_password: ' . $response['error_update']);
+    if ($get_user) {
+      $result_update = $this->usersDao->update_password_user_db($new_data);
+
+      if ($result_update) {
+        return true;
+      }
+
+      Logger::log(['method' => 'UsersModel->update_myaccount_password', 'result' => $result_update ], 'error');
+      return false;
     }
 
-    return $response;
+    Logger::log(['method' => 'UsersModel->update_myaccount_password', 'result' => $get_user ], 'error');
+    return false;
   }
 
   // Busca usuário no Banco de Dados
@@ -143,6 +147,7 @@ class UsersModel
     if (empty($response)) {
       Logger::log('UsersModel->get_user: Erro ao buscar usuário');
     }
+
     return $response;
   }
 }

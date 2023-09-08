@@ -30,7 +30,7 @@ class PanelController
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
-      Logger::log('PanelController->display: Usuário desconectado');
+      Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     $this->active_tab = 'overview';
@@ -58,7 +58,7 @@ class PanelController
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
-      Logger::log('PanelController->transactions: Usuário desconectado');
+      Logger::log(['method' => 'PanelController->transactions', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     $message = [];
@@ -107,7 +107,7 @@ class PanelController
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
-      Logger::log('PanelController->accounts: Usuário desconectado');
+      Logger::log(['method' => 'PanelController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     $message = [];
@@ -148,7 +148,7 @@ class PanelController
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
-      Logger::log('PanelController->categories: Usuário desconectado');
+      Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     $message = [];
@@ -196,12 +196,14 @@ class PanelController
     ];
 
     $response = $this->panelModel->add_income($user_id, $income);
+    $message = ['success' => 'Receita adicionada com sucesso!'];
 
-    if (empty($response)) {
-      Logger::log('PanelController->add_income: Erro ao cadastrar receita');
+    if ($response == false) {
+      $message = ['error_income' => 'Erro ao cadastrar receita'];
+      Logger::log(['method' => 'PanelController->add_income', 'result' => $response ], 'error');
     }
 
-    return $response;
+    return $message;
   }
 
   // Recupera despesa do formulário e adiciona no banco de dados
@@ -216,12 +218,14 @@ class PanelController
     ];
 
     $response = $this->panelModel->add_expense($user_id, $expense);
+    $message = ['success' => 'Despesa adicionada com sucesso!'];
 
-    if (empty($response)) {
-      Logger::log('PanelController->add_expense: Erro ao cadastrar despesa');
+    if ($response == false) {
+      $message = ['error_expense' => 'Erro ao cadastrar despesa'];
+      Logger::log(['method' => 'PanelController->add_expense', 'result' => $response ], 'error');
     }
 
-    return $response;
+    return $message;
   }
 
   // Adiciona conta no banco de dados
@@ -229,12 +233,14 @@ class PanelController
   {
     $account = $_POST['account'];
     $response = $this->panelModel->add_account($user_id, $account);
+    $message = ['success' => 'Conta cadastrada com sucesso!'];
 
-    if (empty($response)) {
-      Logger::log('PanelController->add_account: Erro ao cadastrar conta');
+    if ($response == false) {
+      $message = ['error_account' => 'Conta já cadastrada'];
+      Logger::log(['method' => 'PanelController->add_account', 'result' => $response ], 'alert');
     }
-    
-    return $response;
+
+    return $message;
   }
 
   // Adiciona categoria no banco de dados
@@ -242,12 +248,14 @@ class PanelController
   {
     $category = $_POST['category'];
     $response = $this->panelModel->add_category($user_id, $category);
+    $message = ['success' => 'Categoria cadastrada com sucesso!'];
 
-    if (empty($response)) {
-      Logger::log('PanelController->add_category: Erro ao cadastrar categoria');
+    if ($response == false) {
+      $message = ['error_category' => 'Categoria já cadastrada'];
+      Logger::log(['method' => 'PanelController->add_category', 'result' => $response ], 'alert');
     }
-    
-    return $response;
+
+    return $message;
   }
 
   // Exibe cadastro do usuário
@@ -255,7 +263,7 @@ class PanelController
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
-      Logger::log('PanelController->myaccount: Usuário desconectado');
+      Logger::log(['method' => 'PanelController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     // Recupera alterações no cadastro
@@ -268,29 +276,53 @@ class PanelController
     $user_confirm_new_password = trim($_POST['user_confirm_new_password']) ?? '';
 
     $message = [];
+    $request_update = false;
+    $return_update = false;
 
-    // Atualiza dados cadastrais
+    // Atualiza o cadastro do usuário
     if ($user_first_name) {
-      $message = $this->usersModel->update_myaccount([
+      $request_update = true;
+
+      $result = $this->usersModel->update_myaccount([
         'user_id' => $user_id,
         'user_first_name' => $user_first_name,
         'user_last_name' => $user_last_name, 
         'user_email' => $user_email,
       ]);
+
+      if ($result) {
+        $return_update = true;
+      }
     }
 
-    // Atualiza senha
     if ($user_new_password) {
+      $request_update = true;
+      $return_update = false;
+      $result = '';
 
+      // Se as senhas forem iguais, faz alteração
       if ($user_new_password == $user_confirm_new_password) {
-        $message = $this->usersModel->update_myaccount_password([
-          'user_id' => $user_id,
-          'user_new_password' => $user_new_password,
-        ]);
+        $result = $this->usersModel->update_myaccount_password(['user_id' => $user_id, 'user_new_password' => $user_new_password ]);
       }
       else {
-       $message = ['error_update' => 'As senhas não coincidem'];
+        $request_update = false;
+        $message = ['error_update' => 'As senhas não coincidem'];
+        Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'error');
       }
+
+      if ($result) {
+        $return_update = true;
+      }
+    }
+
+    // Exibe mensagens de atualização do cadastro
+    if ($return_update) {
+      $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
+    }
+
+    if ($request_update and $return_update == false) {
+      $message = ['error_update' => 'Erro ao atualizar cadastro'];
+      Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'error');
     }
 
     // Prepara conteúdo para a View
