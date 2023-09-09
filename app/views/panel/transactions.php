@@ -54,7 +54,7 @@
         <h5 class="modal-title" id="modal_income_label">Nova Receita</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo BASE . '/panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
+        <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
           <input type="hidden" name="add_income">
           <fieldset class="form-group">
 
@@ -116,7 +116,7 @@
         <h5 class="modal-title" id="modal_expense_label">Nova Despesa</h5>
       </div>
       <div class="modal-body">
-        <form action="#" method="POST" id="add_expense">
+        <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_expense">
           <input type="hidden" name="add_expense">
           <fieldset class="form-group">
 
@@ -169,4 +169,4 @@
   </div>
 </div>
 
-<script src="<?php echo BASE ?>/js/transactions.js"></script>
+<script src="/js/transactions.js"></script>

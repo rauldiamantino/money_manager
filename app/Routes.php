@@ -4,18 +4,14 @@ require_once '../app/helpers/ViewRenderes.php';
 
 class Router
 {
-  private $base_uri;
-  private $uri;
-  private $parts;
+  public $uri;
+  public $parts;
   public $result;
 
   public function __construct()
   {
-    // Ajuste da URL para permitir o projeto ser aberto em qualquer servidor
-    $this->base_uri = str_replace('/public/', '', dirname($_SERVER['SCRIPT_NAME']));
-    $this->uri = str_replace($this->base_uri, '', $_SERVER['REQUEST_URI']);
-
     // Divide a URI e remove partes vazias ou nulas
+    $this->uri = $_SERVER['REQUEST_URI'];
     $this->parts = explode('/', $this->uri);
     $this->parts = array_filter($this->parts);
 
@@ -38,6 +34,8 @@ class Router
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
       $methodName = strtolower(array_shift($this->parts));
       $params = $this->parts ?? '';
+
+      print_r($methodName);
     }
 
     // Chama o controller e se não existir chama a página de erro

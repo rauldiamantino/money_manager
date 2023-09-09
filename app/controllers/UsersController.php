@@ -86,7 +86,7 @@ class UsersController
 
       $message = ['success_login' => $response['success_login']['message']];
 
-      header('Location: ' . BASE . '/panel/display');
+      header('Location: /panel/display');
       exit();
     }
 
@@ -100,7 +100,7 @@ class UsersController
   private function check_session()
   {
     if (isset($_SESSION['user']) and $_SESSION['user']) {
-      header('Location: ' . BASE . '/panel/display');
+      header('Location: /panel/display');
       return true;
     }
 

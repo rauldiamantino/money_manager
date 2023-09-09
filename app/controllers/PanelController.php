@@ -34,7 +34,7 @@ class PanelController
     }
 
     $this->active_tab = 'overview';
-    $this->action_route = '../panel/display';
+    $this->action_route = '/panel/display';
 
     // View e conteúdo para o menu de navegação
     $nav_view_name = 'panel/templates/nav';
@@ -73,7 +73,7 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = '../transactions/' . $user_id;
+    $this->action_route = 'panel/transactions/' . $user_id;
     $transactions = $this->panelModel->get_transactions($user_id);
     $categories = $this->panelModel->get_categories($user_id);
     $accounts = $this->panelModel->get_accounts($user_id);
@@ -118,7 +118,7 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = '../accounts/' . $user_id;
+    $this->action_route = 'panel/accounts/' . $user_id;
     $accounts = $this->panelModel->get_accounts($user_id);
     $this->active_tab = 'accounts';
 
@@ -159,7 +159,7 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = '../categories/' . $user_id;
+    $this->action_route = 'panel/categories/' . $user_id;
     $categories = $this->panelModel->get_categories($user_id);
     $this->active_tab = 'categories';
 
@@ -313,8 +313,22 @@ class PanelController
 
       if ($value == true) {
         $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
+
+        // Armazena novos dados do usuário
+        $this->user_id = $user_update['user_id'];
+        $this->user_first_name = $user_update['user_first_name'];
+        $this->user_last_name = $user_update['user_last_name'];
+        $this->user_email = $user_update['user_email'];
+        
+        // Substitui dados da sessão atual
+        $_SESSION['user'] = [
+          'user_id' => $this->user_id,
+          'user_first_name' => $this->user_first_name,
+          'user_last_name' => $this->user_last_name,
+          'user_email' => $this->user_email,
+        ];
       }
-      
+
       if ($value === false) {
         $message = ['error_update' => 'Erro ao atualizar cadastro'];
         Logger::log(['method' => 'PanelController->myaccount', 'result' => ['message' => $message, 'local' => $key ]], 'error');
@@ -327,7 +341,7 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = '../myaccount/' . $user_id;
+    $this->action_route = 'panel/myaccount/' . $user_id;
     $myaccount = $this->usersModel->get_myaccount($user_id);
     $this->active_tab = 'myaccount';
 

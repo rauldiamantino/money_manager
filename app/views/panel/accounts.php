@@ -40,7 +40,7 @@
         <h5 class="modal-title" id="modal_account_label">Nova Conta</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo BASE . '/panel/accounts/' . $data['user_id'] ?>" method="POST" id="add_income">
+        <form action="<?php echo 'panel/accounts/' . $data['user_id'] ?>" method="POST" id="add_income">
           <fieldset class="form-group">
             <div class="input-group mb-3">
               <div class="form-floating">
@@ -59,4 +59,4 @@
   </div>
 </div>
 
-<script src="<?php echo BASE ?>/js/accounts.js"></script>
+<script src="/js/accounts.js"></script>

@@ -40,7 +40,7 @@
         <h5 class="modal-title" id="modal_category_label">Nova Categoria</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo BASE . '/panel/categories/' . $data['user_id'] ?>" method="POST" id="add_income">
+        <form action="<?php echo 'panel/categories/' . $data['user_id'] ?>" method="POST" id="add_income">
           <fieldset class="form-group">
             <div class="input-group mb-3">
               <div class="form-floating">
@@ -58,4 +58,4 @@
     </div>
   </div>
 </div>
-<script src="<?php echo BASE ?>/js/categories.js"></script>
+<script src="/js/categories.js"></script>

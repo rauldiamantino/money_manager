@@ -9,7 +9,7 @@
           </svg>
         </a>
       </div>
-      <form class="border rounded p-4 shadow-sm" action="login" method="POST">
+      <form class="border rounded p-4 shadow-sm" action="users/login" method="POST">
         <h1 class="text-center h4 mb-4">Login</h1>
         <fieldset class="form-group">
           <?php if (isset($data['message']['error_login'])) { ?>
