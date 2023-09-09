@@ -258,7 +258,7 @@ class PanelController
     return $message;
   }
 
-  // Exibe cadastro do usuário
+  // Exibe e altera dados do usuário
   public function myaccount($user_id) 
   {
     // Valida se o usuário está logado
@@ -266,63 +266,64 @@ class PanelController
       Logger::log(['method' => 'PanelController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
-    // Recupera alterações no cadastro
-    $user_first_name = $_POST['user_first_name'] ?? '';
-    $user_last_name = $_POST['user_last_name'] ?? '';
-    $user_email = $_POST['user_email'] ?? '';
-
-    // Recupera alteração de senha
-    $user_new_password = trim($_POST['user_new_password']) ?? '';
-    $user_confirm_new_password = trim($_POST['user_confirm_new_password']) ?? '';
-
+    // Recupera novos dados do formulário
     $message = [];
-    $request_update = false;
-    $return_update = false;
+    $response_update = [];
+    $error_password = false;
+    $user_update = ['user_id' => $user_id ];
 
-    // Atualiza o cadastro do usuário
-    if ($user_first_name) {
-      $request_update = true;
-
-      $result = $this->usersModel->update_myaccount([
-        'user_id' => $user_id,
-        'user_first_name' => $user_first_name,
-        'user_last_name' => $user_last_name, 
-        'user_email' => $user_email,
-      ]);
-
-      if ($result) {
-        $return_update = true;
-      }
+    if (isset($_POST['user_first_name']) and $_POST['user_first_name']) {
+      $user_update['user_first_name'] = $_POST['user_first_name'];
     }
 
-    if ($user_new_password) {
-      $request_update = true;
-      $return_update = false;
-      $result = '';
+    if (isset($_POST['user_last_name']) and $_POST['user_last_name']) {
+      $user_update['user_last_name'] = $_POST['user_last_name'];
+    }
 
-      // Se as senhas forem iguais, faz alteração
-      if ($user_new_password == $user_confirm_new_password) {
-        $result = $this->usersModel->update_myaccount_password(['user_id' => $user_id, 'user_new_password' => $user_new_password ]);
+    if (isset($_POST['user_email']) and $_POST['user_email']) {
+      $user_update['user_email'] = $_POST['user_email'];
+    }
+
+    if (isset($_POST['user_new_password']) and $_POST['user_new_password']) {
+      $user_update['user_new_password'] = trim($_POST['user_new_password']);
+    }
+
+    if (isset($_POST['user_confirm_new_password']) and $_POST['user_confirm_new_password']) {
+      $user_update['user_confirm_new_password'] = trim($_POST['user_confirm_new_password']);
+    }
+
+    // Atualiza cadastro
+    if ($user_update['user_first_name']) {
+      $response_update['user'] = $this->usersModel->update_myaccount($user_update);
+    }
+
+    // Atualiza senha
+    if ($user_update['user_new_password']) {
+
+      if ($user_update['user_new_password'] == $user_update['user_confirm_new_password']) {
+        $response_update['password'] = $this->usersModel->update_myaccount_password($user_update);
       }
       else {
-        $request_update = false;
-        $message = ['error_update' => 'As senhas não coincidem'];
-        Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'error');
-      }
-
-      if ($result) {
-        $return_update = true;
+        $error_password = true;
       }
     }
 
-    // Exibe mensagens de atualização do cadastro
-    if ($return_update) {
-      $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
-    }
+    // Mensagens para o usuário
+    foreach ($response_update as $key => $value) :
 
-    if ($request_update and $return_update == false) {
-      $message = ['error_update' => 'Erro ao atualizar cadastro'];
-      Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'error');
+      if ($value == true) {
+        $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
+      }
+      
+      if ($value === false) {
+        $message = ['error_update' => 'Erro ao atualizar cadastro'];
+        Logger::log(['method' => 'PanelController->myaccount', 'result' => ['message' => $message, 'local' => $key ]], 'error');
+      }
+    endforeach;
+
+    if ($error_password) {
+      $message = ['error_update' => 'As senhas não coincidem'];
+      Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'alert');
     }
 
     // Prepara conteúdo para a View

@@ -108,10 +108,10 @@ class UsersModel
   // Atualiza os dados da conta do usuário
   public function update_myaccount($new_data)
   {
-    $result = $this->usersDao->update_users_db($new_data);
+    $result_update = $this->usersDao->update_users_db($new_data);
 
-    if (empty($result)) {
-      Logger::log(['method' => 'UsersModel->update_myaccount', 'result' => $result ], 'error');
+    if (empty($result_update)) {
+      Logger::log(['method' => 'UsersModel->update_myaccount', 'result' => $result_update ], 'error');
       return false;
     }
 
@@ -122,7 +122,6 @@ class UsersModel
   public function update_myaccount_password($new_data)
   {
     $get_user = $this->get_user($new_data['user_id']);
-    $result_update = '';
 
     if ($get_user) {
       $result_update = $this->usersDao->update_password_user_db($new_data);
