@@ -34,8 +34,6 @@ class Router
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
       $methodName = strtolower(array_shift($this->parts));
       $params = $this->parts ?? '';
-
-      print_r($methodName);
     }
 
     // Chama o controller e se não existir chama a página de erro
