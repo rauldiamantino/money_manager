@@ -190,6 +190,7 @@ class PanelController
     $income = [
       'description' => $_POST['transaction_description'],
       'amount' => $_POST['transaction_amount'],
+      'type' => 'I',
       'category_id' => $_POST['transaction_category'],
       'account_id' => $_POST['transaction_account'],
       'date' => $_POST['transaction_date'],
@@ -212,6 +213,7 @@ class PanelController
     $expense = [
       'description' => $_POST['transaction_description'],
       'amount' => -1 * $_POST['transaction_amount'],
+      'type' => 'E',
       'category_id' => $_POST['transaction_category'],
       'account_id' => $_POST['transaction_account'],
       'date' => $_POST['transaction_date'],
@@ -226,6 +228,11 @@ class PanelController
     }
 
     return $message;
+  }
+
+  public function remove_transaction($user_id)
+  {
+
   }
 
   // Adiciona conta no banco de dados

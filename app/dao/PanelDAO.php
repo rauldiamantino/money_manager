@@ -14,12 +14,13 @@ class PanelDAO
   public function add_income_db($user_id, $income)
   {
     $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO incomes (description, amount, category_id, account_id, date)
-            VALUES (:description, :amount, :category_id, :account_id, :date);';
+    $sql = 'INSERT INTO incomes (description, amount, type, category_id, account_id, date)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
 
     $params = [
       'description' => $income['description'],
       'amount' => $income['amount'],
+      'type' => $income['type'],
       'category_id' => $income['category_id'],
       'account_id' => $income['account_id'],
       'date' => $income['date'],
@@ -39,12 +40,13 @@ class PanelDAO
   public function add_expense_db($user_id, $expense)
   {
     $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO expenses (description, amount, category_id, account_id, date)
-            VALUES (:description, :amount, :category_id, :account_id, :date);';
+    $sql = 'INSERT INTO expenses (description, amount, type, category_id, account_id, date)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
 
     $params = [
       'description' => $expense['description'],
       'amount' => $expense['amount'],
+      'type' => $expense['type'],
       'category_id' => $expense['category_id'],
       'account_id' => $expense['account_id'],
       'date' => $expense['date'],
@@ -68,6 +70,7 @@ class PanelDAO
                 expenses.id, 
                 expenses.description, 
                 expenses.amount, 
+                expenses.type, 
                 categories.name AS category_name, 
                 accounts.name AS account_name, 
                 expenses.date, 
@@ -81,6 +84,7 @@ class PanelDAO
                 incomes.id, 
                 incomes.description, 
                 incomes.amount, 
+                incomes.type, 
                 categories.name AS category_name, 
                 accounts.name AS account_name, 
                 incomes.date, 
