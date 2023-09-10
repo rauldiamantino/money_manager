@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/transactions.css">
+
 <section class="container mt-4">
   <h1 class="mb-4">Geral</h1>
 
@@ -28,7 +30,7 @@
         <th>Categoria</th>
         <th>Valor</th>
         <th>Data</th>
-        <th>Ação</th>
+        <th colspan="3">Ação</th>
       </tr>
     </thead>
     <tbody class="table-group-divider">
@@ -41,7 +43,7 @@
             <?php echo 'R$ ' . number_format($value['amount'], 2, ',', '.'); ?>
           </td>
           <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
-          <td>
+          <td class="px-0 col-10-css">
             <div class="d-flex gap-3 lh-1">
 
               <a href="" class="text-black link_edit_transaction"
@@ -56,7 +58,8 @@
 
                 <i class="bi bi-pencil-square fs-5"></i>
               </a>
-
+            </td>
+            <td class="px-0 col-10-css">
               <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
                 <input type="hidden" name="delete_transaction">
                 <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
@@ -64,7 +67,8 @@
 
                 <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
               </form>
-
+            </td>
+            <td class="px-0 col-10-css">
               <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
                 <input type="hidden" name="edit_transaction_status">
                 <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">

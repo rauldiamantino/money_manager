@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/accounts.css">
+
 <section class="container mt-4">
   <h1 class="mb-4">Contas</h1>
 
@@ -19,12 +21,16 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th colspan="3">Ação</th>
       </tr>
     </thead>
     <tbody class="table-group-divider">
       <?php foreach ($data['accounts'] as $value) : ?>
         <tr>
           <td><?php echo $value['name']; ?></td>
+          <td class="px-0 col-10-css">A</td>
+          <td class="px-0 col-10-css">B</td>
+          <td class="px-0 col-10-css">C</td>
         </tr>
       <?php endforeach; ?>
     </tbody>
