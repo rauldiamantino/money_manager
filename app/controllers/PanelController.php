@@ -63,13 +63,18 @@ class PanelController
 
     $message = [];
 
-    // Resultado da tentativa de adicionar transações
+    // Adiciona transações
     if (isset($_POST['add_income'])) {
       $message = $this->add_income($user_id);
     }
 
     if (isset($_POST['add_expense'])) {
       $message = $this->add_expense($user_id);
+    }
+
+    // Apaga transação
+    if (isset($_POST['delete_transaction'])) {
+      $message = $this->delete_transaction($user_id);
     }
 
     // Prepara conteúdo para a View
@@ -188,16 +193,21 @@ class PanelController
   public function add_income($user_id)
   {
     $income = [
-      'description' => $_POST['transaction_description'],
-      'amount' => $_POST['transaction_amount'],
       'type' => 'I',
-      'category_id' => $_POST['transaction_category'],
-      'account_id' => $_POST['transaction_account'],
       'date' => $_POST['transaction_date'],
+      'transaction_id' => $_POST['add_income'],
+      'amount' => $_POST['transaction_amount'],
+      'account_id' => $_POST['transaction_account'],
+      'category_id' => $_POST['transaction_category'],
+      'description' => $_POST['transaction_description'],
     ];
 
     $response = $this->panelModel->add_income($user_id, $income);
     $message = ['success' => 'Receita adicionada com sucesso!'];
+
+    if ($income['transaction_id']) {
+      $message = ['success' => 'Receita editada com sucesso!'];
+    }
 
     if ($response == false) {
       $message = ['error_income' => 'Erro ao cadastrar receita'];
@@ -211,16 +221,21 @@ class PanelController
   public function add_expense($user_id)
   {
     $expense = [
-      'description' => $_POST['transaction_description'],
-      'amount' => -1 * $_POST['transaction_amount'],
       'type' => 'E',
-      'category_id' => $_POST['transaction_category'],
-      'account_id' => $_POST['transaction_account'],
       'date' => $_POST['transaction_date'],
+      'transaction_id' => $_POST['add_expense'],
+      'amount' => -1 * $_POST['transaction_amount'],
+      'account_id' => $_POST['transaction_account'],
+      'category_id' => $_POST['transaction_category'],
+      'description' => $_POST['transaction_description'],
     ];
 
     $response = $this->panelModel->add_expense($user_id, $expense);
     $message = ['success' => 'Despesa adicionada com sucesso!'];
+
+    if ($expense['transaction_id']) {
+      $message = ['success' => 'Despesa editada com sucesso!'];
+    }
 
     if ($response == false) {
       $message = ['error_expense' => 'Erro ao cadastrar despesa'];
@@ -230,9 +245,22 @@ class PanelController
     return $message;
   }
 
-  public function remove_transaction($user_id)
+  public function delete_transaction($user_id)
   {
+    $transaction = [
+      'transaction_id' => $_POST['transaction_id'],
+      'transaction_type' => $_POST['transaction_type']
+    ];
 
+    $response = $this->panelModel->delete_transaction($user_id, $transaction);
+    $message = ['success' => 'Transação removida com sucesso!'];
+
+    if ($response == false) {
+      $message = ['error_transaction' => 'Erro ao apagar transação'];
+      Logger::log(['method' => 'PanelController->delete_transaction', 'result' => $response ], 'error');
+    }
+
+    return $message;
   }
 
   // Adiciona conta no banco de dados

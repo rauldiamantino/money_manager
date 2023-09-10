@@ -2,11 +2,11 @@
   <h1 class="mb-4">Geral</h1>
 
   <div class="mb-2 d-flex gap-3">
-    <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_income" id="link_add_income">
+    <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_income" id="link_add_income">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Receita
     </a>
-    <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_expense" id="link_add_expense">
+    <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_expense" id="link_add_expense">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Despesa
     </a>
@@ -42,17 +42,18 @@
           </td>
           <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
           <td>
-            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST">
+            <div class="d-flex gap-3 lh-1">
+              <a href="" class="text-black link_edit_transaction" data-toggle="modal" data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>" data-transaction_id="<?php echo $value['id']; ?>" data-transaction_type="<?php echo $value['type']; ?>" data-transaction_description="<?php echo $value['description']; ?>" data-transaction_account_name="<?php echo $value['account_name']; ?>" data-transaction_category_name="<?php echo $value['category_name']; ?>" data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
+                <i class="bi bi-pencil-square fs-5"></i>
+              </a>
 
+              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST">
+                <input type="hidden" name="delete_transaction">
                 <input type="hidden" name="transaction_id" value="<?php echo $value['id']; ?>">
                 <input type="hidden" name="transaction_type" value="<?php echo $value['type']; ?>">
-
-                <button class="bg-transparent p-0 border-0 m-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                  </svg>
-                </button>
-            </form>
+                <button class="p-0 lh-1 border-0 bg-transparent text-danger"><i class="bi bi-x-circle fs-5"></i></button>
+              </form>
+            </div>
           </td>
         </tr>
       <?php endforeach; ?>
@@ -61,54 +62,53 @@
 </section>
 
 <!-- modal nova receita -->
-<div class="modal fade" id="modal_income" tabindex="-1" role="dialog" aria-labelledby="modal_income_label" aria-hidden="true">
+<div class="modal fade" id="modal_income" tabindex="-1" role="dialog" aria-labelledby="modal_label_income" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modal_income_label">Nova Receita</h5>
+        <h5 class="modal-title" id="modal_label_income"><span class="modal_transaction_title">Nova</span> Receita</h5>
       </div>
       <div class="modal-body">
         <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
-          <input type="hidden" name="add_income">
+          <input type="hidden" name="add_income" id="transaction_id_income" class="transaction_id">
           <fieldset class="form-group">
 
-            <div class="form-floating mb-3">
-              <select class="form-select" id="accounts_select" name="transaction_account" aria-label="accounts_select">
+            <div class="form-floating mb-3 accounts_select">
+              <select class="form-select" id="accounts_select_income" name="transaction_account" aria-label="accounts_select_income">
                 <?php foreach ($data['accounts'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>
               </select>
-              <label for="accounts_select">Selecione a conta</label>
+              <label for="accounts_select_income">Selecione a conta</label>
             </div>
 
             <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="text" name="transaction_description" placeholder="transaction_description" id="transaction_description" required autocomplete="off">
-                <label for="transaction_description" class="small">Descrição</label>
+              <div class="form-floating transaction_description">
+                <input class="form-control" type="text" name="transaction_description" placeholder="transaction_description" id="transaction_description_income" required autocomplete="off">
+                <label for="transaction_description_income" class="small">Descrição</label>
               </div>
             </div>
 
-
-            <div class="form-floating mb-3">
-              <select class="form-select" id="categories_select" name="transaction_category" aria-label="categories_select">
+            <div class="form-floating mb-3 categories_select">
+              <select class="form-select" id="categories_select_income" name="transaction_category" aria-label="categories_select_income">
                 <?php foreach ($data['categories'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>
               </select>
-              <label for="categories_select">Selecione a categoria</label>
+              <label for="categories_select_income">Selecione a categoria</label>
             </div>
 
             <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount" required autocomplete="off">
-                <label for="transaction_amount" class="small">Valor</label>
+              <div class="form-floating transaction_amount">
+                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_income" required autocomplete="off">
+                <label for="transaction_amount_income" class="small">Valor</label>
               </div>
             </div>
 
             <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="date" name="transaction_date" placeholder="transaction_date" id="transaction_date" required autocomplete="off">
-                <label for="transaction_date" class="small">Data</label>
+              <div class="form-floating transaction_date">
+                <input class="form-control" type="date" name="transaction_date" placeholder="transaction_date" id="transaction_date_income" required autocomplete="off">
+                <label for="transaction_date_income" class="small">Data</label>
               </div>
             </div>
           </fieldset>
@@ -116,60 +116,60 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success" form="add_income">Adicionar Receita</button>
+        <button type="submit" class="btn btn-success" form="add_income" id="btn_modal_transaction_income"><span class="modal_button_ok_title">Adicionar</span></button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- modal nova receita -->
-<div class="modal fade" id="modal_expense" tabindex="-1" role="dialog" aria-labelledby="modal_expense_label" aria-hidden="true">
+<!-- modal nova despesa -->
+<div class="modal fade" id="modal_expense" tabindex="-1" role="dialog" aria-labelledby="modal_label_expense" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modal_expense_label">Nova Despesa</h5>
+        <h5 class="modal-title" id="modal_label_expense"><span class="modal_transaction_title">Nova</span> Despesa</h5>
       </div>
       <div class="modal-body">
         <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_expense">
-          <input type="hidden" name="add_expense">
+          <input type="hidden" name="add_expense" id="transaction_id_expense" class="transaction_id">
           <fieldset class="form-group">
 
-            <div class="form-floating mb-3">
-              <select class="form-select" id="accounts_select" name="transaction_account" aria-label="accounts_select">
+            <div class="form-floating mb-3 accounts_select">
+              <select class="form-select" id="accounts_select_expense" name="transaction_account" aria-label="accounts_select_expense">
                 <?php foreach ($data['accounts'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>
               </select>
-              <label for="accounts_select">Selecione a conta</label>
+              <label for="accounts_select_expense">Selecione a conta</label>
             </div>
 
             <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="text" name="transaction_description" placeholder="transaction_description" id="transaction_description" required autocomplete="off">
-                <label for="transaction_description" class="small">Descrição</label>
+              <div class="form-floating transaction_description">
+                <input class="form-control" type="text" name="transaction_description" placeholder="transaction_description" id="transaction_description_expense" required autocomplete="off">
+                <label for="transaction_description_expense" class="small">Descrição</label>
               </div>
             </div>
 
-            <div class="form-floating mb-3">
-              <select class="form-select" id="categories_select" name="transaction_category" aria-label="categories_select">
+            <div class="form-floating mb-3 categories_select">
+              <select class="form-select" id="categories_select_expense" name="transaction_category" aria-label="categories_select_expense">
                 <?php foreach ($data['categories'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>
               </select>
-              <label for="categories_select">Selecione a categoria</label>
+              <label for="categories_select_expense">Selecione a categoria</label>
             </div>
 
             <div class="input-group mb-3">
-              <div class="form-floating">
-                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount" required autocomplete="off">
-                <label for="transaction_amount" class="small">Valor</label>
+              <div class="form-floating transaction_amount">
+                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_expense" required autocomplete="off">
+                <label for="transaction_amount_expense" class="small">Valor</label>
               </div>
             </div>
 
-            <div class="input-group mb-3">
+            <div class="input-group mb-3 transaction_date">
               <div class="form-floating">
-                <input class="form-control" type="date" name="transaction_date" placeholder="transaction_date" id="transaction_date" required autocomplete="off">
-                <label for="transaction_date" class="small">Data</label>
+                <input class="form-control" type="date" name="transaction_date" placeholder="transaction_date" id="transaction_date_expense" required autocomplete="off">
+                <label for="transaction_date_expense" class="small">Data</label>
               </div>
             </div>
           </fieldset>
@@ -177,7 +177,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-danger" form="add_expense">Adicionar Despesa</button>
+        <button type="submit" class="btn btn-danger" form="add_expense" id="btn_modal_transaction_expense"><span class="modal_button_ok_title">Adicionar</span></button>
       </div>
     </div>
   </div>

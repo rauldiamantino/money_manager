@@ -78,6 +78,19 @@ class PanelModel {
     return true;
   }
 
+  // Apaga transação
+  public function delete_transaction($user_id, $transaction)
+  {
+    $result = $this->panelDAO->delete_transaction_db($user_id, $transaction);
+
+    if (empty($result)) {
+      Logger::log(['method' => 'PanelModel->delete_transaction', 'result' => $result ], 'error');
+      return false;
+    }
+
+    return true;
+  }
+
   // Adiciona nova conta, se ainda não existir
   public function add_account($user_id, $account)
   {

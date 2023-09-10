@@ -72,6 +72,26 @@ class Database
     }
   }
 
+  // Apaga transação do banco de dados
+  public function delete($sql, $params = [])
+  {
+    $stmt = $this->connection->prepare($sql);
+    foreach ($params as $key => &$value) {
+      $stmt->bindParam(":$key", $value);
+    }
+
+    try {
+      $stmt->execute();
+      return true;
+    }
+    catch (PDOException $e) {
+      Logger::log('Database->delete: ' . $e->getMessage());
+      $this->check_invalid_database($e->getCode());
+
+      return false;
+    }
+  }
+
   // Realiza buscas no banco de dados
   public function select($sql, $params = [])
   {

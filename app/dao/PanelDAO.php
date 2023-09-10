@@ -18,19 +18,36 @@ class PanelDAO
             VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
 
     $params = [
-      'description' => $income['description'],
-      'amount' => $income['amount'],
       'type' => $income['type'],
-      'category_id' => $income['category_id'],
-      'account_id' => $income['account_id'],
       'date' => $income['date'],
+      'amount' => $income['amount'],
+      'account_id' => $income['account_id'],
+      'description' => $income['description'],
+      'category_id' => $income['category_id'],
     ];
+
+    // Edita a receita se houver ID
+    if ($income['transaction_id']) {
+      $sql = 'UPDATE incomes
+              SET description = :description,
+                  amount = :amount,
+                  type = :type,
+                  category_id = :category_id,
+                  account_id = :account_id,
+                  date = :date
+              WHERE id = :id;';
+
+      $params['id'] = $income['transaction_id'];
+    }
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
 
     if (empty($result)) {
       Logger::log('PanelDAO->add_income_db: Erro ao adicionar receita');
+    }
+    elseif (empty($result) and $income['transaction_id']) {
+      Logger::log('PanelDAO->add_income_db: Erro ao editar receita');
     }
 
     return $result;
@@ -44,19 +61,59 @@ class PanelDAO
             VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
 
     $params = [
-      'description' => $expense['description'],
-      'amount' => $expense['amount'],
       'type' => $expense['type'],
-      'category_id' => $expense['category_id'],
-      'account_id' => $expense['account_id'],
       'date' => $expense['date'],
+      'amount' => $expense['amount'],
+      'account_id' => $expense['account_id'],
+      'category_id' => $expense['category_id'],
+      'description' => $expense['description'],
     ];
+
+    // Edita a despesa se houver ID
+    if ($expense['transaction_id']) {
+      $sql = 'UPDATE expenses
+              SET description = :description,
+                  amount = :amount,
+                  type = :type,
+                  category_id = :category_id,
+                  account_id = :account_id,
+                  date = :date
+              WHERE id = :id;';
+
+      $params['id'] = $expense['transaction_id'];
+    }
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
 
     if (empty($result)) {
-      Logger::log('PanelDAO->add_expenses_db: Erro ao adicionar despesa');
+      Logger::log('PanelDAO->add_expense_db: Erro ao adicionar despesa');
+    }
+    elseif (empty($result) and $expense['transaction_id']) {
+      Logger::log('PanelDAO->add_expense_db: Erro ao editar despesa');
+    }
+
+    return $result;
+  }
+
+  // Remove transação do banco de dados
+  public function delete_transaction_db($user_id, $transaction)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $table = 'incomes';
+
+    if ($transaction['transaction_type'] == 'E') {
+      $table = 'expenses';
+    }
+
+    $sql = 'DELETE FROM ' . $table . ' WHERE id = :id;';
+    $params = ['id' => $transaction['transaction_id'] ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->delete($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->delete_transaction_db: Erro ao apagar transação');
     }
 
     return $result;
@@ -67,39 +124,51 @@ class PanelDAO
   {
     $database_name = 'm_user_' . $user_id;
     $sql = 'SELECT 
-                expenses.id, 
-                expenses.description, 
-                expenses.amount, 
-                expenses.type, 
-                categories.name AS category_name, 
-                accounts.name AS account_name, 
-                expenses.date, 
-                expenses.created_at, 
-                expenses.updated_at
-            FROM expenses
-            LEFT JOIN categories ON expenses.category_id = categories.id
-            LEFT JOIN accounts ON expenses.account_id = accounts.id
-            UNION
-            SELECT 
-                incomes.id, 
-                incomes.description, 
-                incomes.amount, 
-                incomes.type, 
-                categories.name AS category_name, 
-                accounts.name AS account_name, 
-                incomes.date, 
-                incomes.created_at, 
-                incomes.updated_at
-            FROM incomes
-            LEFT JOIN categories ON incomes.category_id = categories.id
-            LEFT JOIN accounts ON incomes.account_id = accounts.id
-            ORDER BY date;';
+                id, 
+                description, 
+                amount, 
+                type, 
+                category_name, 
+                account_name, 
+                date, 
+                created_at, 
+                updated_at
+            FROM (
+                SELECT 
+                    expenses.id, 
+                    expenses.description, 
+                    expenses.amount, 
+                    expenses.type, 
+                    categories.name AS category_name, 
+                    accounts.name AS account_name, 
+                    expenses.date, 
+                    expenses.created_at, 
+                    expenses.updated_at
+                FROM expenses
+                LEFT JOIN categories ON expenses.category_id = categories.id
+                LEFT JOIN accounts ON expenses.account_id = accounts.id
+                UNION ALL
+                SELECT 
+                    incomes.id, 
+                    incomes.description, 
+                    incomes.amount, 
+                    incomes.type, 
+                    categories.name AS category_name, 
+                    accounts.name AS account_name, 
+                    incomes.date, 
+                    incomes.created_at, 
+                    incomes.updated_at
+                FROM incomes
+                LEFT JOIN categories ON incomes.category_id = categories.id
+                LEFT JOIN accounts ON incomes.account_id = accounts.id
+            ) AS combined_data
+            ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
     $this->database->switch_database($database_name);
     $result = $this->database->select($sql, ['database_name' => $database_name ]);
 
     if (empty($result)) {
-      Logger::log('PanelDAO->get_transactions_db: Erro ao buscar transações');
+      Logger::log('PanelDAO->get_transactions_db: Transações não encontradas');
     }
 
     return $result;
