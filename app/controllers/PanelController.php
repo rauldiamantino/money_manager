@@ -77,6 +77,11 @@ class PanelController
       $message = $this->delete_transaction($user_id);
     }
 
+    // Altera status da transação
+    if (isset($_POST['edit_transaction_status'])) {
+      $message = $this->edit_transaction_status($user_id);
+    }
+
     // Prepara conteúdo para a View
     $this->action_route = 'panel/transactions/' . $user_id;
     $transactions = $this->panelModel->get_transactions($user_id);
@@ -194,6 +199,7 @@ class PanelController
   {
     $income = [
       'type' => 'I',
+      'status' => 0,
       'date' => $_POST['transaction_date'],
       'transaction_id' => $_POST['add_income'],
       'amount' => $_POST['transaction_amount'],
@@ -222,6 +228,7 @@ class PanelController
   {
     $expense = [
       'type' => 'E',
+      'status' => 0,
       'date' => $_POST['transaction_date'],
       'transaction_id' => $_POST['add_expense'],
       'amount' => -1 * $_POST['transaction_amount'],
@@ -248,8 +255,8 @@ class PanelController
   public function delete_transaction($user_id)
   {
     $transaction = [
-      'transaction_id' => $_POST['transaction_id'],
-      'transaction_type' => $_POST['transaction_type']
+      'transaction_id' => $_POST['delete_transaction_id'],
+      'transaction_type' => $_POST['delete_transaction_type']
     ];
 
     $response = $this->panelModel->delete_transaction($user_id, $transaction);
@@ -258,6 +265,25 @@ class PanelController
     if ($response == false) {
       $message = ['error_transaction' => 'Erro ao apagar transação'];
       Logger::log(['method' => 'PanelController->delete_transaction', 'result' => $response ], 'error');
+    }
+
+    return $message;
+  }
+
+  public function edit_transaction_status($user_id)
+  {
+    $transaction = [
+      'transaction_id' => $_POST['edit_transaction_id'],
+      'transaction_type' => $_POST['edit_transaction_type'],
+      'transaction_status' => intval($_POST['edit_transaction_status']),
+    ];
+    
+    $response = $this->panelModel->edit_transaction_status($user_id, $transaction);
+    $message = ['success' => 'Status alterado com sucesso!'];
+
+    if ($response == false) {
+      $message = ['error_transaction' => 'Erro ao alterar status da transação'];
+      Logger::log(['method' => 'PanelController->edit_transaction_status', 'result' => $response ], 'error');
     }
 
     return $message;

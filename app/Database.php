@@ -63,6 +63,7 @@ class Database
     try {
       $stmt->execute();
       return true;
+
     }
     catch (PDOException $e) {
       Logger::log('Database->insert: ' . $e->getMessage());
@@ -169,6 +170,7 @@ class Database
                                   category_id INT,
                                   account_id INT,
                                   date DATE NOT NULL,
+                                  status INT,
                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                                 )';
@@ -181,6 +183,7 @@ class Database
                                 category_id INT,
                                 account_id INT,
                                 date DATE NOT NULL,
+                                status INT,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                               )';

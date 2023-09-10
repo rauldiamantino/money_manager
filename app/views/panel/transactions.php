@@ -43,15 +43,42 @@
           <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
           <td>
             <div class="d-flex gap-3 lh-1">
-              <a href="" class="text-black link_edit_transaction" data-toggle="modal" data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>" data-transaction_id="<?php echo $value['id']; ?>" data-transaction_type="<?php echo $value['type']; ?>" data-transaction_description="<?php echo $value['description']; ?>" data-transaction_account_name="<?php echo $value['account_name']; ?>" data-transaction_category_name="<?php echo $value['category_name']; ?>" data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
+
+              <a href="" class="text-black link_edit_transaction"
+                data-toggle="modal"
+                data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>"
+                data-transaction_id="<?php echo $value['id']; ?>"
+                data-transaction_type="<?php echo $value['type']; ?>"
+                data-transaction_description="<?php echo $value['description']; ?>"
+                data-transaction_account_name="<?php echo $value['account_name']; ?>"
+                data-transaction_category_name="<?php echo $value['category_name']; ?>"
+                data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
+
                 <i class="bi bi-pencil-square fs-5"></i>
               </a>
 
-              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST">
+              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
                 <input type="hidden" name="delete_transaction">
-                <input type="hidden" name="transaction_id" value="<?php echo $value['id']; ?>">
-                <input type="hidden" name="transaction_type" value="<?php echo $value['type']; ?>">
-                <button class="p-0 lh-1 border-0 bg-transparent text-danger"><i class="bi bi-x-circle fs-5"></i></button>
+                <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
+                <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
+
+                <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
+              </form>
+
+              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
+                <input type="hidden" name="edit_transaction_status">
+                <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">
+                <input type="hidden" name="edit_transaction_type" value="<?php echo $value['type']; ?>">
+
+                <?php if ($value['status'] == "0") { ?>
+                  <input type="hidden" name="edit_transaction_status" value="1">
+                  <button class="p-0 lh-1 border-0 bg-transparent text-secondary" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle fs-5"></i></button>
+                <?php } ?>
+
+                <?php if ($value['status'] == "1") { ?>
+                  <input type="hidden" name="edit_transaction_status" value="0">
+                  <button class="p-0 lh-1 border-0 bg-transparent text-success" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle-fill fs-5"></i></button>
+                <?php } ?>
               </form>
             </div>
           </td>

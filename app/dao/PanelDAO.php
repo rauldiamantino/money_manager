@@ -14,12 +14,13 @@ class PanelDAO
   public function add_income_db($user_id, $income)
   {
     $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO incomes (description, amount, type, category_id, account_id, date)
-            VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
+    $sql = 'INSERT INTO incomes (description, amount, type, category_id, account_id, date, status)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date, :status);';
 
     $params = [
       'type' => $income['type'],
       'date' => $income['date'],
+      'status' => $income['status'],
       'amount' => $income['amount'],
       'account_id' => $income['account_id'],
       'description' => $income['description'],
@@ -29,12 +30,13 @@ class PanelDAO
     // Edita a receita se houver ID
     if ($income['transaction_id']) {
       $sql = 'UPDATE incomes
-              SET description = :description,
-                  amount = :amount,
+              SET date = :date,
                   type = :type,
-                  category_id = :category_id,
+                  amount = :amount,
+                  status = :status,
                   account_id = :account_id,
-                  date = :date
+                  category_id = :category_id,
+                  description = :description
               WHERE id = :id;';
 
       $params['id'] = $income['transaction_id'];
@@ -57,12 +59,13 @@ class PanelDAO
   public function add_expense_db($user_id, $expense)
   {
     $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO expenses (description, amount, type, category_id, account_id, date)
-            VALUES (:description, :amount, :type, :category_id, :account_id, :date);';
+    $sql = 'INSERT INTO expenses (description, amount, type, category_id, account_id, date, status)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date, :status);';
 
     $params = [
       'type' => $expense['type'],
       'date' => $expense['date'],
+      'status' => $expense['status'],
       'amount' => $expense['amount'],
       'account_id' => $expense['account_id'],
       'category_id' => $expense['category_id'],
@@ -72,12 +75,13 @@ class PanelDAO
     // Edita a despesa se houver ID
     if ($expense['transaction_id']) {
       $sql = 'UPDATE expenses
-              SET description = :description,
-                  amount = :amount,
+              SET date = :date,
                   type = :type,
-                  category_id = :category_id,
+                  status = :status,
+                  amount = :amount,
                   account_id = :account_id,
-                  date = :date
+                  category_id = :category_id,
+                  description = :description
               WHERE id = :id;';
 
       $params['id'] = $expense['transaction_id'];
@@ -119,48 +123,78 @@ class PanelDAO
     return $result;
   }
 
+  // Remove transação do banco de dados
+  public function edit_transaction_status_db($user_id, $transaction)
+  {
+    $database_name = 'm_user_' . $user_id;
+
+    $sql = 'UPDATE incomes 
+            SET status = :status
+            WHERE id = :id;';
+
+    if ($transaction['transaction_type'] == 'E') {
+      $sql = 'UPDATE expenses
+              SET status = :status
+              WHERE id = :id;';
+    }
+
+    $params = ['id' => $transaction['transaction_id'], 'status' => $transaction['transaction_status'] ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    if (empty($result)) {
+      Logger::log('PanelDAO->edit_transaction_status_db: Erro ao alterar status da transação');
+    }
+
+    return $result;
+  }
+
   // Busca transações no banco de dados
   public function get_transactions_db($user_id)
   {
     $database_name = 'm_user_' . $user_id;
     $sql = 'SELECT 
-                id, 
-                description, 
-                amount, 
-                type, 
-                category_name, 
-                account_name, 
-                date, 
-                created_at, 
-                updated_at
+                id,
+                date,
+                type,
+                status,
+                amount,
+                created_at,
+                updated_at,
+                description,
+                account_name,
+                category_name
             FROM (
-                SELECT 
-                    expenses.id, 
-                    expenses.description, 
-                    expenses.amount, 
-                    expenses.type, 
-                    categories.name AS category_name, 
-                    accounts.name AS account_name, 
-                    expenses.date, 
-                    expenses.created_at, 
-                    expenses.updated_at
+                SELECT
+                    expenses.id,
+                    expenses.date,
+                    expenses.type,
+                    expenses.amount,
+                    expenses.status,
+                    expenses.created_at,
+                    expenses.updated_at,
+                    expenses.description,
+                    accounts.name AS account_name,
+                    categories.name AS category_name
                 FROM expenses
-                LEFT JOIN categories ON expenses.category_id = categories.id
                 LEFT JOIN accounts ON expenses.account_id = accounts.id
+                LEFT JOIN categories ON expenses.category_id = categories.id
                 UNION ALL
-                SELECT 
-                    incomes.id, 
-                    incomes.description, 
-                    incomes.amount, 
-                    incomes.type, 
-                    categories.name AS category_name, 
-                    accounts.name AS account_name, 
-                    incomes.date, 
-                    incomes.created_at, 
-                    incomes.updated_at
+                SELECT
+                    incomes.id,
+                    incomes.date,
+                    incomes.type,
+                    incomes.amount,
+                    incomes.status,
+                    incomes.created_at,
+                    incomes.updated_at,
+                    incomes.description,
+                    accounts.name AS account_name,
+                    categories.name AS category_name
                 FROM incomes
-                LEFT JOIN categories ON incomes.category_id = categories.id
                 LEFT JOIN accounts ON incomes.account_id = accounts.id
+                LEFT JOIN categories ON incomes.category_id = categories.id
             ) AS combined_data
             ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 

@@ -91,6 +91,19 @@ class PanelModel {
     return true;
   }
 
+  // Altera status da transação
+  public function edit_transaction_status($user_id, $transaction)
+  {
+    $result = $this->panelDAO->edit_transaction_status_db($user_id, $transaction);
+
+    if (empty($result)) {
+      Logger::log(['method' => 'PanelModel->edit_transaction_status', 'result' => $result ], 'error');
+      return false;
+    }
+
+    return true;
+  }
+
   // Adiciona nova conta, se ainda não existir
   public function add_account($user_id, $account)
   {

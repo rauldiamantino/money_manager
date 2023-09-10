@@ -1,13 +1,13 @@
 //---------------------- Alerta após tentar criar uma transação ----------------------//
-const alert_add_transaction = document.querySelector('#alert_add_transaction')
+// const alert_add_transaction = document.querySelector('#alert_add_transaction')
 
-if (alert_add_transaction) {
+// if (alert_add_transaction) {
   
-  // Exibe alerta após 100ms
-  setTimeout(() => {
-    alert(alert_add_transaction.innerText)
-  }, 100)
-}
+//   // Exibe alerta após 100ms
+//   setTimeout(() => {
+//     alert(alert_add_transaction.innerText)
+//   }, 100)
+// }
 
 //---------------------- Recupera transação a ser editada e preenche inputs do modal ----------------------//
 
