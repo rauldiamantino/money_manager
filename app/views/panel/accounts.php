@@ -7,9 +7,9 @@
       Nova Conta
     </a>
   </div>
-
+  
   <?php if (isset($data['message']['error_account'])) { ?>
-    <div class="d-none" id="alert_create_account"><?php echo $data['message']['error_account'] ?></div>
+    <div class="col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_create_account"><?php echo $data['message']['error_account'] ?></div>
   <?php } ?>
 
   <?php if (isset($data['message']['success'])) { ?>

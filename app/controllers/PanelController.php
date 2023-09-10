@@ -216,7 +216,7 @@ class PanelController
     }
 
     if ($response == false) {
-      $message = ['error_income' => 'Erro ao cadastrar receita'];
+      $message = ['error_transaction' => 'Erro ao cadastrar receita'];
       Logger::log(['method' => 'PanelController->add_income', 'result' => $response ], 'error');
     }
 
@@ -245,7 +245,7 @@ class PanelController
     }
 
     if ($response == false) {
-      $message = ['error_expense' => 'Erro ao cadastrar despesa'];
+      $message = ['error_transaction' => 'Erro ao cadastrar despesa'];
       Logger::log(['method' => 'PanelController->add_expense', 'result' => $response ], 'error');
     }
 

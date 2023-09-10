@@ -9,7 +9,7 @@
   </div>
 
   <?php if (isset($data['message']['error_category'])) { ?>
-    <div class="d-none" id="alert_create_category"><?php echo $data['message']['error_category'] ?></div>
+    <div class="col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_create_category"><?php echo $data['message']['error_category'] ?></div>
   <?php } ?>
 
   <?php if (isset($data['message']['success'])) { ?>

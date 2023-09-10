@@ -1,13 +1,12 @@
-//---------------------- Alerta após tentar criar uma transação ----------------------//
-// const alert_add_transaction = document.querySelector('#alert_add_transaction')
+//---------------------- Oculta alertas de transações ----------------------//
+const error_transaction = document.querySelector('#error_transaction')
 
-// if (alert_add_transaction) {
-  
-//   // Exibe alerta após 100ms
-//   setTimeout(() => {
-//     alert(alert_add_transaction.innerText)
-//   }, 100)
-// }
+// Oculta alerta após 2 segundos
+if (error_transaction) {
+  setTimeout(() => {
+    error_transaction.style.display = 'none'
+  }, 2000)
+}
 
 //---------------------- Recupera transação a ser editada e preenche inputs do modal ----------------------//
 
