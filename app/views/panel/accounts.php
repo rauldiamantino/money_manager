@@ -1,21 +1,20 @@
 <section class="container mt-4">
   <h1 class="mb-4">Contas</h1>
 
-  <div class="mb-2 d-flex gap-3">
+  <div class="mb-2 d-flex gap-3 position-relative">
     <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" data-toggle="modal" data-target="#modal_account">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Conta
     </a>
+
+    <?php if (isset($data['message']['error_account'])) { ?>
+      <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_create_account"><?php echo $data['message']['error_account'] ?></div>
+    <?php } ?>
+
+    <?php if (isset($data['message']['success'])) { ?>
+      <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_create_account"><?php echo $data['message']['success'] ?></div>
+    <?php } ?>
   </div>
-  
-  <?php if (isset($data['message']['error_account'])) { ?>
-    <div class="col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_create_account"><?php echo $data['message']['error_account'] ?></div>
-  <?php } ?>
-
-  <?php if (isset($data['message']['success'])) { ?>
-    <div class="d-none" id="alert_create_account"><?php echo $data['message']['success'] ?></div>
-  <?php } ?>
-
   <table class="table table-hover">
     <thead>
       <tr>

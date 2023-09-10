@@ -1,10 +1,10 @@
 //---------------------- Oculta alertas de transações ----------------------//
-const error_transaction = document.querySelector('#error_transaction')
+const alert_transaction = document.querySelector('#alert_transaction')
 
 // Oculta alerta após 2 segundos
-if (error_transaction) {
+if (alert_transaction) {
   setTimeout(() => {
-    error_transaction.style.display = 'none'
+    alert_transaction.style.display = 'none'
   }, 2000)
 }
 

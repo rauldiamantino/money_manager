@@ -1,7 +1,7 @@
 <section class="container mt-4">
   <h1 class="mb-4">Geral</h1>
 
-  <div class="mb-2 d-flex gap-3">
+  <div class="mb-2 d-flex gap-3 position-relative">
     <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_income" id="link_add_income">
       <i class="bi bi-file-earmark-plus"></i>
       Nova Receita
@@ -10,15 +10,15 @@
       <i class="bi bi-file-earmark-plus"></i>
       Nova Despesa
     </a>
+
+    <?php if (isset($data['message']['error_transaction'])) { ?>
+      <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['error_transaction'] ?></div>
+    <?php } ?>
+
+    <?php if (isset($data['message']['success'])) { ?>
+      <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
+    <?php } ?>
   </div>
-
-  <?php if (isset($data['message']['error_transaction'])) { ?>
-    <div class="col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['error_transaction'] ?></div>
-  <?php } ?>
-
-  <?php if (isset($data['message']['success'])) { ?>
-    <div class="d-none" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
-  <?php } ?>
 
   <table class="table table-hover">
     <thead>
