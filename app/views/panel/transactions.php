@@ -18,7 +18,7 @@
     <?php } ?>
 
     <?php if (isset($data['message']['success'])) { ?>
-      <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
+      <div class="d-none position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
     <?php } ?>
   </div>
 
@@ -43,48 +43,45 @@
             <?php echo 'R$ ' . number_format($value['amount'], 2, ',', '.'); ?>
           </td>
           <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
-          <td class="px-0 col-10-css">
-            <div class="d-flex gap-3 lh-1">
+          <td class="px-0 col-10-css lh-1">
+            <a href="" class="text-black link_edit_transaction"
+              data-toggle="modal"
+              data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>"
+              data-transaction_id="<?php echo $value['id']; ?>"
+              data-transaction_type="<?php echo $value['type']; ?>"
+              data-transaction_description="<?php echo $value['description']; ?>"
+              data-transaction_account_name="<?php echo $value['account_name']; ?>"
+              data-transaction_category_name="<?php echo $value['category_name']; ?>"
+              data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
 
-              <a href="" class="text-black link_edit_transaction"
-                data-toggle="modal"
-                data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>"
-                data-transaction_id="<?php echo $value['id']; ?>"
-                data-transaction_type="<?php echo $value['type']; ?>"
-                data-transaction_description="<?php echo $value['description']; ?>"
-                data-transaction_account_name="<?php echo $value['account_name']; ?>"
-                data-transaction_category_name="<?php echo $value['category_name']; ?>"
-                data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
+              <i class="bi bi-pencil-square fs-5"></i>
+            </a>
+          </td>
+          <td class="px-0 col-10-css lh-1">
+            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
+              <input type="hidden" name="delete_transaction">
+              <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
+              <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
 
-                <i class="bi bi-pencil-square fs-5"></i>
-              </a>
-            </td>
-            <td class="px-0 col-10-css">
-              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
-                <input type="hidden" name="delete_transaction">
-                <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
-                <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
+              <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
+            </form>
+          </td>
+          <td class="px-0 col-10-css lh-1">
+            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
+              <input type="hidden" name="edit_transaction_status">
+              <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">
+              <input type="hidden" name="edit_transaction_type" value="<?php echo $value['type']; ?>">
 
-                <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
-              </form>
-            </td>
-            <td class="px-0 col-10-css">
-              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
-                <input type="hidden" name="edit_transaction_status">
-                <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">
-                <input type="hidden" name="edit_transaction_type" value="<?php echo $value['type']; ?>">
+              <?php if ($value['status'] == "0") { ?>
+                <input type="hidden" name="edit_transaction_status" value="1">
+                <button class="p-0 lh-1 border-0 bg-transparent text-secondary" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle fs-5"></i></button>
+              <?php } ?>
 
-                <?php if ($value['status'] == "0") { ?>
-                  <input type="hidden" name="edit_transaction_status" value="1">
-                  <button class="p-0 lh-1 border-0 bg-transparent text-secondary" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle fs-5"></i></button>
-                <?php } ?>
-
-                <?php if ($value['status'] == "1") { ?>
-                  <input type="hidden" name="edit_transaction_status" value="0">
-                  <button class="p-0 lh-1 border-0 bg-transparent text-success" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle-fill fs-5"></i></button>
-                <?php } ?>
-              </form>
-            </div>
+              <?php if ($value['status'] == "1") { ?>
+                <input type="hidden" name="edit_transaction_status" value="0">
+                <button class="p-0 lh-1 border-0 bg-transparent text-success" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle-fill fs-5"></i></button>
+              <?php } ?>
+            </form>
           </td>
         </tr>
       <?php endforeach; ?>
@@ -105,7 +102,7 @@
           <fieldset class="form-group">
 
             <div class="form-floating mb-3 accounts_select">
-              <select class="form-select" id="accounts_select_income" name="transaction_account" aria-label="accounts_select_income">
+              <select class="form-select" id="accounts_select_income" name="transaction_account" aria-label="accounts_select_income" required>
                 <?php foreach ($data['accounts'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>
@@ -121,7 +118,7 @@
             </div>
 
             <div class="form-floating mb-3 categories_select">
-              <select class="form-select" id="categories_select_income" name="transaction_category" aria-label="categories_select_income">
+              <select class="form-select" id="categories_select_income" name="transaction_category" aria-label="categories_select_income" required>
                 <?php foreach ($data['categories'] as $value) : ?>
                   <option value=<?php echo $value['id'] ?>><?php echo $value['name'] ?></option>
                 <?php endforeach; ?>

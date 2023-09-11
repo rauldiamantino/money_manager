@@ -127,6 +127,11 @@ class PanelController
       $message = $this->add_account($user_id);
     }
 
+    // Apaga conta
+    if (isset($_POST['delete_account'])) {
+      $message = $this->delete_account($user_id);
+    }
+
     // Prepara conteúdo para a View
     $this->action_route = 'panel/accounts/' . $user_id;
     $accounts = $this->panelModel->get_accounts($user_id);
@@ -166,6 +171,11 @@ class PanelController
     // Resultado da tentativa de adicionar categoria
     if (isset($_POST['category'])) {
       $message = $this->add_category($user_id);
+    }
+
+    // Apaga categoria
+    if (isset($_POST['delete_category'])) {
+      $message = $this->delete_category($user_id);
     }
 
     // Prepara conteúdo para a View
@@ -270,6 +280,36 @@ class PanelController
     return $message;
   }
 
+  public function delete_account($user_id)
+  {
+    $account_id = $_POST['delete_account_id'];
+
+    $response = $this->panelModel->delete_account($user_id, $account_id);
+    $message = ['success' => 'Conta removida com sucesso!'];
+
+    if ($response == false) {
+      $message = ['error_account' => 'Erro ao apagar conta'];
+      Logger::log(['method' => 'PanelController->delete_account', 'result' => $response ], 'error');
+    }
+
+    return $message;
+  }
+
+  public function delete_category($user_id)
+  {
+    $category_id = $_POST['delete_category_id'];
+
+    $response = $this->panelModel->delete_category($user_id, $category_id);
+    $message = ['success' => 'Categoria removida com sucesso!'];
+
+    if ($response == false) {
+      $message = ['error_category' => 'Erro ao apagar categoria'];
+      Logger::log(['method' => 'PanelController->delete_category', 'result' => $response ], 'error');
+    }
+
+    return $message;
+  }
+
   public function edit_transaction_status($user_id)
   {
     $transaction = [
@@ -292,12 +332,16 @@ class PanelController
   // Adiciona conta no banco de dados
   public function add_account($user_id)
   {
-    $account = $_POST['account'];
+    $account = ['id' => $_POST['account_id'], 'name' => $_POST['account']];
+
     $response = $this->panelModel->add_account($user_id, $account);
     $message = ['success' => 'Conta cadastrada com sucesso!'];
 
+    if ($account['id']) {
+      $message = ['success' => 'Conta editada com sucesso'];
+    }
     if ($response == false) {
-      $message = ['error_account' => 'Conta já cadastrada'];
+      $message = ['error_account' => 'Conta já existe'];
       Logger::log(['method' => 'PanelController->add_account', 'result' => $response ], 'alert');
     }
 
@@ -307,12 +351,17 @@ class PanelController
   // Adiciona categoria no banco de dados
   public function add_category($user_id)
   {
-    $category = $_POST['category'];
+    $category = ['id' => $_POST['category_id'], 'name' => $_POST['category']];
+
     $response = $this->panelModel->add_category($user_id, $category);
     $message = ['success' => 'Categoria cadastrada com sucesso!'];
 
+    if ($category['id']) {
+      $message = ['success' => 'Categoria editada com sucesso'];
+    }
+
     if ($response == false) {
-      $message = ['error_category' => 'Categoria já cadastrada'];
+      $message = ['error_category' => 'Categoria já existe'];
       Logger::log(['method' => 'PanelController->add_category', 'result' => $response ], 'alert');
     }
 

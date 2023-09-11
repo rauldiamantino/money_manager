@@ -91,6 +91,32 @@ class PanelModel {
     return true;
   }
 
+  // Apaga conta
+  public function delete_account($user_id, $account_id)
+  {
+    $result = $this->panelDAO->delete_account_db($user_id, $account_id);
+
+    if (empty($result)) {
+      Logger::log(['method' => 'PanelModel->delete_account', 'result' => $result ], 'error');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Apaga conta
+  public function delete_category($user_id, $category_id)
+  {
+    $result = $this->panelDAO->delete_category_db($user_id, $category_id);
+
+    if (empty($result)) {
+      Logger::log(['method' => 'PanelModel->delete_category', 'result' => $result ], 'error');
+      return false;
+    }
+
+    return true;
+  }
+
   // Altera status da transação
   public function edit_transaction_status($user_id, $transaction)
   {
@@ -107,7 +133,7 @@ class PanelModel {
   // Adiciona nova conta, se ainda não existir
   public function add_account($user_id, $account)
   {
-    $get_account = $this->panelDAO->get_accounts_db($user_id, $account);
+    $get_account = $this->panelDAO->get_accounts_db($user_id, $account['name']);
 
     if ($get_account) {
       Logger::log(['method' => 'PanelModel->add_account', 'result' => $get_account ], 'alert');
@@ -121,7 +147,7 @@ class PanelModel {
   // Adiciona nova categoria, se ainda não existir
   public function add_category($user_id, $category)
   {
-    $get_category = $this->panelDAO->get_categories_db($user_id, $category);
+    $get_category = $this->panelDAO->get_categories_db($user_id, $category['name']);
 
     if ($get_category) {
       Logger::log(['method' => 'PanelModel->add_category', 'result' => $get_category ], 'alert');
