@@ -22,7 +22,7 @@ endforeach;
 <link rel="stylesheet" href="/css/transactions.css">
 
 <section class="container mt-4">
-  <h1 class="mb-4">Geral</h1>
+  <h1 class="mb-4 text-center">Receitas e Despesas</h1>
 
   <div class="mb-2 d-flex gap-3 position-relative">
     <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_income" id="link_add_income">
@@ -118,16 +118,16 @@ endforeach;
           <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes, 2, ',', '.') ?></p>
         </div>
       </div>
+      <div class="card alert alert-dark w-100 py-0">
+        <div class="card-body">
+          <h5 class="card-title">Saldo</h5>
+          <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes - $total_expenses, 2, ',', '.') ?></p>
+        </div>
+      </div>
       <div class="card alert alert-danger w-100 py-0">
         <div class="card-body">
           <h5 class="card-title">Despesas</h5>
           <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_expenses, 2, ',', '.') ?></p>
-        </div>
-      </div>
-      <div class="card alert alert-dark w-100 py-0">
-        <div class="card-body">
-          <h5 class="card-title">Total</h5>
-          <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes - $total_expenses, 2, ',', '.') ?></p>
         </div>
       </div>
     </div>

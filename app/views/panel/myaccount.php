@@ -1,7 +1,7 @@
 <section class="container mt-4">
-  <h1 class="mb-4">Minha Conta</h1>
+  <h1 class="mb-4 text-center">Minha Conta</h1>
 
-  <form action="<?php echo 'panel/myaccount/' . $data['user_id']?>" method="POST" class="col-md-8 col-lg-6 col-xl-4">
+  <form action="<?php echo 'panel/myaccount/' . $data['user_id']?>" method="POST" class="col-md-8 col-lg-6 col-xl-4 mx-auto">
     <fieldset class="form-group">
       <?php if (isset($data['message']['success_update'])) { ?>
         <div class="alert alert-success text-center small p-1 rounded-0" id="alert_update">

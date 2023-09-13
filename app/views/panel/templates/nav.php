@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs justify-content-end pe-2 pt-2">
+<ul class="nav nav-tabs justify-content-center pe-2 pt-2">
   <li class="nav-item">
     <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="panel/display">Visão geral</a>
   </li>
