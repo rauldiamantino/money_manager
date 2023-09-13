@@ -284,6 +284,14 @@ class PanelController
   {
     $account_id = $_POST['delete_account_id'];
 
+    // Não apaga conta em uso
+    $account_in_use = $this->panelModel->verify_account_in_use($user_id, $account_id);
+    $message = ['error_account' => 'Conta em uso não pode ser apagada'];
+
+    if ($account_in_use) {
+      return $message;
+    }
+
     $response = $this->panelModel->delete_account($user_id, $account_id);
     $message = ['success' => 'Conta removida com sucesso!'];
 
@@ -298,6 +306,14 @@ class PanelController
   public function delete_category($user_id)
   {
     $category_id = $_POST['delete_category_id'];
+
+    // Não apaga categoria em uso
+    $category_in_use = $this->panelModel->verify_category_in_use($user_id, $category_id);
+    $message = ['error_category' => 'Categoria em uso não pode ser apagada'];
+
+    if ($category_in_use) {
+      return $message;
+    }
 
     $response = $this->panelModel->delete_category($user_id, $category_id);
     $message = ['success' => 'Categoria removida com sucesso!'];

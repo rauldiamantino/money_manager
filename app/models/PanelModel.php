@@ -40,7 +40,31 @@ class PanelModel {
     return $result;
   }
 
-  // Obtém todas as categorias cadastradas do usuário
+  // Verifica se a conta está em uso
+  public function verify_account_in_use($user_id, $account_id)
+  {
+    $result = $this->panelDAO->verify_account_in_use_db($user_id, $account_id);
+
+    if ($result) {
+      Logger::log(['method' => 'PanelModel->verify_account_in_use', 'result' => $result ], 'alert');
+    }
+
+    return $result;
+  }
+
+  // Verifica se a categoria está em uso
+  public function verify_category_in_use($user_id, $category_id)
+  {
+    $result = $this->panelDAO->verify_category_in_use_db($user_id, $category_id);
+
+    if ($result) {
+      Logger::log(['method' => 'PanelModel->verify_category_in_use', 'result' => $result ], 'alert');
+    }
+
+    return $result;
+  }
+
+// Obtém todas as categorias cadastradas do usuário
   public function get_categories($user_id)
   {
     $result = $this->panelDAO->get_categories_db($user_id);

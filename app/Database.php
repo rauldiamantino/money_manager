@@ -62,8 +62,8 @@ class Database
 
     try {
       $stmt->execute();
-      return true;
 
+      return true;
     }
     catch (PDOException $e) {
       Logger::log('Database->insert: ' . $e->getMessage());

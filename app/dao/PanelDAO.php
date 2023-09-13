@@ -40,7 +40,7 @@ class PanelDAO
               WHERE id = :id;';
 
       $params['id'] = $income['transaction_id'];
-    }
+    }    
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
@@ -283,6 +283,46 @@ class PanelDAO
 
     if (empty($result)) {
       Logger::log('PanelDAO->get_categories_db: Categoria inexistente');
+    }
+
+    return $result;
+  }
+
+  // Verifica transações e retorna se a conta está sendo utilizada
+  public function verify_account_in_use_db($user_id, $account_id)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'SELECT account_id, description FROM incomes WHERE account_id = :account_id
+            UNION
+            SELECT account_id, description FROM expenses WHERE account_id = :account_id';
+
+    $params = ['account_id' => $account_id ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
+    if ($result) {
+      Logger::log(['method' => 'PanelDAO->verify_account_in_use_db', 'result' => $result, 'message' => 'Conta em uso não pode ser apagada'], 'alert');
+    }
+
+    return $result;
+  }
+
+  // Verifica transações e retorna se a categoria está sendo utilizada
+  public function verify_category_in_use_db($user_id, $category_id)
+  {
+    $database_name = 'm_user_' . $user_id;
+    $sql = 'SELECT category_id, description FROM incomes WHERE category_id = :category_id
+            UNION
+            SELECT category_id, description FROM expenses WHERE category_id = :category_id';
+
+    $params = ['category_id' => $category_id ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
+
+    if ($result) {
+      Logger::log(['method' => 'PanelDAO->verify_category_in_use_db', 'result' => $result, 'message' => 'Categoria em uso não pode ser apagada'], 'alert');
     }
 
     return $result;
