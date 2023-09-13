@@ -1,3 +1,30 @@
+//---------------------- Requisição AJAX para renderizar a view ----------------------//
+// function carregarPagina() {
+//     var xhttp = new XMLHttpRequest();
+//     xhttp.onreadystatechange = function() {
+//         if (this.readyState == 4 && this.status == 200) {
+//             var data = JSON.parse(this.responseText);
+            
+//             // Atualize o conteúdo da página com os dados recebidos
+//             // document.getElementById("conteudo").innerHTML = criarConteudoHTML(data);
+
+//             console.log(data);
+//         }
+//     };
+//     xhttp.open('GET', 'panel/transactions/' + user_id, true);
+//     xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+//     xhttp.send();
+// }
+
+// carregarPagina()
+
+function criarConteudoHTML(data) {
+    // Crie o HTML com base nos dados recebidos
+    // Use data.transactions, data.user_id, data.categories, etc. para preencher o conteúdo
+
+    // Retorne o HTML gerado
+}
+
 //---------------------- Oculta alertas de transações ----------------------//
 const alert_transaction = document.querySelector('#alert_transaction')
 

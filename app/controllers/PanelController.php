@@ -109,7 +109,14 @@ class PanelController
       'message' => $message,
     ];
 
-    return [ $nav_view_name => $nav_view_content, $transactions_view_name => $transactions_view_content ];
+    // Requisição AJAX renderiza apenas o conteúdo (ainda não vou implementar)
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        $render =  [ $transactions_view_name, $transactions_view_content ];
+        echo json_encode($render);
+    }
+    else {
+      return [ $nav_view_name => $nav_view_content, $transactions_view_name => $transactions_view_content ];
+    }
   }
 
   // Exibe todas as contas

@@ -1,3 +1,24 @@
+<?php
+ // echo '<script> var user_id = ' . $_SESSION['user']['user_id'] . ';</script>';
+
+ 
+$total_incomes = 0;
+$total_expenses = 0;
+
+foreach ($data['transactions'] as $key => $value) :
+  
+  if ($value['type'] == 'E') {
+    $expense_amount = $value['amount'] * -1;
+    $total_expenses += $expense_amount;
+  }
+
+  if ($value['type'] == 'I') {
+    $total_incomes += $value['amount'];
+  }
+
+endforeach;
+?>
+
 <link rel="stylesheet" href="/css/transactions.css">
 
 <section class="container mt-4">
@@ -22,71 +43,96 @@
     <?php } ?>
   </div>
 
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Descrição</th>
-        <th>Conta</th>
-        <th>Categoria</th>
-        <th>Valor</th>
-        <th>Data</th>
-        <th colspan="3">Ação</th>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider">
-      <?php foreach ($data['transactions'] as $value) : ?>
-        <tr>
-          <td><?php echo $value['description']; ?></td>
-          <td><?php echo $value['account_name']; ?></td>
-          <td><?php echo $value['category_name']; ?></td>
-          <td class="<?php echo $value['amount'] <= 0 ? 'text-danger' : 'text-success'; ?>">
-            <?php echo 'R$ ' . number_format($value['amount'], 2, ',', '.'); ?>
-          </td>
-          <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
-          <td class="px-0 col-10-css lh-1">
-            <a href="" class="text-black link_edit_transaction"
-              data-toggle="modal"
-              data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>"
-              data-transaction_id="<?php echo $value['id']; ?>"
-              data-transaction_type="<?php echo $value['type']; ?>"
-              data-transaction_description="<?php echo $value['description']; ?>"
-              data-transaction_account_name="<?php echo $value['account_name']; ?>"
-              data-transaction_category_name="<?php echo $value['category_name']; ?>"
-              data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
 
-              <i class="bi bi-pencil-square fs-5"></i>
-            </a>
-          </td>
-          <td class="px-0 col-10-css lh-1">
-            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
-              <input type="hidden" name="delete_transaction">
-              <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
-              <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
-
-              <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
-            </form>
-          </td>
-          <td class="px-0 col-10-css lh-1">
-            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
-              <input type="hidden" name="edit_transaction_status">
-              <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">
-              <input type="hidden" name="edit_transaction_type" value="<?php echo $value['type']; ?>">
-
-              <?php if ($value['status'] == "0") { ?>
-                <input type="hidden" name="edit_transaction_status" value="1">
-                <button class="p-0 lh-1 border-0 bg-transparent text-secondary" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle fs-5"></i></button>
-              <?php } ?>
-
-              <?php if ($value['status'] == "1") { ?>
-                <input type="hidden" name="edit_transaction_status" value="0">
-                <button class="p-0 lh-1 border-0 bg-transparent text-success" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle-fill fs-5"></i></button>
-              <?php } ?>
-            </form>
-          </td>
+    <table class="table table-hover">
+      <thead>
+        <tr class="text-center">
+          <th>Descrição</th>
+          <th>Conta</th>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>Data</th>
+          <th colspan="3">Ação</th>
         </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+      </thead>
+      <tbody class="table-group-divider text-center">
+        <?php foreach ($data['transactions'] as $value) : ?>
+          <tr>
+            <td class="text-start"><?php echo $value['description']; ?></td>
+            <td><?php echo $value['account_name']; ?></td>
+            <td><?php echo $value['category_name']; ?></td>
+            <td class="<?php echo $value['amount'] <= 0 ? 'text-danger' : 'text-success'; ?> text-end">
+              <?php echo 'R$ ' . number_format($value['amount'], 2, ',', '.'); ?>
+            </td>
+            <td><?php echo date('d/m/Y', strtotime($value['date'])); ?></td>
+            <td class="px-0 col-10-css lh-1">
+              <a href="" class="text-black link_edit_transaction"
+                data-toggle="modal"
+                data-target="#modal_<?php echo $value['type'] == 'I' ? 'income' : 'expense'?>"
+                data-transaction_id="<?php echo $value['id']; ?>"
+                data-transaction_type="<?php echo $value['type']; ?>"
+                data-transaction_description="<?php echo $value['description']; ?>"
+                data-transaction_account_name="<?php echo $value['account_name']; ?>"
+                data-transaction_category_name="<?php echo $value['category_name']; ?>"
+                data-transaction_amount="<?php echo $value['amount']; ?>" data-transaction_date="<?php echo $value['date']; ?>">
+
+                <i class="bi bi-pencil-square fs-5"></i>
+              </a>
+            </td>
+            <td class="px-0 col-10-css lh-1">
+              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
+                <input type="hidden" name="delete_transaction">
+                <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
+                <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
+
+                <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-x-circle fs-5"></i></button>
+              </form>
+            </td>
+            <td class="px-0 col-10-css lh-1">
+              <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
+                <input type="hidden" name="edit_transaction_status">
+                <input type="hidden" name="edit_transaction_id" value="<?php echo $value['id']; ?>">
+                <input type="hidden" name="edit_transaction_type" value="<?php echo $value['type']; ?>">
+
+                <?php if ($value['status'] == "0") { ?>
+                  <input type="hidden" name="edit_transaction_status" value="1">
+                  <button class="p-0 lh-1 border-0 bg-transparent text-secondary" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle fs-5"></i></button>
+                <?php } ?>
+
+                <?php if ($value['status'] == "1") { ?>
+                  <input type="hidden" name="edit_transaction_status" value="0">
+                  <button class="p-0 lh-1 border-0 bg-transparent text-success" form="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>"><i class="bi bi-check-circle-fill fs-5"></i></button>
+                <?php } ?>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+
+
+    <div class="d-flex gap-2 w-100 justify-content-center text-center user-select-none">
+      <div class="card alert alert-success w-100 py-0">
+        <div class="card-body">
+          <h5 class="card-title">Receitas</h5>
+          <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes, 2, ',', '.') ?></p>
+        </div>
+      </div>
+      <div class="card alert alert-danger w-100 py-0">
+        <div class="card-body">
+          <h5 class="card-title">Despesas</h5>
+          <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_expenses, 2, ',', '.') ?></p>
+        </div>
+      </div>
+      <div class="card alert alert-dark w-100 py-0">
+        <div class="card-body">
+          <h5 class="card-title">Total</h5>
+          <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes - $total_expenses, 2, ',', '.') ?></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <!-- modal nova receita -->
@@ -128,7 +174,7 @@
 
             <div class="input-group mb-3">
               <div class="form-floating transaction_amount">
-                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_income" required autocomplete="off">
+                <input class="form-control" type="number" step="0.01" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_income" required autocomplete="off">
                 <label for="transaction_amount_income" class="small">Valor</label>
               </div>
             </div>
@@ -189,7 +235,7 @@
 
             <div class="input-group mb-3">
               <div class="form-floating transaction_amount">
-                <input class="form-control" type="number" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_expense" required autocomplete="off">
+                <input class="form-control" type="number" step="0.01" name="transaction_amount" placeholder="transaction_amount" id="transaction_amount_expense" required autocomplete="off">
                 <label for="transaction_amount_expense" class="small">Valor</label>
               </div>
             </div>
