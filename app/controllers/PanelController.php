@@ -131,7 +131,9 @@ class PanelController
 
     // Resultado da tentativa de adicionar conta
     if (isset($_POST['account'])) {
-      $message = $this->add_account($user_id);
+      // $message = $this->add_account($user_id);
+      $accountName = $_POST['account'];
+      $message = $this->createAccount($user_id, $accountName);
     }
 
     // Apaga conta
@@ -347,6 +349,24 @@ class PanelController
     if ($response == false) {
       $message = ['error_transaction' => 'Erro ao alterar status da transação'];
       Logger::log(['method' => 'PanelController->edit_transaction_status', 'result' => $response ], 'error');
+    }
+
+    return $message;
+  }
+
+  // Cria uma nova conta
+  public function createAccount($user_id, $accountName)
+  {
+    $accountExists = $this->panelModel->accountExists($user_id, ['name' => $accountName ]);
+
+    if ($accountExists) {
+      return ['error_account' => 'Conta já existe'];
+    }
+
+    $createAccount = $this->panelModel->createAccount($user_id, $accountName);
+
+    if (empty($createAccount)) {
+      $message = ['error_account' => 'Erro ao cadastrar conta'];
     }
 
     return $message;

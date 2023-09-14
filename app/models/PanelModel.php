@@ -1,12 +1,15 @@
 <?php
 require_once '../app/dao/PanelDAO.php';
+require_once '../app/Database.php';
 
 class PanelModel {
   public $panelDAO;
+  public $database;
 
   public function __construct()
   {
     $this->panelDAO = new PanelDAO();
+    $this->database = new Database();
   }
 
   // Obtém conteúdo a ser exibido no painel principal
@@ -194,5 +197,24 @@ class PanelModel {
     }
 
     return $response;
+  }
+
+  //---------------------- Nova Model ----------------------//
+
+  // Verifica se a conta já existe para o usuário
+  public function accountExists($user_id, $account)
+  {
+    $databaseName = 'm_user_' . $user_id;
+    $paramWhere = array_key_first($account);
+
+    $sql = 'SELECT * FROM accounts WHERE ' . $paramWhere . ' = :' . $paramWhere;
+    $params = [ $paramWhere => reset($account)];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+
+    Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result ]);
+
+    return $result;
   }
 }

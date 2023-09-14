@@ -33,10 +33,10 @@ class Database
   }
 
   // Encerra conexão atual e alterna banco de dados
-  public function switch_database($database_name)
+  public function switch_database($databaseName)
   {
     $this->connection = null;
-    $this->dbname = $database_name;
+    $this->dbname = $databaseName;
 
     try {
       $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=utf8', $this->username, $this->password);
