@@ -55,58 +55,6 @@ class PanelModel {
     return $result;
   }
 
-  // Adiciona receita
-  public function add_income($user_id, $income)
-  {
-    $result = $this->panelDAO->add_income_db($user_id, $income);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->add_income', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-  
-  // Adiciona despesa
-  public function add_expense($user_id, $expense)
-  {
-    $result = $this->panelDAO->add_expense_db($user_id, $expense);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->add_expense', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-
-  // Apaga transação
-  public function delete_transaction($user_id, $transaction)
-  {
-    $result = $this->panelDAO->delete_transaction_db($user_id, $transaction);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->delete_transaction', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-
-  // Altera status da transação
-  public function edit_transaction_status($user_id, $transaction)
-  {
-    $result = $this->panelDAO->edit_transaction_status_db($user_id, $transaction);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->edit_transaction_status', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-
   // Verifica se o usuário existe na tabela de usuários
   public function check_user_exists($user_id)
   {
@@ -122,6 +70,152 @@ class PanelModel {
   }
 
   //---------------------- Nova Model ----------------------//
+
+  // Adiciona receita
+  public function createIncome($userId, $income)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'INSERT INTO incomes (description, amount, type, category_id, account_id, date, status)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date, :status);';
+
+    $params = [
+      'type' => $income['type'],
+      'date' => $income['date'],
+      'status' => $income['status'],
+      'amount' => $income['amount'],
+      'account_id' => $income['account_id'],
+      'description' => $income['description'],
+      'category_id' => $income['category_id'],
+    ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->createIncome', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Editar receita já existente
+  public function editIncome($userId, $income)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'UPDATE incomes
+              SET date = :date,
+                  type = :type,
+                  amount = :amount,
+                  status = :status,
+                  account_id = :account_id,
+                  category_id = :category_id,
+                  description = :description
+              WHERE id = :id;';
+
+    $params = [
+      'id' => $income['transaction_id'],
+      'type' => $income['type'],
+      'date' => $income['date'],
+      'status' => $income['status'],
+      'amount' => $income['amount'],
+      'account_id' => $income['account_id'],
+      'description' => $income['description'],
+      'category_id' => $income['category_id'],
+    ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->editIncome', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Adiciona despesa
+  public function createExpense($userId, $expense)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'INSERT INTO expenses (description, amount, type, category_id, account_id, date, status)
+            VALUES (:description, :amount, :type, :category_id, :account_id, :date, :status);';
+
+    $params = [
+      'type' => $expense['type'],
+      'date' => $expense['date'],
+      'status' => $expense['status'],
+      'amount' => $expense['amount'],
+      'account_id' => $expense['account_id'],
+      'description' => $expense['description'],
+      'category_id' => $expense['category_id'],
+    ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->createExpense', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Editar receita já existente
+  public function editExpense($userId, $expense)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'UPDATE expenses
+              SET date = :date,
+                  type = :type,
+                  amount = :amount,
+                  status = :status,
+                  account_id = :account_id,
+                  category_id = :category_id,
+                  description = :description
+              WHERE id = :id;';
+
+    $params = [
+      'type' => $expense['type'],
+      'date' => $expense['date'],
+      'status' => $expense['status'],
+      'amount' => $expense['amount'],
+      'id' => $expense['transaction_id'],
+      'account_id' => $expense['account_id'],
+      'description' => $expense['description'],
+      'category_id' => $expense['category_id'],
+    ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->editExpense', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Altera status da transação
+  public function changeTransactionStatus($userId, $transaction)
+  {
+    $database_name = 'm_user_' . $userId;
+    $sql = 'UPDATE ' . $transaction['table'] . ' SET status = :status WHERE id = :id;';
+    $params = ['id' => $transaction['id'], 'status' => $transaction['status'] ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->changeTransactionStatus', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Apaga transação
+  public function deleteTransaction($userId, $transaction)
+  {
+    $database_name = 'm_user_' . $userId;
+    $sql = 'DELETE FROM ' . $transaction['table'] . ' WHERE id = :id;';
+    $params = ['id' => $transaction['id'] ];
+
+    $this->database->switch_database($database_name);
+    $result = $this->database->delete($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->deleteTransaction', 'result' => $result ], 'error');
+
+    return true;
+  }
 
   // Cria uma conta para o usuário
   public function createAccount($userId, $accountName)

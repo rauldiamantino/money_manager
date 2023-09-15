@@ -6,12 +6,12 @@ class PanelController
 {
   public $panelModel;
   public $usersModel;
-  public $user_id;
-  public $user_first_name;
-  public $user_last_name;
-  public $user_email;
-  public $active_tab;
-  public $action_route;
+  public $userId;
+  public $userFirstName;
+  public $userLastName;
+  public $userEmail;
+  public $activeTab;
+  public $actionRoute;
 
   public function __construct()
   {
@@ -19,10 +19,10 @@ class PanelController
     $this->usersModel = new UsersModel();
 
     // Recupera dados de sessão do usuário
-    $this->user_id = $_SESSION['user']['user_id'] ?? '';
-    $this->user_first_name = $_SESSION['user']['user_first_name'] ?? '';
-    $this->user_last_name = $_SESSION['user']['user_last_name'] ?? '';
-    $this->user_email = $_SESSION['user']['user_email'] ?? '';
+    $this->userId = $_SESSION['user']['user_id'] ?? '';
+    $this->userFirstName = $_SESSION['user']['user_first_name'] ?? '';
+    $this->userLastName = $_SESSION['user']['user_last_name'] ?? '';
+    $this->userEmail = $_SESSION['user']['user_email'] ?? '';
   }
 
   // Exibe visão geral do painel
@@ -33,28 +33,28 @@ class PanelController
       Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
-    $this->active_tab = 'overview';
-    $this->action_route = '/panel/display';
+    $this->activeTab = 'overview';
+    $this->actionRoute = '/panel/display';
 
     // View e conteúdo para o menu de navegação
-    $nav_view_name = 'panel/templates/nav';
-    $nav_view_content = [
-      'user_id' => $this->user_id,
-      'active_tab' => $this->active_tab,
-      'action_route' => $this->action_route,
-      'user_first_name' => $this->user_first_name,
-      'user_last_name' => $this->user_last_name,
+    $navViewName = 'panel/templates/nav';
+    $navViewContent = [
+      'user_id' => $this->userId,
+      'active_tab' => $this->activeTab,
+      'action_route' => $this->actionRoute,
+      'user_first_name' => $this->userFirstName,
+      'user_last_name' => $this->userLastName,
     ];
 
     // View e conteúdo para o painel
-    $panel_view_name = 'panel/panel';
-    $panel_view_content = [];
+    $panelViewName = 'panel/panel';
+    $panelViewContent = [];
 
-    return [ $nav_view_name => $nav_view_content, $panel_view_name => $panel_view_content ];
+    return [ $navViewName => $navViewContent, $panelViewName => $panelViewContent ];
   }
 
   // Exibe todas as transações
-  public function transactions($user_id)
+  public function transactions($userId)
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
@@ -63,86 +63,141 @@ class PanelController
 
     $message = [];
 
-    // Adiciona transações
-    if (isset($_POST['add_income'])) {
-      $message = $this->add_income($user_id);
+    // Recupera informações da transação
+    $transactions = [
+      'operation' => [
+        'add_income' => $_POST['add_income'] ?? 0,
+        'add_expense' => $_POST['add_expense'] ?? 0,
+        'edit_income' => $_POST['edit_income'] ?? 0,
+        'edit_expense' => $_POST['edit_expense'] ?? 0,
+        'delete_transaction' => $_POST['delete_transaction_id'] ?? 0,
+        'change_status' => $_POST['change_status_transaction_id'] ?? 0,
+      ],
+      'transaction' => [
+        'status' => 0,
+        'date' => $_POST['transaction_date'],
+        'amount' => $_POST['transaction_amount'],
+        'account_id' => $_POST['transaction_account'],
+        'category_id' => $_POST['transaction_category'],
+        'description' => $_POST['transaction_description'],
+      ]
+    ];
+
+    // Adiciona ou edita uma receita
+    if ($transactions['operation']['add_income']) {
+
+      // Campos específicos para uma receita
+      $transactions['transaction']['type'] = 'I';
+      $transactions['transaction']['amount'] = $_POST['transaction_amount'];
+      $transactions['transaction']['transaction_id'] = $_POST['edit_income'];
+
+      if ($transactions['operation']['edit_income']) {
+        $message = $this->editIncome($userId, $transactions['transaction']);
+      }
+      else {
+        $message = $this->createIncome($userId, $transactions['transaction']);
+      }
     }
 
-    if (isset($_POST['add_expense'])) {
-      $message = $this->add_expense($user_id);
+    // Adiciona ou edita uma despesa
+    if ($transactions['operation']['add_expense']) {
+
+      // Campos específicos para uma despesa
+      $transactions['transaction']['type'] = 'E';
+      $transactions['transaction']['amount'] = -1 * $_POST['transaction_amount'];
+      $transactions['transaction']['transaction_id'] = $_POST['edit_expense'];
+
+      // Edita despesa
+      if ($transactions['operation']['edit_expense']) {
+        $message = $this->editExpense($userId, $transactions['transaction']);
+      }
+      else {
+        $message = $this->createExpense($userId, $transactions['transaction']);
+      }
     }
 
     // Apaga transação
-    if (isset($_POST['delete_transaction'])) {
-      $message = $this->delete_transaction($user_id);
+    if ($transactions['operation']['delete_transaction']) {
+
+      $transactions['transaction'] = [
+        'id' => $_POST['delete_transaction_id'],
+        'table' => $_POST['delete_transaction_type'] == 'E' ? 'expenses' : 'incomes',
+      ];
+
+      $message = $this->deleteTransaction($userId, $transactions['transaction']);
     }
 
     // Altera status da transação
-    if (isset($_POST['edit_transaction_status'])) {
-      $message = $this->edit_transaction_status($user_id);
+    if ($transactions['operation']['change_status']) {
+
+      $transactions['transaction'] = [
+        'id' => $_POST['change_status_transaction_id'],
+        'status' => intval($_POST['edit_transaction_status']),
+        'table' => $_POST['change_status_transaction_type'] == 'E' ? 'expenses' : 'incomes',
+      ];
+
+      $message = $this->changeTransactionStatus($userId, $transactions['transaction']);
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = 'panel/transactions/' . $user_id;
-    $transactions = $this->panelModel->get_transactions($user_id);
-    $categories = $this->panelModel->get_categories($user_id);
-    $accounts = $this->panelModel->get_accounts($user_id);
-    $this->active_tab = 'transactions';
+    $this->actionRoute = 'panel/transactions/' . $userId;
+    $transactions = $this->panelModel->get_transactions($userId);
+    $categories = $this->panelModel->get_categories($userId);
+    $accounts = $this->panelModel->get_accounts($userId);
+    $this->activeTab = 'transactions';
 
     // View e conteúdo para o menu de navegação
-    $nav_view_name = 'panel/templates/nav';
-    $nav_view_content = [
-      'user_id' => $this->user_id,
-      'active_tab' => $this->active_tab,
-      'action_route' => $this->action_route,
-      'user_first_name' => $this->user_first_name,
-      'user_last_name' => $this->user_last_name,
+    $navViewName = 'panel/templates/nav';
+    $navViewContent = [
+      'user_id' => $this->userId,
+      'active_tab' => $this->activeTab,
+      'action_route' => $this->actionRoute,
+      'user_first_name' => $this->userFirstName,
+      'user_last_name' => $this->userLastName,
     ];
 
     // View e conteúdo para a página de transações
-    $transactions_view_name = 'panel/transactions';
-    $transactions_view_content = [
+    $transactionsViewName = 'panel/transactions';
+    $transactionsViewContent = [
       'transactions' => $transactions, 
-      'user_id' => $this->user_id, 
+      'user_id' => $this->userId, 
       'categories' => $categories, 
       'accounts' => $accounts,
       'message' => $message,
     ];
 
-    // Requisição AJAX renderiza apenas o conteúdo (ainda não vou implementar)
-    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-        $render =  [ $transactions_view_name, $transactions_view_content ];
-        echo json_encode($render);
-    }
-    else {
-      return [ $nav_view_name => $nav_view_content, $transactions_view_name => $transactions_view_content ];
-    }
+    return [ $navViewName => $navViewContent, $transactionsViewName => $transactionsViewContent ];
   }
 
   // Exibe todas as contas
-  public function accounts($user_id)
+  public function accounts($userId)
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
       Logger::log(['method' => 'PanelController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
     }
+    
+    $account = [
+      'id' => $_POST['account_id'] ?? 0,
+      'name' => $_POST['account_name'] ?? '',
+      'delete' => $_POST['delete_account_id'] ?? 0
+    ];
 
     $message = [];
-    $account = ['id' => $_POST['account_id'] ?? 0, 'name' => $_POST['account_name'] ?? '', 'delete' => $_POST['delete_account_id'] ?? 0];
 
     // Adiciona uma nova conta para o usuário
     if ($account['name'] and empty($account['id'])) {
-      $message = $this->createAccount($user_id, $account);
+      $message = $this->createAccount($userId, $account);
     }
 
     // Edita uma conta já existente
     if ($account['id']) {
-      $message = $this->editAccount($user_id, $account);
+      $message = $this->editAccount($userId, $account);
     }
 
     // Apaga uma conta
     if ($account['delete']) {
-      $message = $this->deleteAccount($user_id, $account);
+      $message = $this->deleteAccount($userId, $account);
     }
 
     if (empty($message)) {
@@ -150,55 +205,60 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = 'panel/accounts/' . $user_id;
-    $accounts = $this->panelModel->get_accounts($user_id);
-    $this->active_tab = 'accounts';
+    $this->actionRoute = 'panel/accounts/' . $userId;
+    $accounts = $this->panelModel->get_accounts($userId);
+    $this->activeTab = 'accounts';
 
     // View e conteúdo para o menu de navegação
-    $nav_view_name = 'panel/templates/nav';
-    $nav_view_content = [
-      'user_id' => $this->user_id,
-      'active_tab' => $this->active_tab,
-      'action_route' => $this->action_route,
-      'user_first_name' => $this->user_first_name,
-      'user_last_name' => $this->user_last_name,
+    $navViewName = 'panel/templates/nav';
+    $navViewContent = [
+      'user_id' => $this->userId,
+      'active_tab' => $this->activeTab,
+      'action_route' => $this->actionRoute,
+      'user_first_name' => $this->userFirstName,
+      'user_last_name' => $this->userLastName,
     ];
 
     // View e conteúdo para a página de contas
-    $accounts_view_name = 'panel/accounts';
-    $accounts_view_content = [
+    $accountsViewName = 'panel/accounts';
+    $accountsViewContent = [
       'accounts' => $accounts, 
-      'user_id' => $this->user_id,
+      'user_id' => $this->userId,
       'message' => $message,
     ];
 
-    return [ $nav_view_name => $nav_view_content, $accounts_view_name => $accounts_view_content ];
+    return [ $navViewName => $navViewContent, $accountsViewName => $accountsViewContent ];
   }
 
   // Exibe todas as categorias
-  public function categories($user_id)
+  public function categories($userId)
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
       Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
+    $category = [
+      'id' => $_POST['category_id'] ?? 0,
+      'name' => $_POST['category_name'] ?? '',
+      'delete' => $_POST['delete_category_id'] ?? 0
+    ];
+
     $message = [];
-    $category = ['id' => $_POST['category_id'] ?? 0, 'name' => $_POST['category_name'] ?? '', 'delete' => $_POST['delete_category_id'] ?? 0];
 
     // Adiciona uma nova categoria para o usuário
     if ($category['name'] and empty($category['id'])) {
-      $message = $this->createCategory($user_id, $category);
+      $message = $this->createCategory($userId, $category);
     }
 
     // Edita uma categoria já existente
     if ($category['id']) {
-      $message = $this->editCategory($user_id, $category);
+      $message = $this->editCategory($userId, $category);
     }
 
     // Apaga uma categoria
     if ($category['delete']) {
-      $message = $this->deleteCategory($user_id, $category);
+      $message = $this->deleteCategory($userId, $category);
     }
 
     if (empty($message)) {
@@ -206,124 +266,99 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = 'panel/categories/' . $user_id;
-    $categories = $this->panelModel->get_categories($user_id);
-    $this->active_tab = 'categories';
+    $this->actionRoute = 'panel/categories/' . $userId;
+    $categories = $this->panelModel->get_categories($userId);
+    $this->activeTab = 'categories';
 
     // View e conteúdo para o menu de navegação
-    $nav_view_name = 'panel/templates/nav';
-    $nav_view_content = [
-      'user_id' => $this->user_id,
-      'active_tab' => $this->active_tab,
-      'action_route' => $this->action_route,
-      'user_first_name' => $this->user_first_name,
-      'user_last_name' => $this->user_last_name,
+    $navViewName = 'panel/templates/nav';
+    $navViewContent = [
+      'user_id' => $this->userId,
+      'active_tab' => $this->activeTab,
+      'action_route' => $this->actionRoute,
+      'user_first_name' => $this->userFirstName,
+      'user_last_name' => $this->userLastName,
     ];
 
     // View e conteúdo para a página de categorias
-    $categories_view_name = 'panel/categories';
-    $categories_view_content = [
+    $categoriesViewName = 'panel/categories';
+    $categoriesViewContent = [
       'categories' => $categories, 
-      'user_id' => $this->user_id,
+      'user_id' => $this->userId,
       'message' => $message,
     ];
 
-    return [ $nav_view_name => $nav_view_content, $categories_view_name => $categories_view_content ];
+    return [ $navViewName => $navViewContent, $categoriesViewName => $categoriesViewContent ];
   }
 
-  // Recupera receita do formulário e adiciona no banco de dados
-  public function add_income($user_id)
+  // Adiciona uma nova receita ao formulário
+  public function createIncome($userId, $income)
   {
-    $income = [
-      'type' => 'I',
-      'status' => 0,
-      'date' => $_POST['transaction_date'],
-      'transaction_id' => $_POST['add_income'],
-      'amount' => $_POST['transaction_amount'],
-      'account_id' => $_POST['transaction_account'],
-      'category_id' => $_POST['transaction_category'],
-      'description' => $_POST['transaction_description'],
-    ];
+    $createIncome = $this->panelModel->createIncome($userId, $income);
 
-    $response = $this->panelModel->add_income($user_id, $income);
-    $message = ['success' => 'Receita adicionada com sucesso!'];
-
-    if ($income['transaction_id']) {
-      $message = ['success' => 'Receita editada com sucesso!'];
+    if (empty($createIncome)) {
+      return ['error_transaction' => 'Erro ao cadastrar receita'];
     }
 
-    if ($response == false) {
-      $message = ['error_transaction' => 'Erro ao cadastrar receita'];
-      Logger::log(['method' => 'PanelController->add_income', 'result' => $response ], 'error');
-    }
-
-    return $message;
+    return [];
   }
 
-  // Recupera despesa do formulário e adiciona no banco de dados
-  public function add_expense($user_id)
+  // Edita uma receita existente
+  public function editIncome($userId, $income)
   {
-    $expense = [
-      'type' => 'E',
-      'status' => 0,
-      'date' => $_POST['transaction_date'],
-      'transaction_id' => $_POST['add_expense'],
-      'amount' => -1 * $_POST['transaction_amount'],
-      'account_id' => $_POST['transaction_account'],
-      'category_id' => $_POST['transaction_category'],
-      'description' => $_POST['transaction_description'],
-    ];
+    $editIncome = $this->panelModel->editIncome($userId, $income);
 
-    $response = $this->panelModel->add_expense($user_id, $expense);
-    $message = ['success' => 'Despesa adicionada com sucesso!'];
-
-    if ($expense['transaction_id']) {
-      $message = ['success' => 'Despesa editada com sucesso!'];
+    if (empty($editIncome)) {
+      return ['error_transaction' => 'Erro ao editar receita'];
     }
 
-    if ($response == false) {
-      $message = ['error_transaction' => 'Erro ao cadastrar despesa'];
-      Logger::log(['method' => 'PanelController->add_expense', 'result' => $response ], 'error');
-    }
-
-    return $message;
+    return [];
   }
 
-  public function delete_transaction($user_id)
+  // Adiciona uma nova despesa ao formulário
+  public function createExpense($userId, $expense)
   {
-    $transaction = [
-      'transaction_id' => $_POST['delete_transaction_id'],
-      'transaction_type' => $_POST['delete_transaction_type']
-    ];
+    $createExpense = $this->panelModel->createExpense($userId, $expense);
 
-    $response = $this->panelModel->delete_transaction($user_id, $transaction);
-    $message = ['success' => 'Transação removida com sucesso!'];
-
-    if ($response == false) {
-      $message = ['error_transaction' => 'Erro ao apagar transação'];
-      Logger::log(['method' => 'PanelController->delete_transaction', 'result' => $response ], 'error');
+    if (empty($createExpense)) {
+      return ['error_transaction' => 'Erro ao cadastrar despesa'];
     }
 
-    return $message;
+    return [];
   }
 
-  public function edit_transaction_status($user_id)
+  // Edita uma despesa existente
+  public function editExpense($userId, $expense)
   {
-    $transaction = [
-      'transaction_id' => $_POST['edit_transaction_id'],
-      'transaction_type' => $_POST['edit_transaction_type'],
-      'transaction_status' => intval($_POST['edit_transaction_status']),
-    ];
-    
-    $response = $this->panelModel->edit_transaction_status($user_id, $transaction);
-    $message = ['success' => 'Status alterado com sucesso!'];
+    $editExpense = $this->panelModel->editExpense($userId, $expense);
 
-    if ($response == false) {
-      $message = ['error_transaction' => 'Erro ao alterar status da transação'];
-      Logger::log(['method' => 'PanelController->edit_transaction_status', 'result' => $response ], 'error');
+    if (empty($editExpense)) {
+      return ['error_transaction' => 'Erro ao editar despesa'];
     }
 
-    return $message;
+    return [];
+  }
+
+  public function deleteTransaction($userId, $transaction)
+  {
+    $deleteTransaction = $this->panelModel->deleteTransaction($userId, $transaction);
+
+    if (empty($deleteTransaction)) {
+      return ['error_transaction' => 'Erro ao apagar transação'];
+    }
+
+    return [];
+  }
+
+  public function changeTransactionStatus($userId, $transaction)
+  {
+    $changeTransactionStatus = $this->panelModel->changeTransactionStatus($userId, $transaction);;
+
+    if (empty($changeTransactionStatus)) {
+      return ['error_transaction' => 'Erro ao alterar status da transação'];
+    }
+
+    return [];
   }
 
   // Cria uma nova conta
@@ -453,7 +488,7 @@ class PanelController
   }
 
   // Exibe e altera dados do usuário
-  public function myaccount($user_id) 
+  public function myaccount($userId) 
   {
     // Valida se o usuário está logado
     if ($this->check_session() or $this->check_logout()) {
@@ -462,64 +497,64 @@ class PanelController
 
     // Recupera novos dados do formulário
     $message = [];
-    $response_update = [];
-    $error_password = false;
-    $user_update = ['user_id' => $user_id ];
+    $responseUpdate = [];
+    $errorPassword = false;
+    $userUpdate = ['user_id' => $userId ];
 
     if (isset($_POST['user_first_name']) and $_POST['user_first_name']) {
-      $user_update['user_first_name'] = $_POST['user_first_name'];
+      $userUpdate['user_first_name'] = $_POST['user_first_name'];
     }
 
     if (isset($_POST['user_last_name']) and $_POST['user_last_name']) {
-      $user_update['user_last_name'] = $_POST['user_last_name'];
+      $userUpdate['user_last_name'] = $_POST['user_last_name'];
     }
 
     if (isset($_POST['user_email']) and $_POST['user_email']) {
-      $user_update['user_email'] = $_POST['user_email'];
+      $userUpdate['user_email'] = $_POST['user_email'];
     }
 
     if (isset($_POST['user_new_password']) and $_POST['user_new_password']) {
-      $user_update['user_new_password'] = trim($_POST['user_new_password']);
+      $userUpdate['user_new_password'] = trim($_POST['user_new_password']);
     }
 
     if (isset($_POST['user_confirm_new_password']) and $_POST['user_confirm_new_password']) {
-      $user_update['user_confirm_new_password'] = trim($_POST['user_confirm_new_password']);
+      $userUpdate['user_confirm_new_password'] = trim($_POST['user_confirm_new_password']);
     }
 
     // Atualiza cadastro
-    if ($user_update['user_first_name']) {
-      $response_update['user'] = $this->usersModel->update_myaccount($user_update);
+    if ($userUpdate['user_first_name']) {
+      $responseUpdate['user'] = $this->usersModel->update_myaccount($userUpdate);
     }
 
     // Atualiza senha
-    if ($user_update['user_new_password']) {
+    if ($userUpdate['user_new_password']) {
 
-      if ($user_update['user_new_password'] == $user_update['user_confirm_new_password']) {
-        $response_update['password'] = $this->usersModel->update_myaccount_password($user_update);
+      if ($userUpdate['user_new_password'] == $userUpdate['user_confirm_new_password']) {
+        $responseUpdate['password'] = $this->usersModel->update_myaccount_password($userUpdate);
       }
       else {
-        $error_password = true;
+        $errorPassword = true;
       }
     }
 
     // Mensagens para o usuário
-    foreach ($response_update as $key => $value) :
+    foreach ($responseUpdate as $key => $value) :
 
       if ($value == true) {
         $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
 
         // Armazena novos dados do usuário
-        $this->user_id = $user_update['user_id'];
-        $this->user_first_name = $user_update['user_first_name'];
-        $this->user_last_name = $user_update['user_last_name'];
-        $this->user_email = $user_update['user_email'];
+        $this->userId = $userUpdate['user_id'];
+        $this->userFirstName = $userUpdate['user_first_name'];
+        $this->userLastName = $userUpdate['user_last_name'];
+        $this->userEmail = $userUpdate['user_email'];
         
         // Substitui dados da sessão atual
         $_SESSION['user'] = [
-          'user_id' => $this->user_id,
-          'user_first_name' => $this->user_first_name,
-          'user_last_name' => $this->user_last_name,
-          'user_email' => $this->user_email,
+          'user_id' => $this->userId,
+          'user_first_name' => $this->userFirstName,
+          'user_last_name' => $this->userLastName,
+          'user_email' => $this->userEmail,
         ];
       }
 
@@ -529,35 +564,35 @@ class PanelController
       }
     endforeach;
 
-    if ($error_password) {
+    if ($errorPassword) {
       $message = ['error_update' => 'As senhas não coincidem'];
       Logger::log(['method' => 'PanelController->myaccount', 'result' => $message ], 'alert');
     }
 
     // Prepara conteúdo para a View
-    $this->action_route = 'panel/myaccount/' . $user_id;
-    $myaccount = $this->usersModel->get_myaccount($user_id);
-    $this->active_tab = 'myaccount';
+    $this->actionRoute = 'panel/myaccount/' . $userId;
+    $myaccount = $this->usersModel->get_myaccount($userId);
+    $this->activeTab = 'myaccount';
 
     // View e conteúdo para o menu de navegação
-    $nav_view_name = 'panel/templates/nav';
-    $nav_view_content = [
-      'user_id' => $this->user_id,
-      'active_tab' => $this->active_tab,
-      'action_route' => $this->action_route,
-      'user_first_name' => $this->user_first_name,
-      'user_last_name' => $this->user_last_name,
+    $navViewName = 'panel/templates/nav';
+    $navViewContent = [
+      'user_id' => $this->userId,
+      'active_tab' => $this->activeTab,
+      'action_route' => $this->actionRoute,
+      'user_first_name' => $this->userFirstName,
+      'user_last_name' => $this->userLastName,
     ];
 
     // View e conteúdo para a página Minha Conta
-    $myaccount_view_name = 'panel/myaccount';
-    $myaccount_view_content = [
+    $myaccountViewName = 'panel/myaccount';
+    $myaccountViewContent = [
       'myaccount' => $myaccount, 
-      'user_id' => $this->user_id,
+      'user_id' => $this->userId,
       'message' => $message,
     ];
 
-    return [ $nav_view_name => $nav_view_content, $myaccount_view_name => $myaccount_view_content ];
+    return [ $navViewName => $navViewContent, $myaccountViewName => $myaccountViewContent ];
   }
 
   // Verifica se o usuário possui sessão ativa
@@ -574,9 +609,9 @@ class PanelController
   // Verifica se o usuário existe e está logado
   private function check_logout()
   {
-    $user_exists = $this->panelModel->check_user_exists($this->user_id);
+    $userExists = $this->panelModel->check_user_exists($this->userId);
 
-    if ($user_exists['success'] and empty($_POST['logout'])) {
+    if ($userExists['success'] and empty($_POST['logout'])) {
       return false;
     }
 
