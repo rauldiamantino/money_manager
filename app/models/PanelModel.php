@@ -43,31 +43,7 @@ class PanelModel {
     return $result;
   }
 
-  // Verifica se a conta está em uso
-  public function verify_account_in_use($user_id, $account_id)
-  {
-    $result = $this->panelDAO->verify_account_in_use_db($user_id, $account_id);
-
-    if ($result) {
-      Logger::log(['method' => 'PanelModel->verify_account_in_use', 'result' => $result ], 'alert');
-    }
-
-    return $result;
-  }
-
-  // Verifica se a categoria está em uso
-  public function verify_category_in_use($user_id, $category_id)
-  {
-    $result = $this->panelDAO->verify_category_in_use_db($user_id, $category_id);
-
-    if ($result) {
-      Logger::log(['method' => 'PanelModel->verify_category_in_use', 'result' => $result ], 'alert');
-    }
-
-    return $result;
-  }
-
-// Obtém todas as categorias cadastradas do usuário
+  // Obtém todas as categorias cadastradas do usuário
   public function get_categories($user_id)
   {
     $result = $this->panelDAO->get_categories_db($user_id);
@@ -118,32 +94,6 @@ class PanelModel {
     return true;
   }
 
-  // Apaga conta
-  public function delete_account($user_id, $account_id)
-  {
-    $result = $this->panelDAO->delete_account_db($user_id, $account_id);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->delete_account', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-
-  // Apaga conta
-  public function delete_category($user_id, $category_id)
-  {
-    $result = $this->panelDAO->delete_category_db($user_id, $category_id);
-
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->delete_category', 'result' => $result ], 'error');
-      return false;
-    }
-
-    return true;
-  }
-
   // Altera status da transação
   public function edit_transaction_status($user_id, $transaction)
   {
@@ -154,34 +104,6 @@ class PanelModel {
       return false;
     }
 
-    return true;
-  }
-
-  // Adiciona nova conta, se ainda não existir
-  public function add_account($user_id, $account)
-  {
-    $get_account = $this->panelDAO->get_accounts_db($user_id, $account['name']);
-
-    if ($get_account) {
-      Logger::log(['method' => 'PanelModel->add_account', 'result' => $get_account ], 'alert');
-      return false;
-    }
-
-    $this->panelDAO->add_account_db($user_id, $account);
-    return true;
-  }
-
-  // Adiciona nova categoria, se ainda não existir
-  public function add_category($user_id, $category)
-  {
-    $get_category = $this->panelDAO->get_categories_db($user_id, $category['name']);
-
-    if ($get_category) {
-      Logger::log(['method' => 'PanelModel->add_category', 'result' => $get_category ], 'alert');
-      return false;
-    }
-    
-    $this->panelDAO->add_category_db($user_id, $category);
     return true;
   }
 
@@ -277,6 +199,86 @@ class PanelModel {
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
 
     Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Cria uma categoria para o usuário
+  public function createCategory($userId, $categoryName)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'INSERT INTO categories (name) VALUES (:name);';
+    $params = ['name' => $categoryName ];
+
+    $this->database->switch_database(($databaseName));
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->createCategory', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Edita uma categoria já existente
+  public function editCategory($userId, $category)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'UPDATE categories SET name = :name WHERE id = :id;';
+    $params = ['id' => $category['id'], 'name' => $category['name'] ];
+
+    $this->database->switch_database(($databaseName));
+    $result = $this->database->insert($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->editCategory', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Apaga categoria
+  public function deleteCategory($userId, $categoryId)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'DELETE FROM categories WHERE id = :id;';
+    $params = ['id' => $categoryId ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->delete($sql, $params);
+
+    Logger::log(['method' => 'PanelModel->deleteCategory', 'result' => $result ]);
+
+    return true;
+  }
+
+  // Verifica se a categoria está em uso em alguma transação
+  public function categoryInUse($userId, $categoryId)
+  {
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'SELECT category_id, description FROM incomes WHERE category_id = :category_id
+            UNION
+            SELECT category_id, description FROM expenses WHERE category_id = :category_id';
+
+    $params = ['category_id' => $categoryId ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+
+    Logger::log(['method' => 'PanelModel->categoryInUse', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Verifica se a categoria já existe para o usuário
+  public function categoryExists($user_id, $category)
+  {
+    $databaseName = 'm_user_' . $user_id;
+    $paramWhere = array_key_first($category);
+
+    $sql = 'SELECT * FROM categories WHERE ' . $paramWhere . ' = :' . $paramWhere;
+    $params = [ $paramWhere => reset($category)];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+
+    Logger::log(['method' => 'PanelModel->categoryExists', 'result' => $result ]);
 
     return $result;
   }

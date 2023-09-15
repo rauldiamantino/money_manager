@@ -123,40 +123,6 @@ class PanelDAO
     return $result;
   }
 
-  // Remove conta do banco de dados
-  public function delete_account_db($user_id, $account_id)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'DELETE FROM accounts WHERE id = :id;';
-    $params = ['id' => $account_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->delete($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('PanelDAO->delete_account_db: Erro ao apagar conta');
-    }
-
-    return $result;
-  }
-
-  // Remove categoria do banco de dados
-  public function delete_category_db($user_id, $category_id)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'DELETE FROM categories WHERE id = :id;';
-    $params = ['id' => $category_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->delete($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('PanelDAO->delete_category_db: Erro ao apagar categoria');
-    }
-
-    return $result;
-  }
-
   // Remove transação do banco de dados
   public function edit_transaction_status_db($user_id, $transaction)
   {
@@ -283,98 +249,6 @@ class PanelDAO
 
     if (empty($result)) {
       Logger::log('PanelDAO->get_categories_db: Categoria inexistente');
-    }
-
-    return $result;
-  }
-
-  // Verifica transações e retorna se a conta está sendo utilizada
-  public function verify_account_in_use_db($user_id, $account_id)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'SELECT account_id, description FROM incomes WHERE account_id = :account_id
-            UNION
-            SELECT account_id, description FROM expenses WHERE account_id = :account_id';
-
-    $params = ['account_id' => $account_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
-
-    if ($result) {
-      Logger::log(['method' => 'PanelDAO->verify_account_in_use_db', 'result' => $result, 'message' => 'Conta em uso não pode ser apagada'], 'alert');
-    }
-
-    return $result;
-  }
-
-  // Verifica transações e retorna se a categoria está sendo utilizada
-  public function verify_category_in_use_db($user_id, $category_id)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'SELECT category_id, description FROM incomes WHERE category_id = :category_id
-            UNION
-            SELECT category_id, description FROM expenses WHERE category_id = :category_id';
-
-    $params = ['category_id' => $category_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
-
-    if ($result) {
-      Logger::log(['method' => 'PanelDAO->verify_category_in_use_db', 'result' => $result, 'message' => 'Categoria em uso não pode ser apagada'], 'alert');
-    }
-
-    return $result;
-  }
-
-  // Adiciona conta no banco de dados
-  public function add_account_db($user_id, $account)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO accounts (name) VALUES (:name);';
-    $params = ['name' => $account['name'] ];
-
-    // Edita a conta se houver ID
-    if ($account['id']) {
-      $sql = 'UPDATE accounts SET name = :name WHERE id = :id;';
-      $params['id'] = $account['id'];
-    }
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->insert($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('PanelDAO->add_account_db: Erro ao adicionar conta no banco de dados do usuário');
-    }
-    elseif (empty($result) and $account['id']) {
-      Logger::log('PanelDAO->add_account_db: Erro ao editar conta');
-    }
-
-    return $result;
-  }
-
-  // Adiciona categoria no banco de dados
-  public function add_category_db($user_id, $category)
-  {
-    $database_name = 'm_user_' . $user_id;
-    $sql = 'INSERT INTO categories (name) VALUES (:name);';
-    $params = ['name' => $category['name'] ];
-
-    // Edita a categoria se houver ID
-    if ($category['id']) {
-      $sql = 'UPDATE categories SET name = :name WHERE id = :id;';
-      $params['id'] = $category['id'];
-    }
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->insert($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('PanelDAO->add_category_db: Erro ao adicionar categoria no banco de dados do usuário');
-    }
-    elseif (empty($result) and $category['id']) {
-      Logger::log('PanelDAO->add_category_db: Erro ao editar categoria');
     }
 
     return $result;

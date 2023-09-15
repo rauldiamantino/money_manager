@@ -128,24 +128,25 @@ class PanelController
     }
 
     $message = [];
+    $account = ['id' => $_POST['account_id'] ?? 0, 'name' => $_POST['account_name'] ?? '', 'delete' => $_POST['delete_account_id'] ?? 0];
 
-    // Cria, edita e altera a conta
-    $account = [
-      'id' => $_POST['account_id'] ?? 0,
-      'name' => $_POST['account_name'] ?? '',
-      'delete' => $_POST['delete_account_id'] ?? 0,
-    ];
-
+    // Adiciona uma nova conta para o usuário
     if ($account['name'] and empty($account['id'])) {
-      $message = $this->createAccount($user_id, $account['name'] );
+      $message = $this->createAccount($user_id, $account);
     }
 
+    // Edita uma conta já existente
     if ($account['id']) {
-      $message = $this->editAccount($user_id, $account['id'] );
+      $message = $this->editAccount($user_id, $account);
     }
 
+    // Apaga uma conta
     if ($account['delete']) {
-      $message = $this->deleteAccount($user_id, $account['delete'] );
+      $message = $this->deleteAccount($user_id, $account);
+    }
+
+    if (empty($message)) {
+      Logger::log(['method' => 'PanelController->accounts', 'result' => $account ]);
     }
 
     // Prepara conteúdo para a View
@@ -183,15 +184,25 @@ class PanelController
     }
 
     $message = [];
+    $category = ['id' => $_POST['category_id'] ?? 0, 'name' => $_POST['category_name'] ?? '', 'delete' => $_POST['delete_category_id'] ?? 0];
 
-    // Resultado da tentativa de adicionar categoria
-    if (isset($_POST['category'])) {
-      $message = $this->add_category($user_id);
+    // Adiciona uma nova categoria para o usuário
+    if ($category['name'] and empty($category['id'])) {
+      $message = $this->createCategory($user_id, $category);
     }
 
-    // Apaga categoria
-    if (isset($_POST['delete_category'])) {
-      $message = $this->delete_category($user_id);
+    // Edita uma categoria já existente
+    if ($category['id']) {
+      $message = $this->editCategory($user_id, $category);
+    }
+
+    // Apaga uma categoria
+    if ($category['delete']) {
+      $message = $this->deleteCategory($user_id, $category);
+    }
+
+    if (empty($message)) {
+      Logger::log(['method' => 'PanelController->categories', 'result' => $category ]);
     }
 
     // Prepara conteúdo para a View
@@ -296,52 +307,6 @@ class PanelController
     return $message;
   }
 
-  public function delete_account($user_id)
-  {
-    $account_id = $_POST['delete_account_id'];
-
-    // Não apaga conta em uso
-    $account_in_use = $this->panelModel->verify_account_in_use($user_id, $account_id);
-    $message = ['error_account' => 'Conta em uso não pode ser apagada'];
-
-    if ($account_in_use) {
-      return $message;
-    }
-
-    $response = $this->panelModel->delete_account($user_id, $account_id);
-    $message = ['success' => 'Conta removida com sucesso!'];
-
-    if ($response == false) {
-      $message = ['error_account' => 'Erro ao apagar conta'];
-      Logger::log(['method' => 'PanelController->delete_account', 'result' => $response ], 'error');
-    }
-
-    return $message;
-  }
-
-  public function delete_category($user_id)
-  {
-    $category_id = $_POST['delete_category_id'];
-
-    // Não apaga categoria em uso
-    $category_in_use = $this->panelModel->verify_category_in_use($user_id, $category_id);
-    $message = ['error_category' => 'Categoria em uso não pode ser apagada'];
-
-    if ($category_in_use) {
-      return $message;
-    }
-
-    $response = $this->panelModel->delete_category($user_id, $category_id);
-    $message = ['success' => 'Categoria removida com sucesso!'];
-
-    if ($response == false) {
-      $message = ['error_category' => 'Erro ao apagar categoria'];
-      Logger::log(['method' => 'PanelController->delete_category', 'result' => $response ], 'error');
-    }
-
-    return $message;
-  }
-
   public function edit_transaction_status($user_id)
   {
     $transaction = [
@@ -362,18 +327,18 @@ class PanelController
   }
 
   // Cria uma nova conta
-  public function createAccount($userId, $accountName)
+  public function createAccount($userId, $account)
   {
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($userId, ['name' => $accountName ]);
+    $accountExists = $this->panelModel->accountExists($userId, ['name' => $account['name'] ]);
 
     if ($accountExists) {
       return ['error_account' => 'Conta já existe'];
     }
 
     // Cria a conta
-    $createAccount = $this->panelModel->createAccount($userId, $accountName);
+    $createAccount = $this->panelModel->createAccount($userId, $account['name']);
 
     if (empty($createAccount)) {
       return ['error_account' => 'Erro ao cadastrar conta'];
@@ -383,19 +348,18 @@ class PanelController
   }
 
   // Edita uma conta já existente
-  public function editAccount($userId, $accountId)
+  public function editAccount($userId, $account)
   {
-    $accountName = $_POST['account_name'];
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($userId, ['id' => $accountId ]);
+    $accountExists = $this->panelModel->accountExists($userId, ['id' => $account['id'] ]);
 
     if (empty($accountExists)) {
       return ['error_account' => 'Conta inexistente'];
     }
 
     // Edita a conta
-    $editAccount = $this->panelModel->editAccount($userId, ['id' => $accountId, 'name' => $accountName ]);
+    $editAccount = $this->panelModel->editAccount($userId, ['id' => $account['id'], 'name' => $account['name'] ]);
 
     if (empty($editAccount)) {
       return ['error_account' => 'Erro ao editar conta'];
@@ -405,18 +369,18 @@ class PanelController
   }
 
   // Apaga uma conta do banco de dados
-  public function deleteAccount($userId, $accountId)
+  public function deleteAccount($userId, $account)
   {
 
     // Não apaga conta em uso
-    $accountInUse = $this->panelModel->accountInUse($userId, $accountId);
+    $accountInUse = $this->panelModel->accountInUse($userId, $account['delete']);
 
     if ($accountInUse) {
       return ['error_account' => 'Conta em uso não pode ser apagada'];
     }
 
     // Apaga a conta
-    $deleteAccount = $this->panelModel->deleteAccount($userId, $accountId);
+    $deleteAccount = $this->panelModel->deleteAccount($userId, $account['delete']);
 
     if (empty($deleteAccount)) {
       return ['error_account' => 'Erro ao apagar conta'];
@@ -425,44 +389,67 @@ class PanelController
     return [];
   }
 
-
-  // Adiciona conta no banco de dados
-  public function add_account($user_id)
+  // Cria uma nova categoria
+  public function createCategory($userId, $category)
   {
-    $account = ['id' => $_POST['account_id'], 'name' => $_POST['account']];
 
-    $response = $this->panelModel->add_account($user_id, $account);
-    $message = ['success' => 'Conta cadastrada com sucesso!'];
+    // Verifica se a categoria existe
+    $categoryExists = $this->panelModel->categoryExists($userId, ['name' => $category['name'] ]);
 
-    if ($account['id']) {
-      $message = ['success' => 'Conta editada com sucesso'];
-    }
-    if ($response == false) {
-      $message = ['error_account' => 'Conta já existe'];
-      Logger::log(['method' => 'PanelController->add_account', 'result' => $response ], 'alert');
+    if ($categoryExists) {
+      return ['error_category' => 'Conta já existe'];
     }
 
-    return $message;
+    // Cria a categoria
+    $createCategory = $this->panelModel->createCategory($userId, $category['name']);
+
+    if (empty($createCategory)) {
+      return ['error_category' => 'Erro ao cadastrar categoria'];
+    }
+
+    return [];
   }
 
-  // Adiciona categoria no banco de dados
-  public function add_category($user_id)
+  // Edita uma categoria já existente
+  public function editCategory($userId, $category)
   {
-    $category = ['id' => $_POST['category_id'], 'name' => $_POST['category']];
 
-    $response = $this->panelModel->add_category($user_id, $category);
-    $message = ['success' => 'Categoria cadastrada com sucesso!'];
+    // Verifica se a categoria existe
+    $categoryExists = $this->panelModel->categoryExists($userId, ['id' => $category['id'] ]);
 
-    if ($category['id']) {
-      $message = ['success' => 'Categoria editada com sucesso'];
+    if (empty($categoryExists)) {
+      return ['error_category' => 'Conta inexistente'];
     }
 
-    if ($response == false) {
-      $message = ['error_category' => 'Categoria já existe'];
-      Logger::log(['method' => 'PanelController->add_category', 'result' => $response ], 'alert');
+    // Edita a categoria
+    $editCategory = $this->panelModel->editCategory($userId, ['id' => $category['id'], 'name' => $category['name'] ]);
+
+    if (empty($editCategory)) {
+      return ['error_category' => 'Erro ao editar categoria'];
     }
 
-    return $message;
+    return [];
+  }
+
+  // Apaga uma categoria do banco de dados
+  public function deleteCategory($userId, $category)
+  {
+
+    // Não apaga categoria em uso
+    $categoryInUse = $this->panelModel->categoryInUse($userId, $category['delete']);
+
+    if ($categoryInUse) {
+      return ['error_category' => 'Conta em uso não pode ser apagada'];
+    }
+
+    // Apaga a categoria
+    $deleteCategory = $this->panelModel->deleteCategory($userId, $category['delete']);
+
+    if (empty($deleteCategory)) {
+      return ['error_category' => 'Erro ao apagar categoria'];
+    }
+
+    return [];
   }
 
   // Exibe e altera dados do usuário
