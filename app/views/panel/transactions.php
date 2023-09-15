@@ -1,7 +1,4 @@
 <?php
- // echo '<script> var user_id = ' . $_SESSION['user']['user_id'] . ';</script>';
-
- 
 $total_incomes = 0;
 $total_expenses = 0;
 
@@ -15,7 +12,6 @@ foreach ($data['transactions'] as $key => $value) :
   if ($value['type'] == 'I') {
     $total_incomes += $value['amount'];
   }
-
 endforeach;
 ?>
 

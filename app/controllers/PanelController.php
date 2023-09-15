@@ -29,7 +29,7 @@ class PanelController
   public function display()
   {
     // Valida se o usuário está logado
-    if ($this->check_session() or $this->check_logout()) {
+    if ($this->checkSession() or $this->checkLogout()) {
       Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -56,8 +56,10 @@ class PanelController
   // Exibe todas as transações
   public function transactions($userId)
   {
+    $this->userId = $userId;
+
     // Valida se o usuário está logado
-    if ($this->check_session() or $this->check_logout()) {
+    if ($this->checkSession() or $this->checkLogout()) {
       Logger::log(['method' => 'PanelController->transactions', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -92,10 +94,10 @@ class PanelController
       $transactions['transaction']['transaction_id'] = $_POST['edit_income'];
 
       if ($transactions['operation']['edit_income']) {
-        $message = $this->editIncome($userId, $transactions['transaction']);
+        $message = $this->editIncome($transactions['transaction']);
       }
       else {
-        $message = $this->createIncome($userId, $transactions['transaction']);
+        $message = $this->createIncome($transactions['transaction']);
       }
     }
 
@@ -109,10 +111,10 @@ class PanelController
 
       // Edita despesa
       if ($transactions['operation']['edit_expense']) {
-        $message = $this->editExpense($userId, $transactions['transaction']);
+        $message = $this->editExpense($transactions['transaction']);
       }
       else {
-        $message = $this->createExpense($userId, $transactions['transaction']);
+        $message = $this->createExpense($transactions['transaction']);
       }
     }
 
@@ -124,7 +126,7 @@ class PanelController
         'table' => $_POST['delete_transaction_type'] == 'E' ? 'expenses' : 'incomes',
       ];
 
-      $message = $this->deleteTransaction($userId, $transactions['transaction']);
+      $message = $this->deleteTransaction($transactions['transaction']);
     }
 
     // Altera status da transação
@@ -136,14 +138,14 @@ class PanelController
         'table' => $_POST['change_status_transaction_type'] == 'E' ? 'expenses' : 'incomes',
       ];
 
-      $message = $this->changeTransactionStatus($userId, $transactions['transaction']);
+      $message = $this->changeTransactionStatus($transactions['transaction']);
     }
 
     // Prepara conteúdo para a View
-    $this->actionRoute = 'panel/transactions/' . $userId;
-    $transactions = $this->panelModel->get_transactions($userId);
-    $categories = $this->panelModel->get_categories($userId);
-    $accounts = $this->panelModel->get_accounts($userId);
+    $this->actionRoute = 'panel/transactions/' . $this->userId;
+    $transactions = $this->panelModel->get_transactions($this->userId);
+    $categories = $this->panelModel->get_categories($this->userId);
+    $accounts = $this->panelModel->get_accounts($this->userId);
     $this->activeTab = 'transactions';
 
     // View e conteúdo para o menu de navegação
@@ -172,8 +174,10 @@ class PanelController
   // Exibe todas as contas
   public function accounts($userId)
   {
+    $this->userId = $userId;
+
     // Valida se o usuário está logado
-    if ($this->check_session() or $this->check_logout()) {
+    if ($this->checkSession() or $this->checkLogout()) {
       Logger::log(['method' => 'PanelController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
     }
     
@@ -187,17 +191,17 @@ class PanelController
 
     // Adiciona uma nova conta para o usuário
     if ($account['name'] and empty($account['id'])) {
-      $message = $this->createAccount($userId, $account);
+      $message = $this->createAccount($account);
     }
 
     // Edita uma conta já existente
     if ($account['id']) {
-      $message = $this->editAccount($userId, $account);
+      $message = $this->editAccount($account);
     }
 
     // Apaga uma conta
     if ($account['delete']) {
-      $message = $this->deleteAccount($userId, $account);
+      $message = $this->deleteAccount($account);
     }
 
     if (empty($message)) {
@@ -205,8 +209,8 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->actionRoute = 'panel/accounts/' . $userId;
-    $accounts = $this->panelModel->get_accounts($userId);
+    $this->actionRoute = 'panel/accounts/' . $this->userId;
+    $accounts = $this->panelModel->get_accounts($this->userId);
     $this->activeTab = 'accounts';
 
     // View e conteúdo para o menu de navegação
@@ -233,8 +237,10 @@ class PanelController
   // Exibe todas as categorias
   public function categories($userId)
   {
+    $this->userId = $userId;
+
     // Valida se o usuário está logado
-    if ($this->check_session() or $this->check_logout()) {
+    if ($this->checkSession() or $this->checkLogout()) {
       Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -248,17 +254,17 @@ class PanelController
 
     // Adiciona uma nova categoria para o usuário
     if ($category['name'] and empty($category['id'])) {
-      $message = $this->createCategory($userId, $category);
+      $message = $this->createCategory($category);
     }
 
     // Edita uma categoria já existente
     if ($category['id']) {
-      $message = $this->editCategory($userId, $category);
+      $message = $this->editCategory($category);
     }
 
     // Apaga uma categoria
     if ($category['delete']) {
-      $message = $this->deleteCategory($userId, $category);
+      $message = $this->deleteCategory($category);
     }
 
     if (empty($message)) {
@@ -266,8 +272,8 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->actionRoute = 'panel/categories/' . $userId;
-    $categories = $this->panelModel->get_categories($userId);
+    $this->actionRoute = 'panel/categories/' . $this->userId;
+    $categories = $this->panelModel->get_categories($this->userId);
     $this->activeTab = 'categories';
 
     // View e conteúdo para o menu de navegação
@@ -292,9 +298,9 @@ class PanelController
   }
 
   // Adiciona uma nova receita ao formulário
-  public function createIncome($userId, $income)
+  public function createIncome($income)
   {
-    $createIncome = $this->panelModel->createIncome($userId, $income);
+    $createIncome = $this->panelModel->createIncome($this->userId, $income);
 
     if (empty($createIncome)) {
       return ['error_transaction' => 'Erro ao cadastrar receita'];
@@ -304,9 +310,9 @@ class PanelController
   }
 
   // Edita uma receita existente
-  public function editIncome($userId, $income)
+  public function editIncome($income)
   {
-    $editIncome = $this->panelModel->editIncome($userId, $income);
+    $editIncome = $this->panelModel->editIncome($this->userId, $income);
 
     if (empty($editIncome)) {
       return ['error_transaction' => 'Erro ao editar receita'];
@@ -316,9 +322,9 @@ class PanelController
   }
 
   // Adiciona uma nova despesa ao formulário
-  public function createExpense($userId, $expense)
+  public function createExpense($expense)
   {
-    $createExpense = $this->panelModel->createExpense($userId, $expense);
+    $createExpense = $this->panelModel->createExpense($this->userId, $expense);
 
     if (empty($createExpense)) {
       return ['error_transaction' => 'Erro ao cadastrar despesa'];
@@ -328,9 +334,9 @@ class PanelController
   }
 
   // Edita uma despesa existente
-  public function editExpense($userId, $expense)
+  public function editExpense($expense)
   {
-    $editExpense = $this->panelModel->editExpense($userId, $expense);
+    $editExpense = $this->panelModel->editExpense($this->userId, $expense);
 
     if (empty($editExpense)) {
       return ['error_transaction' => 'Erro ao editar despesa'];
@@ -339,9 +345,9 @@ class PanelController
     return [];
   }
 
-  public function deleteTransaction($userId, $transaction)
+  public function deleteTransaction($transaction)
   {
-    $deleteTransaction = $this->panelModel->deleteTransaction($userId, $transaction);
+    $deleteTransaction = $this->panelModel->deleteTransaction($this->userId, $transaction);
 
     if (empty($deleteTransaction)) {
       return ['error_transaction' => 'Erro ao apagar transação'];
@@ -350,9 +356,9 @@ class PanelController
     return [];
   }
 
-  public function changeTransactionStatus($userId, $transaction)
+  public function changeTransactionStatus($transaction)
   {
-    $changeTransactionStatus = $this->panelModel->changeTransactionStatus($userId, $transaction);;
+    $changeTransactionStatus = $this->panelModel->changeTransactionStatus($this->userId, $transaction);;
 
     if (empty($changeTransactionStatus)) {
       return ['error_transaction' => 'Erro ao alterar status da transação'];
@@ -362,18 +368,18 @@ class PanelController
   }
 
   // Cria uma nova conta
-  public function createAccount($userId, $account)
+  public function createAccount($account)
   {
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($userId, ['name' => $account['name'] ]);
+    $accountExists = $this->panelModel->accountExists($this->userId, ['name' => $account['name'] ]);
 
     if ($accountExists) {
       return ['error_account' => 'Conta já existe'];
     }
 
     // Cria a conta
-    $createAccount = $this->panelModel->createAccount($userId, $account['name']);
+    $createAccount = $this->panelModel->createAccount($this->userId, $account['name']);
 
     if (empty($createAccount)) {
       return ['error_account' => 'Erro ao cadastrar conta'];
@@ -383,18 +389,18 @@ class PanelController
   }
 
   // Edita uma conta já existente
-  public function editAccount($userId, $account)
+  public function editAccount($account)
   {
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($userId, ['id' => $account['id'] ]);
+    $accountExists = $this->panelModel->accountExists($this->userId, ['id' => $account['id'] ]);
 
     if (empty($accountExists)) {
       return ['error_account' => 'Conta inexistente'];
     }
 
     // Edita a conta
-    $editAccount = $this->panelModel->editAccount($userId, ['id' => $account['id'], 'name' => $account['name'] ]);
+    $editAccount = $this->panelModel->editAccount($this->userId, ['id' => $account['id'], 'name' => $account['name'] ]);
 
     if (empty($editAccount)) {
       return ['error_account' => 'Erro ao editar conta'];
@@ -404,18 +410,18 @@ class PanelController
   }
 
   // Apaga uma conta do banco de dados
-  public function deleteAccount($userId, $account)
+  public function deleteAccount($account)
   {
 
     // Não apaga conta em uso
-    $accountInUse = $this->panelModel->accountInUse($userId, $account['delete']);
+    $accountInUse = $this->panelModel->accountInUse($this->userId, $account['delete']);
 
     if ($accountInUse) {
       return ['error_account' => 'Conta em uso não pode ser apagada'];
     }
 
     // Apaga a conta
-    $deleteAccount = $this->panelModel->deleteAccount($userId, $account['delete']);
+    $deleteAccount = $this->panelModel->deleteAccount($this->userId, $account['delete']);
 
     if (empty($deleteAccount)) {
       return ['error_account' => 'Erro ao apagar conta'];
@@ -425,18 +431,18 @@ class PanelController
   }
 
   // Cria uma nova categoria
-  public function createCategory($userId, $category)
+  public function createCategory($category)
   {
 
     // Verifica se a categoria existe
-    $categoryExists = $this->panelModel->categoryExists($userId, ['name' => $category['name'] ]);
+    $categoryExists = $this->panelModel->categoryExists($this->userId, ['name' => $category['name'] ]);
 
     if ($categoryExists) {
       return ['error_category' => 'Conta já existe'];
     }
 
     // Cria a categoria
-    $createCategory = $this->panelModel->createCategory($userId, $category['name']);
+    $createCategory = $this->panelModel->createCategory($this->userId, $category['name']);
 
     if (empty($createCategory)) {
       return ['error_category' => 'Erro ao cadastrar categoria'];
@@ -446,18 +452,18 @@ class PanelController
   }
 
   // Edita uma categoria já existente
-  public function editCategory($userId, $category)
+  public function editCategory($category)
   {
 
     // Verifica se a categoria existe
-    $categoryExists = $this->panelModel->categoryExists($userId, ['id' => $category['id'] ]);
+    $categoryExists = $this->panelModel->categoryExists($this->userId, ['id' => $category['id'] ]);
 
     if (empty($categoryExists)) {
       return ['error_category' => 'Conta inexistente'];
     }
 
     // Edita a categoria
-    $editCategory = $this->panelModel->editCategory($userId, ['id' => $category['id'], 'name' => $category['name'] ]);
+    $editCategory = $this->panelModel->editCategory($this->userId, ['id' => $category['id'], 'name' => $category['name'] ]);
 
     if (empty($editCategory)) {
       return ['error_category' => 'Erro ao editar categoria'];
@@ -467,18 +473,18 @@ class PanelController
   }
 
   // Apaga uma categoria do banco de dados
-  public function deleteCategory($userId, $category)
+  public function deleteCategory($category)
   {
 
     // Não apaga categoria em uso
-    $categoryInUse = $this->panelModel->categoryInUse($userId, $category['delete']);
+    $categoryInUse = $this->panelModel->categoryInUse($this->userId, $category['delete']);
 
     if ($categoryInUse) {
       return ['error_category' => 'Conta em uso não pode ser apagada'];
     }
 
     // Apaga a categoria
-    $deleteCategory = $this->panelModel->deleteCategory($userId, $category['delete']);
+    $deleteCategory = $this->panelModel->deleteCategory($this->userId, $category['delete']);
 
     if (empty($deleteCategory)) {
       return ['error_category' => 'Erro ao apagar categoria'];
@@ -490,8 +496,10 @@ class PanelController
   // Exibe e altera dados do usuário
   public function myaccount($userId) 
   {
+    $this->userId = $userId;
+
     // Valida se o usuário está logado
-    if ($this->check_session() or $this->check_logout()) {
+    if ($this->checkSession() or $this->checkLogout()) {
       Logger::log(['method' => 'PanelController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -499,7 +507,7 @@ class PanelController
     $message = [];
     $responseUpdate = [];
     $errorPassword = false;
-    $userUpdate = ['user_id' => $userId ];
+    $userUpdate = ['user_id' => $this->userId ];
 
     if (isset($_POST['user_first_name']) and $_POST['user_first_name']) {
       $userUpdate['user_first_name'] = $_POST['user_first_name'];
@@ -570,8 +578,8 @@ class PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->actionRoute = 'panel/myaccount/' . $userId;
-    $myaccount = $this->usersModel->get_myaccount($userId);
+    $this->actionRoute = 'panel/myaccount/' . $this->userId;
+    $myaccount = $this->usersModel->get_myaccount($this->userId);
     $this->activeTab = 'myaccount';
 
     // View e conteúdo para o menu de navegação
@@ -596,7 +604,7 @@ class PanelController
   }
 
   // Verifica se o usuário possui sessão ativa
-  private function check_session()
+  private function checkSession()
   {
     if (empty($_SESSION['user'])) {
       header('Location: ' . BASE . '/users/login');
@@ -607,7 +615,7 @@ class PanelController
   }
 
   // Verifica se o usuário existe e está logado
-  private function check_logout()
+  private function checkLogout()
   {
     $userExists = $this->panelModel->check_user_exists($this->userId);
 
