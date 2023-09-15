@@ -129,16 +129,23 @@ class PanelController
 
     $message = [];
 
-    // Resultado da tentativa de adicionar conta
-    if (isset($_POST['account'])) {
-      // $message = $this->add_account($user_id);
-      $accountName = $_POST['account'];
-      $message = $this->createAccount($user_id, $accountName);
+    // Cria, edita e altera a conta
+    $account = [
+      'id' => $_POST['account_id'] ?? 0,
+      'name' => $_POST['account_name'] ?? '',
+      'delete' => $_POST['delete_account_id'] ?? 0,
+    ];
+
+    if ($account['name'] and empty($account['id'])) {
+      $message = $this->createAccount($user_id, $account['name'] );
     }
 
-    // Apaga conta
-    if (isset($_POST['delete_account'])) {
-      $message = $this->delete_account($user_id);
+    if ($account['id']) {
+      $message = $this->editAccount($user_id, $account['id'] );
+    }
+
+    if ($account['delete']) {
+      $message = $this->deleteAccount($user_id, $account['delete'] );
     }
 
     // Prepara conteúdo para a View
@@ -355,22 +362,69 @@ class PanelController
   }
 
   // Cria uma nova conta
-  public function createAccount($user_id, $accountName)
+  public function createAccount($userId, $accountName)
   {
-    $accountExists = $this->panelModel->accountExists($user_id, ['name' => $accountName ]);
+
+    // Verifica se a conta existe
+    $accountExists = $this->panelModel->accountExists($userId, ['name' => $accountName ]);
 
     if ($accountExists) {
       return ['error_account' => 'Conta já existe'];
     }
 
-    $createAccount = $this->panelModel->createAccount($user_id, $accountName);
+    // Cria a conta
+    $createAccount = $this->panelModel->createAccount($userId, $accountName);
 
     if (empty($createAccount)) {
-      $message = ['error_account' => 'Erro ao cadastrar conta'];
+      return ['error_account' => 'Erro ao cadastrar conta'];
     }
 
-    return $message;
+    return [];
   }
+
+  // Edita uma conta já existente
+  public function editAccount($userId, $accountId)
+  {
+    $accountName = $_POST['account_name'];
+
+    // Verifica se a conta existe
+    $accountExists = $this->panelModel->accountExists($userId, ['id' => $accountId ]);
+
+    if (empty($accountExists)) {
+      return ['error_account' => 'Conta inexistente'];
+    }
+
+    // Edita a conta
+    $editAccount = $this->panelModel->editAccount($userId, ['id' => $accountId, 'name' => $accountName ]);
+
+    if (empty($editAccount)) {
+      return ['error_account' => 'Erro ao editar conta'];
+    }
+
+    return [];
+  }
+
+  // Apaga uma conta do banco de dados
+  public function deleteAccount($userId, $accountId)
+  {
+
+    // Não apaga conta em uso
+    $accountInUse = $this->panelModel->accountInUse($userId, $accountId);
+
+    if ($accountInUse) {
+      return ['error_account' => 'Conta em uso não pode ser apagada'];
+    }
+
+    // Apaga a conta
+    $deleteAccount = $this->panelModel->deleteAccount($userId, $accountId);
+
+    if (empty($deleteAccount)) {
+      return ['error_account' => 'Erro ao apagar conta'];
+    }
+
+    return [];
+  }
+
 
   // Adiciona conta no banco de dados
   public function add_account($user_id)
