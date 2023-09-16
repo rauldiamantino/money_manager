@@ -138,14 +138,14 @@ class PanelController
         'table' => $_POST['change_status_transaction_type'] == 'E' ? 'expenses' : 'incomes',
       ];
 
-      $message = $this->changeTransactionStatus($transactions['transaction']);
+      $message = $this->changeStatus($transactions['transaction']);
     }
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'panel/transactions/' . $this->userId;
-    $transactions = $this->panelModel->get_transactions($this->userId);
-    $categories = $this->panelModel->get_categories($this->userId);
-    $accounts = $this->panelModel->get_accounts($this->userId);
+    $transactions = $this->panelModel->getTransactions($this->userId);
+    $categories = $this->panelModel->getCategories($this->userId);
+    $accounts = $this->panelModel->getAccounts($this->userId);
     $this->activeTab = 'transactions';
 
     // View e conteúdo para o menu de navegação
@@ -210,7 +210,7 @@ class PanelController
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'panel/accounts/' . $this->userId;
-    $accounts = $this->panelModel->get_accounts($this->userId);
+    $accounts = $this->panelModel->getAccounts($this->userId);
     $this->activeTab = 'accounts';
 
     // View e conteúdo para o menu de navegação
@@ -273,7 +273,7 @@ class PanelController
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'panel/categories/' . $this->userId;
-    $categories = $this->panelModel->get_categories($this->userId);
+    $categories = $this->panelModel->getCategories($this->userId);
     $this->activeTab = 'categories';
 
     // View e conteúdo para o menu de navegação
@@ -356,11 +356,11 @@ class PanelController
     return [];
   }
 
-  public function changeTransactionStatus($transaction)
+  public function changeStatus($transaction)
   {
-    $changeTransactionStatus = $this->panelModel->changeTransactionStatus($this->userId, $transaction);;
+    $changeStatus = $this->panelModel->changeStatus($this->userId, $transaction);;
 
-    if (empty($changeTransactionStatus)) {
+    if (empty($changeStatus)) {
       return ['error_transaction' => 'Erro ao alterar status da transação'];
     }
 
@@ -531,14 +531,20 @@ class PanelController
 
     // Atualiza cadastro
     if ($userUpdate['user_first_name']) {
-      $responseUpdate['user'] = $this->usersModel->update_myaccount($userUpdate);
+      $responseUpdate['user'] = $this->usersModel->updateMyaccount($userUpdate);
     }
 
     // Atualiza senha
     if ($userUpdate['user_new_password']) {
 
       if ($userUpdate['user_new_password'] == $userUpdate['user_confirm_new_password']) {
-        $responseUpdate['password'] = $this->usersModel->update_myaccount_password($userUpdate);
+
+        // Altera a senha se o usuário existir
+        $getUser = $this->usersModel->getUser('', $userUpdate['user_id']);
+
+        if ($getUser) {
+          $responseUpdate['password'] = $this->usersModel->updateMyaccountPassword($userUpdate);
+        }
       }
       else {
         $errorPassword = true;
@@ -579,7 +585,7 @@ class PanelController
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'panel/myaccount/' . $this->userId;
-    $myaccount = $this->usersModel->get_myaccount($this->userId);
+    $myaccount = $this->usersModel->getMyaccount($this->userId);
     $this->activeTab = 'myaccount';
 
     // View e conteúdo para o menu de navegação
@@ -617,9 +623,9 @@ class PanelController
   // Verifica se o usuário existe e está logado
   private function checkLogout()
   {
-    $userExists = $this->panelModel->check_user_exists($this->userId);
+    $userExists = $this->panelModel->checkUserExists($this->userId);
 
-    if ($userExists['success'] and empty($_POST['logout'])) {
+    if ($userExists and empty($_POST['logout'])) {
       return false;
     }
 

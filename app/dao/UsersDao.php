@@ -54,50 +54,6 @@ class UsersDAO
     return $result;
   }
 
-  // Atualiza usuário no Banco de Dados
-  public function update_users_db($new_data)
-  {
-    $sql = 'UPDATE users
-            SET first_name = :first_name, last_name = :last_name, email = :email
-            WHERE id = :id';
-
-    $params = [
-      'first_name' => $new_data['user_first_name'],
-      'last_name' => $new_data['user_last_name'],
-      'email' => $new_data['user_email'],
-      'id' => $new_data['user_id'],
-    ];
-
-    $result = $this->database->insert($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('UsersDao->update_users_db: Falha ao atualizar usuário');
-    }
-
-    return $result;
-  }
-
-  // Atualiza senha do usuário no Banco de Dados
-  public function update_password_user_db($new_data)
-  {
-    $sql = 'UPDATE users
-            SET password = :password
-            WHERE id = :id';
-
-    $params = [
-      'password' => password_hash($new_data['user_new_password'], PASSWORD_DEFAULT),
-      'id' => $new_data['user_id'],
-    ];
-
-    $result = $this->database->insert($sql, $params);
-
-    if (empty($result)) {
-      Logger::log('UsersDao->update_password_user_db: Falha ao atualizar senha do usuário');
-    }
-
-    return $result;
-  }
-
   // Cria o database para cada usuário adicionado
   public function create_database_user($database)
   {
@@ -137,22 +93,5 @@ class UsersDAO
     if (empty($result)) {
       Logger::log('UsersDao->add_default_category: Falha ao criar categoria padrão.');
     }
-  }
-
-  // Busca cadastro do usuário no banco de dados
-  public function get_myaccount_db($user_id)
-  {
-    $database_name = DB_NAME;
-    $sql = 'SELECT * FROM users WHERE id = :id';
-    $params = ['id' => $user_id ];
-
-    $this->database->switch_database($database_name);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $database_name ]);
-
-    if (empty($result)) {
-      Logger::log('UsersDao->get_myaccount_db: Falha ao buscar dados cadastrais do usuário.');
-    }
-
-    return $result;
   }
 }
