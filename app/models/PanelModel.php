@@ -17,6 +17,19 @@ class PanelModel
     return $result;
   }
 
+  // Verifica se o usuário existe na tabela de usuários
+  public function checkUserExists($userId)
+  {
+    $sql = 'SELECT * FROM users WHERE id = :id';
+    $params = ['id' => $userId];
+
+    $this->database->switch_database(DB_NAME);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
+    Logger::log(['method' => 'PanelModel->checkUserExists', 'result' => $result]);
+
+    return $result;
+  }
+
   // Obtém receitas e despesas do usuário
   public function getTransactions($userId)
   {
@@ -42,63 +55,6 @@ class PanelModel
     $this->database->switch_database($databaseName);
     $result = $this->database->select($sql, ['database_name' => $databaseName]);
     Logger::log(['method' => 'PanelModel->getTransactions', 'result' => $result]);
-
-    return $result;
-  }
-
-  // Obtém todas as contas cadastradas do usuário
-  public function getAccounts($userId, $account = '')
-  {
-    $sql = 'SELECT * FROM accounts';
-    $databaseName = 'm_user_' . $userId;
-
-    $params = '';
-    $accountName = $account;
-
-    if ($accountName) {
-      $sql .= ' WHERE name = :name';
-      $params = ['name' => $accountName];
-    }
-
-    $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
-    Logger::log(['method' => 'PanelModel->getAccounts', 'result' => $result]);
-
-    return $result;
-  }
-
-  // Obtém todas as categorias cadastradas do usuário
-  public function getCategories($userId, $category = '')
-  {
-    $sql = 'SELECT * FROM categories';
-    $databaseName = 'm_user_' . $userId;
-
-    $params = '';
-    $categoryName = $category;
-
-    if ($categoryName) {
-      $sql .= ' WHERE name = :name';
-      $params = ['name' => $category];
-    }
-
-    $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
-    Logger::log(['method' => 'PanelModel->getCategories', 'result' => $result]);
-
-    return $result;
-  }
-
-  //---------------------- Nova Model ----------------------//
-
-  // Verifica se o usuário existe na tabela de usuários
-  public function checkUserExists($userId)
-  {
-    $sql = 'SELECT * FROM users WHERE id = :id';
-    $params = ['id' => $userId];
-
-    $this->database->switch_database(DB_NAME);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
-    Logger::log(['method' => 'PanelModel->checkUserExists', 'result' => $result]);
 
     return $result;
   }
@@ -249,6 +205,27 @@ class PanelModel
     return true;
   }
 
+  // Obtém todas as contas cadastradas do usuário
+  public function getAccounts($userId, $account = '')
+  {
+    $sql = 'SELECT * FROM accounts';
+    $databaseName = 'm_user_' . $userId;
+
+    $params = '';
+    $accountName = $account;
+
+    if ($accountName) {
+      $sql .= ' WHERE name = :name';
+      $params = ['name' => $accountName];
+    }
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
+    Logger::log(['method' => 'PanelModel->getAccounts', 'result' => $result]);
+
+    return $result;
+  }
+
   // Cria uma conta para o usuário
   public function createAccount($userId, $accountName)
   {
@@ -325,6 +302,27 @@ class PanelModel
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
     Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result]);
+
+    return $result;
+  }
+
+  // Obtém todas as categorias cadastradas do usuário
+  public function getCategories($userId, $category = '')
+  {
+    $sql = 'SELECT * FROM categories';
+    $databaseName = 'm_user_' . $userId;
+
+    $params = '';
+    $categoryName = $category;
+
+    if ($categoryName) {
+      $sql .= ' WHERE name = :name';
+      $params = ['name' => $category];
+    }
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
+    Logger::log(['method' => 'PanelModel->getCategories', 'result' => $result]);
 
     return $result;
   }
