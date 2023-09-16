@@ -1,21 +1,3 @@
-<?php
-$total_incomes = 0;
-$total_expenses = 0;
-
-foreach ($data['transactions'] as $key => $value) :
-  
-  if ($value['type'] == 'E') {
-    $expense_amount = $value['amount'] * -1;
-    $total_expenses += $expense_amount;
-  }
-
-  if ($value['type'] == 'I') {
-    $total_incomes += $value['amount'];
-  }
-
-endforeach;
-?>
-
 <link rel="stylesheet" href="/css/transactions.css">
 
 <section class="container mt-4">
@@ -52,7 +34,7 @@ endforeach;
       </tr>
     </thead>
     <tbody class="table-group-divider text-center">
-      <?php foreach ($data['transactions'] as $value) : ?>
+      <?php foreach ($data['transactions']['items'] as $value) : ?>
         <tr>
           <td class="text-start"><?php echo $value['description']; ?></td>
           <td><?php echo $value['account_name']; ?></td>
@@ -108,19 +90,19 @@ endforeach;
     <div class="card alert alert-success w-100 m-0 py-0">
       <div class="card-body">
         <h5 class="card-title">Receitas</h5>
-        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes, 2, ',', '.') ?></p>
+        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['incomes'], 2, ',', '.') ?></p>
       </div>
     </div>
     <div class="card alert alert-danger w-100 m-0 py-0">
       <div class="card-body">
         <h5 class="card-title">Despesas</h5>
-        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_expenses, 2, ',', '.') ?></p>
+        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['expenses'], 2, ',', '.') ?></p>
       </div>
     </div>
     <div class="card alert alert-dark w-100 m-0 py-0">
       <div class="card-body">
         <h5 class="card-title">Saldo</h5>
-        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($total_incomes - $total_expenses, 2, ',', '.') ?></p>
+        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['balance'], 2, ',', '.') ?></p>
       </div>
     </div>
   </div>

@@ -141,15 +141,32 @@ class PanelController
       $message = $this->changeStatus($transactions['transaction']);
     }
 
-    // Prepara conteúdo para a View
-    $this->actionRoute = 'panel/transactions/' . $this->userId;
-    $transactions = $this->panelModel->getTransactions($this->userId);
-    $categories = $this->panelModel->getCategories($this->userId);
-    $accounts = $this->panelModel->getAccounts($this->userId);
-    $this->activeTab = 'transactions';
+    // Prepara totais das transações
+    $getTransactions = [
+      'items' => $this->panelModel->getTransactions($this->userId), 
+      'totals' => ['incomes' => 0, 'expenses' => 0],
+    ];
+
+    foreach ($getTransactions['items'] as $key => $value) :
+      
+      if ($value['type'] == 'E') {
+        $expense_amount = $value['amount'] * -1;
+        $getTransactions['totals']['expenses'] += $expense_amount;
+      }
+
+      if ($value['type'] == 'I') {
+        $getTransactions['totals']['incomes'] += $value['amount'];
+      }
+
+    endforeach;
+
+    $getTransactions['totals']['balance'] = $getTransactions['totals']['incomes'] - $getTransactions['totals']['expenses'];
 
     // View e conteúdo para o menu de navegação
+    $this->activeTab = 'transactions';
     $navViewName = 'panel/templates/nav';
+    $this->actionRoute = 'panel/transactions/' . $this->userId;
+
     $navViewContent = [
       'user_id' => $this->userId,
       'active_tab' => $this->activeTab,
@@ -160,10 +177,13 @@ class PanelController
 
     // View e conteúdo para a página de transações
     $transactionsViewName = 'panel/transactions';
+    $accounts = $this->panelModel->getAccounts($this->userId);
+    $categories = $this->panelModel->getCategories($this->userId);
+
     $transactionsViewContent = [
-      'transactions' => $transactions, 
-      'user_id' => $this->userId, 
-      'categories' => $categories, 
+      'transactions' => $getTransactions,
+      'user_id' => $this->userId,
+      'categories' => $categories,
       'accounts' => $accounts,
       'message' => $message,
     ];
