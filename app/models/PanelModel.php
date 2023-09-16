@@ -1,14 +1,12 @@
 <?php
-require_once '../app/dao/PanelDAO.php';
 require_once '../app/Database.php';
 
-class PanelModel {
-  public $panelDAO;
+class PanelModel
+{
   public $database;
 
   public function __construct()
   {
-    $this->panelDAO = new PanelDAO();
     $this->database = new Database();
   }
 
@@ -20,56 +18,90 @@ class PanelModel {
   }
 
   // Obtém receitas e despesas do usuário
-  public function get_transactions($user_id)
+  public function getTransactions($userId)
   {
-    $result = $this->panelDAO->get_transactions_db($user_id);
+    $databaseName = 'm_user_' . $userId;
+    $sql = 'SELECT id, date, type, status, amount, created_at, updated_at, description, account_name, category_name
+            FROM
+            (
+              SELECT expenses.id, expenses.date, expenses.type, expenses.amount, expenses.status, expenses.created_at,
+                      expenses.updated_at, expenses.description, accounts.name AS account_name, categories.name AS category_name
+              FROM expenses
+              LEFT JOIN accounts ON expenses.account_id = accounts.id
+              LEFT JOIN categories ON expenses.category_id = categories.id
+              UNION ALL
+              SELECT incomes.id, incomes.date, incomes.type, incomes.amount, incomes.status, incomes.created_at,
+                      incomes.updated_at, incomes.description, accounts.name AS account_name, categories.name AS category_name
+              FROM incomes
+              LEFT JOIN accounts ON incomes.account_id = accounts.id
+              LEFT JOIN categories ON incomes.category_id = categories.id
+            )
+            AS combined_data
+            ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->get_transactions', 'result' => $result ], 'alert');
-    }
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['database_name' => $databaseName]);
+    Logger::log(['method' => 'PanelModel->getTransactions', 'result' => $result]);
 
     return $result;
   }
 
   // Obtém todas as contas cadastradas do usuário
-  public function get_accounts($user_id)
+  public function getAccounts($userId, $account = '')
   {
-    $result = $this->panelDAO->get_accounts_db($user_id);
+    $sql = 'SELECT * FROM accounts';
+    $databaseName = 'm_user_' . $userId;
 
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->get_accounts', 'result' => $result ], 'alert');
+    $params = '';
+    $accountName = $account;
+
+    if ($accountName) {
+      $sql .= ' WHERE name = :name';
+      $params = ['name' => $accountName];
     }
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
+    Logger::log(['method' => 'PanelModel->getAccounts', 'result' => $result]);
 
     return $result;
   }
 
   // Obtém todas as categorias cadastradas do usuário
-  public function get_categories($user_id)
+  public function getCategories($userId, $category = '')
   {
-    $result = $this->panelDAO->get_categories_db($user_id);
+    $sql = 'SELECT * FROM categories';
+    $databaseName = 'm_user_' . $userId;
 
-    if (empty($result)) {
-      Logger::log(['method' => 'PanelModel->get_categories', 'result' => $result ], 'alert');
+    $params = '';
+    $categoryName = $category;
+
+    if ($categoryName) {
+      $sql .= ' WHERE name = :name';
+      $params = ['name' => $category];
     }
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
+    Logger::log(['method' => 'PanelModel->getCategories', 'result' => $result]);
 
     return $result;
   }
 
-  // Verifica se o usuário existe na tabela de usuários
-  public function check_user_exists($user_id)
-  {
-    $check_user = $this->panelDAO->check_user_db($user_id);
-    $response = ['success' => 'Usuário existe'];
-
-    if (empty($check_user)) {
-      $response = ['error_user' => 'Usuário não existe na tabela users'];
-      Logger::log(['method' => 'PanelModel->check_user_exists', 'result' => $check_user ], 'error');
-    }
-
-    return $response;
-  }
-
   //---------------------- Nova Model ----------------------//
+
+  // Verifica se o usuário existe na tabela de usuários
+  public function checkUserExists($userId)
+  {
+    $sql = 'SELECT * FROM users WHERE id = :id';
+    $params = ['id' => $userId];
+
+    $this->database->switch_database(DB_NAME);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
+    Logger::log(['method' => 'PanelModel->checkUserExists', 'result' => $result]);
+
+    return $result;
+  }
 
   // Adiciona receita
   public function createIncome($userId, $income)
@@ -91,7 +123,7 @@ class PanelModel {
     $this->database->switch_database($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createIncome', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->createIncome', 'result' => $result]);
 
     return $result;
   }
@@ -124,7 +156,7 @@ class PanelModel {
     $this->database->switch_database($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editIncome', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->editIncome', 'result' => $result]);
 
     return $result;
   }
@@ -149,7 +181,7 @@ class PanelModel {
     $this->database->switch_database($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createExpense', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->createExpense', 'result' => $result]);
 
     return $result;
   }
@@ -182,22 +214,22 @@ class PanelModel {
     $this->database->switch_database($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editExpense', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->editExpense', 'result' => $result]);
 
     return $result;
   }
 
   // Altera status da transação
-  public function changeTransactionStatus($userId, $transaction)
+  public function changeStatus($userId, $transaction)
   {
     $database_name = 'm_user_' . $userId;
     $sql = 'UPDATE ' . $transaction['table'] . ' SET status = :status WHERE id = :id;';
-    $params = ['id' => $transaction['id'], 'status' => $transaction['status'] ];
+    $params = ['id' => $transaction['id'], 'status' => $transaction['status']];
 
     $this->database->switch_database($database_name);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->changeTransactionStatus', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->changeStatus', 'result' => $result]);
 
     return $result;
   }
@@ -207,12 +239,12 @@ class PanelModel {
   {
     $database_name = 'm_user_' . $userId;
     $sql = 'DELETE FROM ' . $transaction['table'] . ' WHERE id = :id;';
-    $params = ['id' => $transaction['id'] ];
+    $params = ['id' => $transaction['id']];
 
     $this->database->switch_database($database_name);
     $result = $this->database->delete($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->deleteTransaction', 'result' => $result ], 'error');
+    Logger::log(['method' => 'PanelModel->deleteTransaction', 'result' => $result], 'error');
 
     return true;
   }
@@ -222,12 +254,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'INSERT INTO accounts (name) VALUES (:name);';
-    $params = ['name' => $accountName ];
+    $params = ['name' => $accountName];
 
     $this->database->switch_database(($databaseName));
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createAccount', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->createAccount', 'result' => $result]);
 
     return $result;
   }
@@ -237,12 +269,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'UPDATE accounts SET name = :name WHERE id = :id;';
-    $params = ['id' => $account['id'], 'name' => $account['name'] ];
+    $params = ['id' => $account['id'], 'name' => $account['name']];
 
     $this->database->switch_database(($databaseName));
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editAccount', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->editAccount', 'result' => $result]);
 
     return $result;
   }
@@ -252,12 +284,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'DELETE FROM accounts WHERE id = :id;';
-    $params = ['id' => $accountId ];
+    $params = ['id' => $accountId];
 
     $this->database->switch_database($databaseName);
     $result = $this->database->delete($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->deleteAccount', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->deleteAccount', 'result' => $result]);
 
     return true;
   }
@@ -270,12 +302,12 @@ class PanelModel {
             UNION
             SELECT account_id, description FROM expenses WHERE account_id = :account_id';
 
-    $params = ['account_id' => $accountId ];
+    $params = ['account_id' => $accountId];
 
     $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
-    Logger::log(['method' => 'PanelModel->accountInUse', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->accountInUse', 'result' => $result]);
 
     return $result;
   }
@@ -287,12 +319,12 @@ class PanelModel {
     $paramWhere = array_key_first($account);
 
     $sql = 'SELECT * FROM accounts WHERE ' . $paramWhere . ' = :' . $paramWhere;
-    $params = [ $paramWhere => reset($account)];
+    $params = [$paramWhere => reset($account)];
 
     $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
-    Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result]);
 
     return $result;
   }
@@ -302,12 +334,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'INSERT INTO categories (name) VALUES (:name);';
-    $params = ['name' => $categoryName ];
+    $params = ['name' => $categoryName];
 
     $this->database->switch_database(($databaseName));
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createCategory', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->createCategory', 'result' => $result]);
 
     return $result;
   }
@@ -317,12 +349,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'UPDATE categories SET name = :name WHERE id = :id;';
-    $params = ['id' => $category['id'], 'name' => $category['name'] ];
+    $params = ['id' => $category['id'], 'name' => $category['name']];
 
     $this->database->switch_database(($databaseName));
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editCategory', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->editCategory', 'result' => $result]);
 
     return $result;
   }
@@ -332,12 +364,12 @@ class PanelModel {
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'DELETE FROM categories WHERE id = :id;';
-    $params = ['id' => $categoryId ];
+    $params = ['id' => $categoryId];
 
     $this->database->switch_database($databaseName);
     $result = $this->database->delete($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->deleteCategory', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->deleteCategory', 'result' => $result]);
 
     return true;
   }
@@ -350,12 +382,12 @@ class PanelModel {
             UNION
             SELECT category_id, description FROM expenses WHERE category_id = :category_id';
 
-    $params = ['category_id' => $categoryId ];
+    $params = ['category_id' => $categoryId];
 
     $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
-    Logger::log(['method' => 'PanelModel->categoryInUse', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->categoryInUse', 'result' => $result]);
 
     return $result;
   }
@@ -367,12 +399,12 @@ class PanelModel {
     $paramWhere = array_key_first($category);
 
     $sql = 'SELECT * FROM categories WHERE ' . $paramWhere . ' = :' . $paramWhere;
-    $params = [ $paramWhere => reset($category)];
+    $params = [$paramWhere => reset($category)];
 
     $this->database->switch_database($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
-    Logger::log(['method' => 'PanelModel->categoryExists', 'result' => $result ]);
+    Logger::log(['method' => 'PanelModel->categoryExists', 'result' => $result]);
 
     return $result;
   }

@@ -12,6 +12,7 @@ foreach ($data['transactions'] as $key => $value) :
   if ($value['type'] == 'I') {
     $total_incomes += $value['amount'];
   }
+
 endforeach;
 ?>
 

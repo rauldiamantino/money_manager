@@ -1,15 +1,18 @@
 <?php
 require_once '../app/dao/UsersDAO.php';
+require_once '../app/Database.php';
 
 class UsersModel
 {
   public $user_email;
   public $usersDao;
+  public $database;
   public $database_user;
 
   public function __construct()
   {
     $this->usersDao = new UsersDAO();
+    $this->database = new Database();
   }
 
   // Registra o usuário caso ele ainda não exista
@@ -94,48 +97,77 @@ class UsersModel
   }
 
   // Obtém os dados da conta do usuário
-  public function get_myaccount($user_id)
+  public function getMyaccount($userId)
   {
-    $result = $this->usersDao->get_myaccount_db($user_id);
-    
-    if (empty($result)) {
-      Logger::log('UsersModel->get_myaccount: Erro ao buscar conta do usuário');
-    }
+    $databaseName = DB_NAME;
+    $sql = 'SELECT * FROM users WHERE id = :id';
+    $params = ['id' => $userId ];
+
+    $this->database->switch_database($databaseName);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+
+    Logger::log(['method' => 'PanelModel->getMyaccount', 'result' => $result ]);
 
     return $result;
   }
 
   // Atualiza os dados da conta do usuário
-  public function update_myaccount($new_data)
+  public function updateMyaccount($newData)
   {
-    $result_update = $this->usersDao->update_users_db($new_data);
+    $sql = 'UPDATE users
+            SET first_name = :first_name, last_name = :last_name, email = :email
+            WHERE id = :id';
 
-    if (empty($result_update)) {
-      Logger::log(['method' => 'UsersModel->update_myaccount', 'result' => $result_update ], 'error');
-      return false;
-    }
+    $params = [
+      'first_name' => $newData['user_first_name'],
+      'last_name' => $newData['user_last_name'],
+      'email' => $newData['user_email'],
+      'id' => $newData['user_id'],
+    ];
+
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'PanelModel->updateMyaccount', 'result' => $result ]);
 
     return true;
   }
 
   // Atualiza senha do conta do usuário
-  public function update_myaccount_password($new_data)
+  public function updateMyaccountPassword($newData)
   {
-    $get_user = $this->get_user($new_data['user_id']);
+    $sql = 'UPDATE users
+            SET password = :password
+            WHERE id = :id';
 
-    if ($get_user) {
-      $result_update = $this->usersDao->update_password_user_db($new_data);
+    $params = [
+      'password' => password_hash($newData['user_new_password'], PASSWORD_DEFAULT),
+      'id' => $newData['user_id'],
+    ];
 
-      if ($result_update) {
-        return true;
-      }
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'PanelModel->updateMyaccountPassword', 'result' => $result ]);
 
-      Logger::log(['method' => 'UsersModel->update_myaccount_password', 'result' => $result_update ], 'error');
-      return false;
+    return $result;
+  }
+
+  // Busca o usuário
+  public function getUser($userEmail, $userId = 0)
+  {
+    // Busca por e-mail
+    $where = 'WHERE email = :email';
+    $params = ['email' => $userEmail ];
+
+    // Busca por id
+    if ($userId) {
+      $where = 'WHERE id = :id';
+      $params = ['id' => $userId ];
     }
 
-    Logger::log(['method' => 'UsersModel->update_myaccount_password', 'result' => $get_user ], 'error');
-    return false;
+    $sql = 'SELECT * FROM users ' . $where;
+    $result = $this->database->select($sql, ['params' => $params ]);
+
+    Logger::log(['method' => 'PanelModel->getUser', 'result' => $result ]);
+
+    return $result;
   }
 
   // Busca usuário no Banco de Dados
