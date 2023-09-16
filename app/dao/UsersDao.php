@@ -26,7 +26,7 @@ class UsersDAO
     $result = $this->database->select($sql, ['params' => $params ]);
 
     if (empty($result)) {
-      Logger::log('UsersDao->get_user_db: Usuário inexistente');
+      Logger::log(['method' => 'UsersDao->get_user_db', 'result' => $result ]);
     }
 
     return $result;
@@ -48,7 +48,7 @@ class UsersDAO
     $result = $this->database->insert($sql, $params);
 
     if (empty($result)) {
-      Logger::log('UsersDao->register_user_db: Falha ao cadastrar usuário');
+      Logger::log(['method' => 'UsersDao->register_user_db', 'result' => $result ]);
     }
 
     return $result;
@@ -65,7 +65,7 @@ class UsersDAO
     }
 
     if (empty($result)) {
-      Logger::log('UsersDao->create_database_user: Falha ao criar database ' . $database);
+      Logger::log(['method' => 'UsersDao->create_database_user', 'result' => $result ]);
     }
 
     return $result;
@@ -79,7 +79,7 @@ class UsersDAO
     $result = $this->database->insert($sql, $params);
 
     if (empty($result)) {
-      Logger::log('UsersDao->add_default_account: Falha ao criar conta padrão.');
+      Logger::log(['method' => 'UsersDao->add_default_account', 'result' => $result ]);
     }
   }
 
@@ -91,7 +91,7 @@ class UsersDAO
     $result = $this->database->insert($sql, $params);
 
     if (empty($result)) {
-      Logger::log('UsersDao->add_default_category: Falha ao criar categoria padrão.');
+      Logger::log(['method' => 'UsersDao->add_default_category', 'result' => $result ]);
     }
   }
 }

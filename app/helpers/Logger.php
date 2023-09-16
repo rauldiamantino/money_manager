@@ -5,14 +5,25 @@ class Logger
 
   public static function log($message, $level = 'alert')
   {
-    // Se for array, converte para JSON
-    if (is_array($message)) {
-      $message = json_encode($message, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    // Inicializa a mensagem de log com data e hora e nível
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] [$level]\n";
+
+    // Verifica se o "method" está definido e adiciona à mensagem
+    if (isset($message['method'])) {
+      $method = json_encode($message['method'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+      $log_message .= '{"method":"' . $method. '"';
     }
 
-    // Adiciona data e hora à mensagem de log
-    $timestamp = date('Y-m-d H:i:s');
-    $log_message = "[$timestamp] [$level]\n$message\n\n";
+    // Verifica se o "result" está definido e formata-o em uma única linha sem barras invertidas
+    if (isset($message['result'])) {
+      $result = json_encode($message['result'], JSON_UNESCAPED_UNICODE);
+      $result = preg_replace('/\s+/', ' ', $result);
+      $log_message .= ',"result":' . $result;
+    }
+
+    // Fecha o objeto JSON
+    $log_message .= "}\n\n";
 
     // Abre o arquivo de log em modo de escrita (append)
     if ($file_handle = fopen(self::$log_file_path, 'a')) {

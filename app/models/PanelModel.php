@@ -24,7 +24,8 @@ class PanelModel
     $params = ['id' => $userId];
 
     $this->database->switch_database(DB_NAME);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]);
+    $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]) ? true : false;
+
     Logger::log(['method' => 'PanelModel->checkUserExists', 'result' => $result]);
 
     return $result;

@@ -25,7 +25,7 @@ class UsersModel
 
     if ($get_user) {
       $response = ['error_register' => 'E-mail já cadastrado'];
-      Logger::log('UsersModel->register_user' . $response);
+      Logger::log(['method' => 'PanelModel->register_user', 'result' => $response ]);
     }
 
     if (empty($get_user) and $this->usersDao->register_user_db($data)) {
@@ -47,7 +47,7 @@ class UsersModel
 
     if (empty($result)) {
       $response = ['error_register' => $result];
-      Logger::log('UsersModel->create_database_user: ' . $response['error_register'] . ' retorno vazio');
+      Logger::log(['method' => 'PanelModel->create_database_user', 'result' => $response ]);
     }
 
     return $response;
@@ -62,7 +62,7 @@ class UsersModel
 
     if (empty($get_user)) {
       $response = ['error_login' => 'Dados inválidos'];
-      Logger::log('UsersModel->login_user: ' . $response['error_login']);
+      Logger::log(['method' => 'PanelModel->login_user', 'result' => $response ]);
 
       return $response;
     }
@@ -89,7 +89,7 @@ class UsersModel
     foreach ($validation_user as $linha) :
       if (empty($linha)) {
         $response = ['error_login' => 'Dados inválidos'];
-        Logger::log('UsersModel->login_user: ' . $response['error_login']);
+        Logger::log(['method' => 'PanelModel->login_user', 'result' => $response ]);
       }
     endforeach;
 
@@ -176,7 +176,7 @@ class UsersModel
     $response = $this->usersDao->get_user_db($this->user_email, $user_id);
 
     if (empty($response)) {
-      Logger::log('UsersModel->get_user: Erro ao buscar usuário');
+      Logger::log(['method' => 'PanelModel->get_user', 'result' => $response ]);
     }
 
     return $response;

@@ -25,7 +25,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      Logger::log('Database->__construct: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->__construct', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -45,7 +45,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      Logger::log('Database::switch_database: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->switch_database', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -66,7 +66,7 @@ class Database
       return true;
     }
     catch (PDOException $e) {
-      Logger::log('Database->insert: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->insert', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -86,7 +86,7 @@ class Database
       return true;
     }
     catch (PDOException $e) {
-      Logger::log('Database->delete: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->delete', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -119,7 +119,7 @@ class Database
       return $result;
     }
     catch (PDOException $e) {
-      Logger::log('Database->select: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->select', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -138,7 +138,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      Logger::log('Database->create_database' . $e->getMessage());
+      Logger::log(['method' => 'Database->create_database', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -197,7 +197,7 @@ class Database
       return true;
     }
     catch (PDOException $e) {
-      Logger::log('Database->create_user_tables: ' . $e->getMessage());
+      Logger::log(['method' => 'Database->create_user_tables', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
