@@ -53,6 +53,7 @@ class LoginController
 
     // Verifica se o usuário existe
     $getUser = $this->loginModel->getUser($this->user['email']);
+    $this->message = ['error_login' => 'Dados inválidos'];
 
     if (empty($getUser)) {
       return false;
@@ -72,7 +73,6 @@ class LoginController
       return true;
     }
 
-    $this->message = ['error_login' => 'Dados inválidos'];
     return false;
   }
 }

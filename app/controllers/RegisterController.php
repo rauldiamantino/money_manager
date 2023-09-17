@@ -97,7 +97,6 @@ class RegisterController
     }
 
     $this->message = ['success_register' => 'Cadastro efetuado com sucesso!'];
-
     return true;
   }
 }

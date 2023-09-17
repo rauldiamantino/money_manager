@@ -36,6 +36,17 @@ class Router
       $params = $this->parts ?? '';
     }
 
+    // Rotas pré definidas
+    if ($this->uri == '/login') {
+      $controllerName = 'LoginController';
+      $methodName = 'start';
+    }
+
+    if ($this->uri == '/register') {
+      $controllerName = 'RegisterController';
+      $methodName = 'start';
+    }
+
     // Chama o controller e se não existir chama a página de erro
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
     $controller = '';
