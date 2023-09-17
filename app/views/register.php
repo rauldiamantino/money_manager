@@ -10,7 +10,7 @@
         </a>
       </div>
       <?php if (empty($data['message']['success_register'])) { ?>
-        <form class="border rounded p-4 shadow-sm" action="users/registration" method="POST">
+        <form class="border rounded p-4 shadow-sm" action="register/start" method="POST">
           <h1 class="text-center h4 mb-4">Cadastro de Usuário</h1>
           <fieldset class="form-group">
             
@@ -63,11 +63,11 @@
             <button class="w-100 btn btn-primary" type="submit">Cadastrar</button>
           </div>
         </form>
-        <p class="text-center">Já tem cadastro? <a class="link-offset-2" href="login">Faça login</a></p>
+        <p class="text-center">Já tem cadastro? <a class="link-offset-2" href="login/start">Faça login</a></p>
       <?php } ?>
 
       <?php if (isset($data['message']['success_register'])) { ?>
-        <form class="border rounded p-4 shadow-sm" action="users/login" method="POST">
+        <form class="border rounded p-4 shadow-sm" action="login/start" method="POST">
           <input type="hidden" name="user_email" value="<?php echo $data['user_email'] ?>">
           <p class="mb-4 small text-center"><?php echo $data['message']['success_register'] ?></p>
           <div class="col-12 text-center">

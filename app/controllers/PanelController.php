@@ -633,7 +633,7 @@ class PanelController
   private function checkSession()
   {
     if (empty($_SESSION['user'])) {
-      header('Location: ' . BASE . '/users/login');
+      header('Location: ' . BASE . 'login/start');
       return true;
     }
 
