@@ -99,7 +99,8 @@ class UsersController
 
     // View e conteúdo da página
     $user = [];
-    $renderView = ['user_login' => ['message' => []]];
+    $message = [];
+    $renderView = ['user_login' => []];
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -126,12 +127,11 @@ class UsersController
 
       if (password_verify(trim($user['password']), $getUser[0]['password'])) {
         $message = ['success_login' => 'Dados corretos'];
-        $renderView['user_login']['message'] = $message;
       }
     }
 
     // Se o usuário for localizado, redireciona para o painel
-    if (isset($renderView['user_login']['message']['success_login']) and empty($_SESSION['user'])) {
+    if (isset($message['success_login']) and empty($_SESSION['user'])) {
 
       $_SESSION['user'] = [
         'user_id' => $getUser[0]['id'],
@@ -144,7 +144,7 @@ class UsersController
       exit();
     }
 
-
+    $renderView['user_login']['message'] = $message;
     return $renderView;
   }
 
