@@ -15,42 +15,101 @@ class UsersModel
     $this->database = new Database();
   }
 
-  // Registra o usuário caso ele ainda não exista
-  public function register_user($data)
+  // Cadastra o usuário
+  public function registerUser($user)
   {
-    $this->user_email = $data['user_email'] ?? '';
-    $get_user = $this->get_user();
+    $sql = 'INSERT INTO users (first_name, last_name, email, password) 
+            VALUES (:first_name, :last_name, :email, :password)';
 
-    $response = [];
+    $params = [
+      'first_name' => $user['firstName'],
+      'last_name' => $user['lastName'],
+      'email' => $user['email'],
+      'password' => password_hash($user['password'], PASSWORD_DEFAULT),
+    ];
 
-    if ($get_user) {
-      $response = ['error_register' => 'E-mail já cadastrado'];
-      Logger::log(['method' => 'PanelModel->register_user', 'result' => $response ]);
-    }
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'UsersModel->registerUser', 'result' => $result]);
 
-    if (empty($get_user) and $this->usersDao->register_user_db($data)) {
-      $user = $this->get_user();
-      $database_user = 'm_user_' . $user[0]['id'];
-      $this->create_database_user($database_user);
-
-      $response = ['success_register' => 'Cadastro realizado com sucesso!'];
-    }
-
-    return $response;
+    return $result;
   }
 
   // Cria database do usuário após ter sido cadastrado
-  private function create_database_user($database_user)
+  public function createUserDatabase($databaseName)
   {
-    $result = $this->usersDao->create_database_user($database_user);
-    $response = ['success_create' => 'Database criado com sucesso'];
+    $sql = 'CREATE DATABASE IF NOT EXISTS ' . $databaseName;
 
-    if (empty($result)) {
-      $response = ['error_register' => $result];
-      Logger::log(['method' => 'PanelModel->create_database_user', 'result' => $response ]);
+    $result = $this->database->createDatabase($sql);
+    Logger::log(['method' => 'UsersModel->createUserDatabase', 'result' => $result]);
+
+    return $result;
+  }
+
+  // Cria tabelas padrões do usuário
+  public function createUserTables($databaseName)
+  {
+    $sql = [
+      'expenses' => 'CREATE TABLE expenses (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    description VARCHAR(255) NOT NULL,
+                                    amount DECIMAL(10, 2) NOT NULL,
+                                    type VARCHAR(255) NOT NULL,
+                                    category_id INT,
+                                    account_id INT,
+                                    date DATE NOT NULL,
+                                    status INT,
+                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                                 )',
+      'incomes' => 'CREATE TABLE incomes (
+                                   id INT AUTO_INCREMENT PRIMARY KEY,
+                                   description VARCHAR(255) NOT NULL,
+                                   amount DECIMAL(10, 2) NOT NULL,
+                                   type VARCHAR(255) NOT NULL,
+                                   category_id INT,
+                                   account_id INT,
+                                   date DATE NOT NULL,
+                                   status INT,
+                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                                 )',
+      'accounts' => 'CREATE TABLE accounts (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL)',
+      'categories' => 'CREATE TABLE categories (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL)',
+    ];
+
+    $result = $this->database->createTables($databaseName, $sql);
+
+    if ($result) {
+      $result = $this->defaultCategory() and $this->defaultAccount() ? true : false;
     }
 
-    return $response;
+    Logger::log(['method' => 'UsersModel->createUserTables', 'result' => $result]);
+
+    return $result;
+  }
+
+  // Cria conta padrão para cada usuário adicionado
+  private function defaultAccount()
+  {
+    $sql = 'INSERT INTO accounts (name) VALUES (:name)';
+    $params = ['name' => 'Conta Corrente'];
+
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'UsersDao->defaultAccount', 'result' => $result ]);
+
+    return $result;
+  }
+
+  // Cria categoria padrão para cada usuário adicionado
+  private function defaultCategory()
+  {
+    $sql = 'INSERT INTO categories (name) VALUES (:name)';
+    $params = ['name' => 'Geral'];
+
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'UsersDao->add_default_category', 'result' => $result ]);
+
+    return $result;
   }
 
   // Verifica se o usuário possui conta e faz login

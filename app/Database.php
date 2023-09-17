@@ -127,10 +127,8 @@ class Database
   }
 
   // Cria novo banco de dados
-  public function create_database($database)
+  public function createDatabase($sql)
   {
-    $sql = 'CREATE DATABASE IF NOT EXISTS ' . $database;
-
     try {
       $stmt = $this->connection->prepare($sql);
       $stmt->execute();
@@ -138,7 +136,7 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      Logger::log(['method' => 'Database->create_database', 'result' => $e->getMessage()]);
+      Logger::log(['method' => 'Database->createDatabase', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;
@@ -146,58 +144,20 @@ class Database
   }
 
   // Cria tabelas do usuário após se cadastrar
-  public function create_user_tables($database)
+  public function createTables($database, $sql)
   {
     try {
-      $this->create_database($database);
       $this->connection->exec('USE ' . $database);
 
-      $create_categories_table = 'CREATE TABLE categories (
-                                    id INT AUTO_INCREMENT PRIMARY KEY,
-                                      name VARCHAR(255) NOT NULL
-                                  )';
-
-      $create_accounts_table = 'CREATE TABLE accounts (
-                                  id INT AUTO_INCREMENT PRIMARY KEY,
-                                    name VARCHAR(255) NOT NULL
-                                )';
-
-      $create_expenses_table = 'CREATE TABLE expenses (
-                                  id INT AUTO_INCREMENT PRIMARY KEY,
-                                  description VARCHAR(255) NOT NULL,
-                                  amount DECIMAL(10, 2) NOT NULL,
-                                  type VARCHAR(255) NOT NULL,
-                                  category_id INT,
-                                  account_id INT,
-                                  date DATE NOT NULL,
-                                  status INT,
-                                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                                )';
-
-      $create_incomes_table = 'CREATE TABLE incomes (
-                                id INT AUTO_INCREMENT PRIMARY KEY,
-                                description VARCHAR(255) NOT NULL,
-                                amount DECIMAL(10, 2) NOT NULL,
-                                type VARCHAR(255) NOT NULL,
-                                category_id INT,
-                                account_id INT,
-                                date DATE NOT NULL,
-                                status INT,
-                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                              )';
-
       // Cria as tabelas
-      $this->connection->exec($create_categories_table);
-      $this->connection->exec($create_accounts_table);
-      $this->connection->exec($create_expenses_table);
-      $this->connection->exec($create_incomes_table);
-
+      foreach ($sql as $value) :
+        $this->connection->exec($value);
+      endforeach;
+      
       return true;
     }
     catch (PDOException $e) {
-      Logger::log(['method' => 'Database->create_user_tables', 'result' => $e->getMessage()]);
+      Logger::log(['method' => 'Database->createTables', 'result' => $e->getMessage()]);
       $this->check_invalid_database($e->getCode());
 
       return false;

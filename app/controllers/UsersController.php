@@ -13,51 +13,86 @@ class UsersController
   // Cadastro de usuário
   public function registration()
   {
-    // Verifica se o usuário possui sessão ativa
-    $this->check_session();
-    
+
+    // Valida se o usuário está logado
+    if ($this->checkSession()) {
+      Logger::log(['method' => 'UsersController->registration', 'result' => 'Usuario possui sessão ativa']);
+    }
+
     // View e conteúdo da página
-    $view_name = 'user_register';
-    $view_content = [];
+    $message = [];
+    $user = [];
+    $renderView = ['user_register' => []];
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if (empty($_POST['user_email'])) {
-      return [ $view_name => $view_content ];
+      // Recupera formulário
+      $user['email'] = $_POST['user_email'] ?? '';
+      $user['firstName'] = $_POST['user_first_name'] ?? '';
+      $user['lastName'] = $_POST['user_last_name'] ?? '';
+      $user['password'] = trim($_POST['user_password']) ?? '';
+      $user['confirmPassword'] = trim($_POST['user_confirm_password']) ?? '';
+
+      // Não aceita campos vazios
+      if (in_array('', $user, true)) {
+        $message = ['error_register' => 'Todos os campos precisam ser preenchidos'];
+        $renderView['user_register'] = ['message' => $message ];
+
+        return $renderView;
+      }
+
+      // Registra o usuário
+      $message = $user['password'] == $user['confirmPassword'] ? $this->registerUser($user) : ['error_password' => 'As senhas não coincidem']; 
     }
 
-    // Recupera formulário
-    $user = [
-      'user_first_name' => $_POST['user_first_name'],
-      'user_last_name' => $_POST['user_last_name'],
-      'user_email' => $_POST['user_email'],
-      'user_password' => trim($_POST['user_password']),
-      ];
-    $user_confirm_password = trim($_POST['user_confirm_password']);
-    $message = ['error_password' => 'As senhas não coincidem'];
+    $renderView['user_register'] = ['message' => $message, 'user_email' => $user['user_email'] ?? ''];
 
-    // Faz requisição do cadastro
-    if ($user['user_password'] == $user_confirm_password) {
-      $response = $this->usersModel->register_user($user);
+    return $renderView;
+  }
+
+  // Cadastra o usuário e cria tabelas
+  private function registerUser($user)
+  {
+    $userExists = $this->usersModel->getUser($user['email']);
+
+    // Verifica se o usuário já existe
+    if ($userExists) {
+      return ['error_register' => 'Email já registrado'];
     }
 
-    if (isset($response['error_register'])) {
-      $message = ['error_register' => $response['error_register']];
-      Logger::log('UsersController->registration: ' . $response['error_register']);
+    $registerUser = $this->usersModel->registerUser($user);
+    $getUser = $this->usersModel->getUser(($user['email']));
+    $message = ['error_register' => 'Erro ao cadastrar o usuário'];
+    
+    // Cadastra o usuário
+    if (empty($registerUser) or empty($getUser)) {
+      return $message;
     }
 
-    if (isset($response['success_register'])) {
-      $message = ['success_register' => $response['success_register']];
+    $databaseName = 'm_user_' . $getUser[0]['id'];
+    $createDatabase = $this->usersModel->createUserDatabase($databaseName);
+
+    // Cria a base de dados para o usuário
+    if (empty($createDatabase)) {
+      return $message;
     }
 
-    // Retorna view e seu conteúdo
-    $view_content = ['message' => $message, 'user_email' => $user['user_email']];
+    $createTables = $this->usersModel->createUserTables($databaseName);
 
-    return [ $view_name => $view_content ];
+    // Cria as tabelas padrões do usuário
+    if (empty($createTables)) {
+      return $message;
+    }
+
+    $message = ['success_register' => 'Cadastro efetuado com sucesso!'];
+
+    return $message;
   }
 
   public function login()
   {
     // Verifica se o usuário está logado
-    $this->check_session();
+    $this->checkSession();
 
     // View e conteúdo da página
     $view_name = 'user_login';
@@ -97,7 +132,7 @@ class UsersController
   }
 
   // Verifica se o usuário possui sessão ativa
-  private function check_session()
+  private function checkSession()
   {
     if (isset($_SESSION['user']) and $_SESSION['user']) {
       header('Location: /panel/display');

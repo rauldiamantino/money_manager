@@ -26,11 +26,11 @@
             <?php } ?>
 
             <div class="form-floating mb-3">
-              <input class="form-control" type="text" name="user_first_name" id="user_first_name" placeholder="username" required autocomplete="off" autofocus value=<?php echo $_POST['user_first_name'] ?? '' ?>>
+              <input class="form-control" type="text" name="user_first_name" id="user_first_name" placeholder="username" autocomplete="off" autofocus value=<?php echo $_POST['user_first_name'] ?? '' ?>>
               <label for="user_first_name" class="small">Nome</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" type="text" name="user_last_name" id="user_last_name" placeholder="username" required autocomplete="off" autofocus value=<?php echo $_POST['user_last_name'] ?? '' ?>>
+              <input class="form-control" type="text" name="user_last_name" id="user_last_name" placeholder="username" autocomplete="off" autofocus value=<?php echo $_POST['user_last_name'] ?? '' ?>>
               <label for="user_last_name" class="small">Sobrenome</label>
             </div>
             <div class="input-group mb-3">
@@ -40,7 +40,7 @@
                 </svg>
               </span>
               <div class="form-floating">
-                <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" required autocomplete="off" value=<?php echo $_POST['user_email'] ?? '' ?>>
+                <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" autocomplete="off" value=<?php echo $_POST['user_email'] ?? '' ?>>
                 <label for="user_email" class="small">Endereço de email</label>
               </div>
             </div>
@@ -48,13 +48,13 @@
           <fieldset class="form-group">
             <div class="input-group mb-3">
               <div class="form-floating">
-                <input class="form-control" type="password" name="user_password" placeholder="user_password" id="user_password" required autocomplete="off">
+                <input class="form-control" type="password" name="user_password" placeholder="user_password" id="user_password" autocomplete="off">
                 <label for="user_password" class="small">Digite sua senha</label>
               </div>
             </div>
             <div class="input-group mb-2">
               <div class="form-floating">
-                <input class="form-control mb-2" type="password" name="user_confirm_password" placeholder="user_confirm_password" id="user_confirm_password" required autocomplete="off">
+                <input class="form-control mb-2" type="password" name="user_confirm_password" placeholder="user_confirm_password" id="user_confirm_password" autocomplete="off">
                 <label for="user_confirm_password" class="small">Confirme sua Senha</label>
               </div>
             </div>
