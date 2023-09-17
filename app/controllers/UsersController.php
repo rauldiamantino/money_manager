@@ -20,8 +20,8 @@ class UsersController
     }
 
     // View e conteúdo da página
-    $message = [];
     $user = [];
+    $message = [];
     $renderView = ['user_register' => []];
     
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -91,44 +91,61 @@ class UsersController
 
   public function login()
   {
-    // Verifica se o usuário está logado
-    $this->checkSession();
 
-    // View e conteúdo da página
-    $view_name = 'user_login';
-    $view_content = [];
-
-    if (empty($_POST['user_password'])) {
-      return [$view_name => $view_content];
+    // Valida se o usuário está logado
+    if ($this->checkSession()) {
+      Logger::log(['method' => 'UsersController->login', 'result' => 'Usuario possui sessão ativa']);
     }
 
-    $user = ['user_email' => $_POST['user_email'], 'user_password' => trim($_POST['user_password'])];
-    $response = $this->usersModel->login_user($user);
+    // View e conteúdo da página
+    $user = [];
+    $renderView = ['user_login' => ['message' => []]];
 
-    if (isset($response['error_login'])) {
-      $message = ['error_login' => $response['error_login']];
-      Logger::log('UsersController->login: ' . $response['error_login']);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+      // Recupera formulário
+      $user['email'] = $_POST['user_email'] ?? '';
+      $user['password'] = trim($_POST['user_password']) ?? '';
+
+      if (in_array('', $user, true)) {
+        $message = ['error_login' => 'Todos os campos precisam ser preenchidos'];
+        $renderView['user_login']['message'] = $message;
+
+        return $renderView;
+      }
+
+      // Verifica se o usuário existe
+      $message = ['error_login' => 'Dados inválidos'];
+      $renderView['user_login']['message'] = $message;
+
+      $getUser = $this->usersModel->getUser($user['email']);
+
+      if (empty($getUser)) {
+        return $renderView;
+      }
+
+      if (password_verify(trim($user['password']), $getUser[0]['password'])) {
+        $message = ['success_login' => 'Dados corretos'];
+        $renderView['user_login']['message'] = $message;
+      }
     }
 
     // Se o usuário for localizado, redireciona para o painel
-    if (isset($response['success_login']) and empty($_SESSION['user'])) {
-      $_SESSION['user'] = [
-        'user_id' => $response['success_login']['user_id'],
-        'user_first_name' => $response['success_login']['user_first_name'],
-        'user_last_name' => $response['success_login']['user_last_name'],
-        'user_email' => $response['success_login']['user_email'],
-      ];
+    if (isset($renderView['user_login']['message']['success_login']) and empty($_SESSION['user'])) {
 
-      $message = ['success_login' => $response['success_login']['message']];
+      $_SESSION['user'] = [
+        'user_id' => $getUser[0]['id'],
+        'user_first_name' => $getUser[0]['first_name'],
+        'user_last_name' => $getUser[0]['last_name'],
+        'user_email' => $getUser[0]['email'],
+      ];
 
       header('Location: /panel/display');
       exit();
     }
 
-    // Se o usuario não for localizado, retorna  mensagem de erro
-    $view_content = ['message' => $message ];
 
-    return [$view_name => $view_content];
+    return $renderView;
   }
 
   // Verifica se o usuário possui sessão ativa

@@ -23,7 +23,7 @@ class PanelModel
     $sql = 'SELECT * FROM users WHERE id = :id';
     $params = ['id' => $userId];
 
-    $this->database->switch_database(DB_NAME);
+    $this->database->switchDatabase(DB_NAME);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => DB_NAME]) ? true : false;
 
     Logger::log(['method' => 'PanelModel->checkUserExists', 'result' => $result]);
@@ -53,7 +53,7 @@ class PanelModel
             AS combined_data
             ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['database_name' => $databaseName]);
     Logger::log(['method' => 'PanelModel->getTransactions', 'result' => $result]);
 
@@ -77,7 +77,7 @@ class PanelModel
       'category_id' => $income['category_id'],
     ];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->createIncome', 'result' => $result]);
@@ -110,7 +110,7 @@ class PanelModel
       'category_id' => $income['category_id'],
     ];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->editIncome', 'result' => $result]);
@@ -135,7 +135,7 @@ class PanelModel
       'category_id' => $expense['category_id'],
     ];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->createExpense', 'result' => $result]);
@@ -168,7 +168,7 @@ class PanelModel
       'category_id' => $expense['category_id'],
     ];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->editExpense', 'result' => $result]);
@@ -183,7 +183,7 @@ class PanelModel
     $sql = 'UPDATE ' . $transaction['table'] . ' SET status = :status WHERE id = :id;';
     $params = ['id' => $transaction['id'], 'status' => $transaction['status']];
 
-    $this->database->switch_database($database_name);
+    $this->database->switchDatabase($database_name);
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->changeStatus', 'result' => $result]);
@@ -198,7 +198,7 @@ class PanelModel
     $sql = 'DELETE FROM ' . $transaction['table'] . ' WHERE id = :id;';
     $params = ['id' => $transaction['id']];
 
-    $this->database->switch_database($database_name);
+    $this->database->switchDatabase($database_name);
     $result = $this->database->delete($sql, $params);
 
     Logger::log(['method' => 'PanelModel->deleteTransaction', 'result' => $result], 'error');
@@ -220,7 +220,7 @@ class PanelModel
       $params = ['name' => $accountName];
     }
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
     Logger::log(['method' => 'PanelModel->getAccounts', 'result' => $result]);
 
@@ -234,7 +234,7 @@ class PanelModel
     $sql = 'INSERT INTO accounts (name) VALUES (:name);';
     $params = ['name' => $accountName];
 
-    $this->database->switch_database(($databaseName));
+    $this->database->switchDatabase(($databaseName));
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->createAccount', 'result' => $result]);
@@ -249,7 +249,7 @@ class PanelModel
     $sql = 'UPDATE accounts SET name = :name WHERE id = :id;';
     $params = ['id' => $account['id'], 'name' => $account['name']];
 
-    $this->database->switch_database(($databaseName));
+    $this->database->switchDatabase(($databaseName));
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->editAccount', 'result' => $result]);
@@ -264,7 +264,7 @@ class PanelModel
     $sql = 'DELETE FROM accounts WHERE id = :id;';
     $params = ['id' => $accountId];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->delete($sql, $params);
 
     Logger::log(['method' => 'PanelModel->deleteAccount', 'result' => $result]);
@@ -282,7 +282,7 @@ class PanelModel
 
     $params = ['account_id' => $accountId];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
     Logger::log(['method' => 'PanelModel->accountInUse', 'result' => $result]);
@@ -299,7 +299,7 @@ class PanelModel
     $sql = 'SELECT * FROM accounts WHERE ' . $paramWhere . ' = :' . $paramWhere;
     $params = [$paramWhere => reset($account)];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
     Logger::log(['method' => 'PanelModel->accountExists', 'result' => $result]);
@@ -321,7 +321,7 @@ class PanelModel
       $params = ['name' => $category];
     }
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
     Logger::log(['method' => 'PanelModel->getCategories', 'result' => $result]);
 
@@ -335,7 +335,7 @@ class PanelModel
     $sql = 'INSERT INTO categories (name) VALUES (:name);';
     $params = ['name' => $categoryName];
 
-    $this->database->switch_database(($databaseName));
+    $this->database->switchDatabase(($databaseName));
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->createCategory', 'result' => $result]);
@@ -350,7 +350,7 @@ class PanelModel
     $sql = 'UPDATE categories SET name = :name WHERE id = :id;';
     $params = ['id' => $category['id'], 'name' => $category['name']];
 
-    $this->database->switch_database(($databaseName));
+    $this->database->switchDatabase(($databaseName));
     $result = $this->database->insert($sql, $params);
 
     Logger::log(['method' => 'PanelModel->editCategory', 'result' => $result]);
@@ -365,7 +365,7 @@ class PanelModel
     $sql = 'DELETE FROM categories WHERE id = :id;';
     $params = ['id' => $categoryId];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->delete($sql, $params);
 
     Logger::log(['method' => 'PanelModel->deleteCategory', 'result' => $result]);
@@ -383,7 +383,7 @@ class PanelModel
 
     $params = ['category_id' => $categoryId];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
     Logger::log(['method' => 'PanelModel->categoryInUse', 'result' => $result]);
@@ -400,7 +400,7 @@ class PanelModel
     $sql = 'SELECT * FROM categories WHERE ' . $paramWhere . ' = :' . $paramWhere;
     $params = [$paramWhere => reset($category)];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName]);
 
     Logger::log(['method' => 'PanelModel->categoryExists', 'result' => $result]);

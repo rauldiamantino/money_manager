@@ -24,7 +24,7 @@
               </svg>
             </span>
             <div class="form-floating">
-              <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" required autocomplete="off" value=<?php echo $_POST['user_email'] ?? '' ?>>
+              <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" autocomplete="off" value=<?php echo $_POST['user_email'] ?? '' ?>>
               <label for="user_email" class="small">Endereço de email</label>
             </div>
           </div>
@@ -32,7 +32,7 @@
         <fieldset class="form-group">
           <div class="input-group mb-3">
             <div class="form-floating">
-              <input class="form-control" type="password" name="user_password" placeholder="user_password" id="user_password" required autocomplete="off">
+              <input class="form-control" type="password" name="user_password" placeholder="user_password" id="user_password" autocomplete="off">
               <label for="user_password" class="small">Digite sua senha</label>
             </div>
           </div>

@@ -26,14 +26,14 @@ class Database
     } 
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->__construct', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
   }
 
   // Encerra conexão atual e alterna banco de dados
-  public function switch_database($databaseName)
+  public function switchDatabase($databaseName)
   {
     $this->connection = null;
     $this->dbname = $databaseName;
@@ -45,8 +45,8 @@ class Database
       return true;
     } 
     catch (PDOException $e) {
-      Logger::log(['method' => 'Database->switch_database', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      Logger::log(['method' => 'Database->switchDatabase', 'result' => $e->getMessage()]);
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
@@ -67,7 +67,7 @@ class Database
     }
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->insert', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
@@ -87,7 +87,7 @@ class Database
     }
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->delete', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
@@ -102,7 +102,7 @@ class Database
     try {
 
       if ($database_name) {
-        $this->switch_database($database_name);
+        $this->switchDatabase($database_name);
       }
       
       $stmt = $this->connection->prepare($sql);
@@ -120,7 +120,7 @@ class Database
     }
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->select', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
@@ -137,7 +137,7 @@ class Database
     } 
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->createDatabase', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
@@ -158,14 +158,14 @@ class Database
     }
     catch (PDOException $e) {
       Logger::log(['method' => 'Database->createTables', 'result' => $e->getMessage()]);
-      $this->check_invalid_database($e->getCode());
+      $this->checkDatabase($e->getCode());
 
       return false;
     }
   }
 
   // Redireciona para página de erro caso o db não exista
-  private function check_invalid_database($error_code)
+  private function checkDatabase($error_code)
   {
     if ($error_code == '1049' or $error_code == '42S02') {
       unset($_SESSION['user']);

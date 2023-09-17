@@ -1,17 +1,12 @@
 <?php
-require_once '../app/dao/UsersDAO.php';
 require_once '../app/Database.php';
 
 class UsersModel
 {
-  public $user_email;
-  public $usersDao;
   public $database;
-  public $database_user;
 
   public function __construct()
   {
-    $this->usersDao = new UsersDAO();
     $this->database = new Database();
   }
 
@@ -60,7 +55,7 @@ class UsersModel
                                     status INT,
                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                                 )',
+                                  )',
       'incomes' => 'CREATE TABLE incomes (
                                    id INT AUTO_INCREMENT PRIMARY KEY,
                                    description VARCHAR(255) NOT NULL,
@@ -95,7 +90,7 @@ class UsersModel
     $params = ['name' => 'Conta Corrente'];
 
     $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'UsersDao->defaultAccount', 'result' => $result ]);
+    Logger::log(['method' => 'UsersPanel->defaultAccount', 'result' => $result ]);
 
     return $result;
   }
@@ -107,52 +102,9 @@ class UsersModel
     $params = ['name' => 'Geral'];
 
     $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'UsersDao->add_default_category', 'result' => $result ]);
+    Logger::log(['method' => 'UsersPanel->add_default_category', 'result' => $result ]);
 
     return $result;
-  }
-
-  // Verifica se o usuário possui conta e faz login
-  public function login_user($data)
-  {
-    $this->user_email = $data['user_email'] ?? '';
-    $get_user = $this->get_user();
-    $response = [];
-
-    if (empty($get_user)) {
-      $response = ['error_login' => 'Dados inválidos'];
-      Logger::log(['method' => 'PanelModel->login_user', 'result' => $response ]);
-
-      return $response;
-    }
-
-    $validation_user = ['user_email' => false, 'user_password' => false];
-
-    if ($data['user_email'] == $get_user[0]['email']) {
-      $validation_user['user_email'] = true;
-    }
-
-    if (password_verify(trim($data['user_password']), $get_user[0]['password'])) {
-      $validation_user['user_password'] = true;
-    }
-
-    $response = [
-      'success_login' => [
-        'message' => 'Dados corretos!',
-        'user_id' => $get_user[0]['id'],
-        'user_first_name' => $get_user[0]['first_name'],
-        'user_last_name' => $get_user[0]['last_name'],
-        'user_email' => $get_user[0]['email'],
-      ],
-    ];
-    foreach ($validation_user as $linha) :
-      if (empty($linha)) {
-        $response = ['error_login' => 'Dados inválidos'];
-        Logger::log(['method' => 'PanelModel->login_user', 'result' => $response ]);
-      }
-    endforeach;
-
-    return $response;
   }
 
   // Obtém os dados da conta do usuário
@@ -162,7 +114,7 @@ class UsersModel
     $sql = 'SELECT * FROM users WHERE id = :id';
     $params = ['id' => $userId ];
 
-    $this->database->switch_database($databaseName);
+    $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
 
     Logger::log(['method' => 'PanelModel->getMyaccount', 'result' => $result ]);
@@ -223,21 +175,14 @@ class UsersModel
 
     $sql = 'SELECT * FROM users ' . $where;
     $result = $this->database->select($sql, ['params' => $params ]);
+    $log = $result;
 
-    Logger::log(['method' => 'PanelModel->getUser', 'result' => $result ]);
-
-    return $result;
-  }
-
-  // Busca usuário no Banco de Dados
-  private function get_user($user_id = 0)
-  {
-    $response = $this->usersDao->get_user_db($this->user_email, $user_id);
-
-    if (empty($response)) {
-      Logger::log(['method' => 'PanelModel->get_user', 'result' => $response ]);
+    if ($log) {
+      $log[0]['password'] = '**************';
     }
 
-    return $response;
+    Logger::log(['method' => 'PanelModel->getUser', 'result' => $log ]);
+
+    return $result;
   }
 }
