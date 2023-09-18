@@ -3,6 +3,12 @@ require_once '../app/Database.php';
 
 class Model
 {
+  public $database;
+
+  public function __construct()
+  {
+    $this->database = new Database();
+  }
 
   // Busca o usuário
   public function getUser($userEmail, $userId = 0)

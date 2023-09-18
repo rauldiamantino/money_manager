@@ -21,30 +21,23 @@ class Router
   // Recupera a rota e chama o controlador
   private function handleRoutes()
   {
+    $params = [];
+    $methodName = '';
 
+    // Rota base
     if ($this->uri == '/') {
-      $controllerName = 'homeController';
+      $controllerName = 'HomeController';
       $methodName = 'index';
     }
-
-    $params = [];
 
     // Remove controlador e método da rota, deixando somente parâmetros
     if (count($this->parts) > 0) {
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
-      $methodName = strtolower(array_shift($this->parts));
+
+      // Verifica se existe rota definida
+      $getMethod = $this->routes($controllerName);
+      $methodName = $getMethod ? $getMethod : strtolower(array_shift($this->parts));
       $params = $this->parts ?? '';
-    }
-
-    // Rotas pré definidas
-    if ($this->uri == '/login') {
-      $controllerName = 'LoginController';
-      $methodName = 'start';
-    }
-
-    if ($this->uri == '/register') {
-      $controllerName = 'RegisterController';
-      $methodName = 'start';
     }
 
     // Chama o controller e se não existir chama a página de erro
@@ -67,5 +60,37 @@ class Router
     foreach($this->result as $view => $content):
       ViewRenderer::render($view, $content);
     endforeach;
+  }
+
+  // Recebe um controlador e retorna o método associado
+  public function routes($controllerName)
+  {
+    $methodName = '';
+
+    if ($controllerName == 'LoginController') {
+      $methodName = 'start';
+    }
+
+    if ($controllerName == 'RegisterController') {
+      $methodName = 'start';
+    }
+
+    if ($controllerName == 'AccountsController') {
+      $methodName = 'accounts';
+    }
+
+    if ($controllerName == 'MyaccountController') {
+      $methodName = 'myaccount';
+    }
+
+    if ($controllerName == 'CategoriesController') {
+      $methodName = 'categories';
+    }
+
+    if ($controllerName == 'TransactionsController') {
+      $methodName = 'transactions';
+    }
+
+    return $methodName;
   }
 }

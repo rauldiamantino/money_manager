@@ -58,7 +58,7 @@
             </a>
           </td>
           <td class="px-0 col-10-css lh-1">
-            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
+            <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id'] . '-' . $value['type']?>">
               <input type="hidden" name="delete_transaction_id" value="<?php echo $value['id']; ?>">
               <input type="hidden" name="delete_transaction_type" value="<?php echo $value['type']; ?>">
 
@@ -66,7 +66,7 @@
             </form>
           </td>
           <td class="px-0 col-10-css lh-1">
-            <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
+            <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="POST" id="<?php echo 'edit-' . $value['id'] . '-' . $value['type']?>">
               <input type="hidden" name="change_status_transaction_id" value="<?php echo $value['id']; ?>">
               <input type="hidden" name="change_status_transaction_type" value="<?php echo $value['type']; ?>">
 
@@ -117,7 +117,7 @@
         <h5 class="modal-title" id="modal_label_income"><span class="modal_transaction_title">Nova</span> Receita</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
+        <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="POST" id="add_income">
           <input type="hidden" name="edit_income" class="transaction_id">
           <input type="hidden" name="add_income" value="1">
           <fieldset class="form-group">
@@ -178,7 +178,7 @@
         <h5 class="modal-title" id="modal_label_expense"><span class="modal_transaction_title">Nova</span> Despesa</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo 'panel/transactions/' . $data['user_id'] ?>" method="POST" id="add_expense">
+        <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="POST" id="add_expense">
           <input type="hidden" name="edit_expense" class="transaction_id">
           <input type="hidden" name="add_expense" value="1">
           <fieldset class="form-group">
