@@ -1,15 +1,8 @@
 <?php
-require_once '../app/Database.php';
 require_once '../app/models/Model.php';
 
 class UsersModel extends Model
 {
-  public $database;
-
-  public function __construct()
-  {
-    $this->database = new Database();
-  }
 
   // Obtém os dados da conta do usuário
   public function getMyaccount($userId)

@@ -1,7 +1,7 @@
 <?php
-require_once '../app/Database.php';
+require_once '../app/models/Model.php';
 
-class PanelModel
+class PanelModel extends Model
 {
   public $database;
 
