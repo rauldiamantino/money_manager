@@ -23,16 +23,16 @@ class PanelController
     $this->userFirstName = $_SESSION['user']['user_first_name'] ?? '';
     $this->userLastName = $_SESSION['user']['user_last_name'] ?? '';
     $this->userEmail = $_SESSION['user']['user_email'] ?? '';
+
+    // Valida se o usuário está logado
+    if ($this->checkSession() or $this->checkLogout()) {
+      Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
+    }
   }
 
   // Exibe visão geral do painel
   public function display()
   {
-    // Valida se o usuário está logado
-    if ($this->checkSession() or $this->checkLogout()) {
-      Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
-    }
-
     $this->activeTab = 'overview';
     $this->actionRoute = '/panel/display';
 

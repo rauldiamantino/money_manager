@@ -9,11 +9,6 @@ class TransactionsController extends PanelController
   {
     $this->userId = $userId;
 
-    // Valida se o usuário está logado
-    if (parent::checkSession() or parent::checkLogout()) {
-      Logger::log(['method' => 'PanelController->transactions', 'result' => 'Usuario Desconectado'], 'alert');
-    }
-
     $message = [];
 
     // Recupera informações da transação
