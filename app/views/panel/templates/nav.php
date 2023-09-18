@@ -3,7 +3,7 @@
     <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="panel/display">Visão geral</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'transactions') echo 'active'; ?>" aria-current="page" href="<?php echo 'panel/transactions/' . $data['user_id'] ?>">Transações</a>
+    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'transactions') echo 'active'; ?>" aria-current="page" href="<?php echo 'transactions/' . $data['user_id'] ?>">Transações</a>
   </li>
   <li class="nav-item">
     <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'accounts') echo 'active'; ?>" aria-current="page" href="<?php echo 'panel/accounts/' . $data['user_id'] ?>">Contas</a>
