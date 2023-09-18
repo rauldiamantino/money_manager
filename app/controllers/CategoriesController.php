@@ -9,6 +9,11 @@ class CategoriesController extends PanelController
   {
     $this->userId = $userId;
 
+    // Valida se o usuário está logado
+    if (parent::checkSession($userId) or parent::checkLogout()) {
+      Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
+    }
+
     $category = [
       'id' => $_POST['category_id'] ?? 0,
       'name' => $_POST['category_name'] ?? '',

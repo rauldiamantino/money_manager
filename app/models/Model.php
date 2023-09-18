@@ -35,4 +35,22 @@ class Model
 
     return $result;
   }
+
+  // Armazena ID de sessão após o login
+  public function saveSession($userId, $sessionId)
+  {
+    $sql = 'UPDATE users
+              SET session_id = :session_id
+              WHERE id = :id;';
+
+    $params = [
+      'id' => $userId,
+      'session_id' => $sessionId,
+    ];
+
+    $result = $this->database->insert($sql, $params);
+    Logger::log(['method' => 'PanelModel->saveSession', 'result' => $result ]);
+
+    return $result;
+  }
 }

@@ -1,7 +1,8 @@
 <?php
 require_once '../app/models/LoginModel.php';
+require_once '../app/controllers/UsersController.php';
 
-class LoginController
+class LoginController extends UsersController
 {
   public $user;
   public $message;
@@ -10,16 +11,28 @@ class LoginController
   public function __construct()
   {
     $this->loginModel = new LoginModel();
-
-    // Valida se o usuário está logado
-    if (isset($_SESSION['user']) and $_SESSION['user']) {
-      header('Location: /panel/display');
-      return true;
-    }
   }
 
   public function start()
   {
+
+    // Valida se o usuário está logado
+    if (isset($_SESSION['user'])) {
+
+      $sessionIdDb = '';
+      $userId = $_SESSION['user']['user_id'];
+
+      $getUser = $this->loginModel->getUser('', $userId);
+
+      if ($getUser) {
+        $sessionIdDb = $getUser[0]['session_id'];
+      }
+
+      if ($sessionIdDb == $_SESSION['user']['session_id']) {
+        header('Location: /panel/' . $userId);
+        exit();
+      }
+    }
 
     // Verifica se o form de login foi submetido
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -28,7 +41,7 @@ class LoginController
       if ($getForm) {
 
         // Redireciona para o painel
-        header('Location: /panel/display');
+        header('Location: /panel/' . $this->user['user_id']);
         exit();
       }
     }
@@ -61,16 +74,25 @@ class LoginController
 
     // Se o usuário for localizado e a senha estiver correta
     if (password_verify(trim($this->user['password']), $getUser[0]['password'])) {
-      $this->message = ['success_login' => 'Dados corretos'];
 
-      $_SESSION['user'] = [
-        'user_id' => $getUser[0]['id'],
-        'user_email' => $getUser[0]['email'],
-        'user_first_name' => $getUser[0]['first_name'],
-        'user_last_name' => $getUser[0]['last_name'],
-      ];
+      $sessionId = session_id();
+      $saveSession = $this->loginModel->saveSession($getUser[0]['id'], $sessionId);
+      session_regenerate_id();
 
-      return true;
+      if ($saveSession) {
+        $this->user['user_id'] = $getUser[0]['id'];
+        $this->message = ['success_login' => 'Dados corretos'];
+
+        $_SESSION['user'] = [
+          'session_id' => $sessionId,
+          'user_id' => $getUser[0]['id'],
+          'user_email' => $getUser[0]['email'],
+          'user_first_name' => $getUser[0]['first_name'],
+          'user_last_name' => $getUser[0]['last_name'],
+        ];
+
+        return true;
+      }
     }
 
     return false;

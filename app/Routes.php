@@ -67,6 +67,10 @@ class Router
   {
     $methodName = '';
 
+    if ($controllerName == 'PanelController') {
+      $methodName = 'display';
+    }
+
     if ($controllerName == 'LoginController') {
       $methodName = 'start';
     }

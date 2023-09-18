@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs justify-content-center pe-2 pt-2">
   <li class="nav-item">
-    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="panel/display">Visão geral</a>
+    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'overview') echo 'active'; ?>" aria-current="page" href="<?php echo 'panel/' . $data['user_id'] ?>">Visão geral</a>
   </li>
   <li class="nav-item">
     <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'transactions') echo 'active'; ?>" aria-current="page" href="<?php echo 'transactions/' . $data['user_id'] ?>">Transações</a>

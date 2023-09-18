@@ -9,6 +9,11 @@ class AccountsController extends PanelController
   {
     $this->userId = $userId;
 
+    // Valida se o usuário está logado
+    if (parent::checkSession($userId) or parent::checkLogout()) {
+      Logger::log(['method' => 'PanelController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
+    }
+    
     $account = [
       'id' => $_POST['account_id'] ?? 0,
       'name' => $_POST['account_name'] ?? '',

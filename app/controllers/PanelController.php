@@ -23,18 +23,19 @@ class PanelController
     $this->userFirstName = $_SESSION['user']['user_first_name'] ?? '';
     $this->userLastName = $_SESSION['user']['user_last_name'] ?? '';
     $this->userEmail = $_SESSION['user']['user_email'] ?? '';
-
-    // Valida se o usuário está logado
-    if ($this->checkSession() or $this->checkLogout()) {
-      Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
-    }
   }
 
   // Exibe visão geral do painel
-  public function display()
+  public function display($userId)
   {
+
+    // Valida se o usuário está logado
+    if ($this->checkSession($userId) or $this->checkLogout()) {
+      Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
+    }
+
     $this->activeTab = 'overview';
-    $this->actionRoute = '/panel/display';
+    $this->actionRoute = '/panel/' . $userId;
 
     // View e conteúdo para o menu de navegação
     $navViewName = 'panel/templates/nav';
@@ -54,8 +55,20 @@ class PanelController
   }
 
   // Verifica se o usuário possui sessão ativa
-  public function checkSession()
+  public function checkSession($userId)
   {
+    $sessionIdDb = '';
+    $getUser = $this->panelModel->getUser('', $userId);
+
+    if ($getUser) {
+      $sessionIdDb = $getUser[0]['session_id'];
+    }
+
+    if ($sessionIdDb != $_SESSION['user']['session_id']) {
+      header('Location: ' . BASE . 'login');
+      return true;
+    }
+
     if (empty($_SESSION['user'])) {
       header('Location: ' . BASE . 'login');
       return true;
@@ -75,6 +88,7 @@ class PanelController
 
     // Encerra sessão e redireciona para a home
     unset($_SESSION['user']);
+    $this->panelModel->saveSession($this->userId, null);
     session_destroy();
 
     header('Location: ' . BASE);
