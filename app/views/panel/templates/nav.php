@@ -9,7 +9,7 @@
     <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'accounts') echo 'active'; ?>" aria-current="page" href="<?php echo 'panel/accounts/' . $data['user_id'] ?>">Contas</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'categories') echo 'active'; ?>" aria-current="page" href="<?php echo 'panel/categories/' . $data['user_id'] ?>">Categorias</a>
+    <a class="nav-link py-3 text-black <?php if ($data['active_tab'] === 'categories') echo 'active'; ?>" aria-current="page" href="<?php echo 'categories/' . $data['user_id'] ?>">Categorias</a>
   </li>
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle py-3 text-black" data-bs-toggle="dropdown" role="button" aria-expanded="false">

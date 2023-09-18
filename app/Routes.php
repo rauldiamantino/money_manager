@@ -49,6 +49,7 @@ class Router
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
     $controller = '';
 
+
     if (file_exists($controllerFilePath)) {
       require_once $controllerFilePath;
       $controller = new $controllerName();
@@ -74,6 +75,10 @@ class Router
 
     if ($controllerName == 'TransactionsController') {
       $methodName = 'transactions';
+    }
+
+    if ($controllerName == 'CategoriesController') {
+      $methodName = 'categories';
     }
 
     if ($controllerName == 'LoginController') {

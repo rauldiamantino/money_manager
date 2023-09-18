@@ -32,7 +32,7 @@
               </a>
             </td>
             <td class="px-0 col-10-css">
-              <form action="<?php echo 'panel/categories/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id']?>">
+              <form action="<?php echo 'categories/' . $data['user_id'] ?>" method="POST" id="<?php echo 'delete-' . $value['id']?>">
                 <input type="hidden" name="delete_category_id" value="<?php echo $value['id']; ?>">
 
                 <button class="p-0 lh-1 border-0 bg-transparent text-danger" form="<?php echo 'delete-' . $value['id']?>"><i class="bi bi-x-circle fs-5"></i></button>
@@ -62,7 +62,7 @@
         <h5 class="modal-title" id="modal_category_label"><span class="modal_category_title">Nova </span>Categoria</h5>
       </div>
       <div class="modal-body">
-        <form action="<?php echo 'panel/categories/' . $data['user_id'] ?>" method="POST" id="add_category">
+        <form action="<?php echo 'categories/' . $data['user_id'] ?>" method="POST" id="add_category">
           <input type="hidden" name="category_id" class="category_id">
           <fieldset class="form-group">
             <div class="input-group mb-3">
