@@ -33,22 +33,16 @@ class Router
     // Remove controlador e método da rota, deixando somente parâmetros
     if (count($this->parts) > 0) {
       $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
-      $getMethod = $this->routes($controllerName);
 
-      // Se houver rota definida
+      // Verifica se existe rota definida
+      $getMethod = $this->routes($controllerName);
       $methodName = $getMethod ? $getMethod : strtolower(array_shift($this->parts));
       $params = $this->parts ?? '';
-    }
-
-    // Certifique-se de que haja parâmetros suficientes para chamar o método
-    if (count($params) < 1) {
-      $params = [null]; // Adicione um valor padrão se nenhum parâmetro for fornecido
     }
 
     // Chama o controller e se não existir chama a página de erro
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
     $controller = '';
-
 
     if (file_exists($controllerFilePath)) {
       require_once $controllerFilePath;
@@ -73,20 +67,28 @@ class Router
   {
     $methodName = '';
 
-    if ($controllerName == 'TransactionsController') {
-      $methodName = 'transactions';
-    }
-
-    if ($controllerName == 'CategoriesController') {
-      $methodName = 'categories';
-    }
-
     if ($controllerName == 'LoginController') {
       $methodName = 'start';
     }
 
     if ($controllerName == 'RegisterController') {
       $methodName = 'start';
+    }
+
+    if ($controllerName == 'AccountsController') {
+      $methodName = 'accounts';
+    }
+
+    if ($controllerName == 'MyaccountController') {
+      $methodName = 'myaccount';
+    }
+
+    if ($controllerName == 'CategoriesController') {
+      $methodName = 'categories';
+    }
+
+    if ($controllerName == 'TransactionsController') {
+      $methodName = 'transactions';
     }
 
     return $methodName;
