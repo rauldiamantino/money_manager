@@ -4,55 +4,46 @@ require_once '../app/models/Model.php';
 class UsersModel extends Model
 {
 
-  // Obtém os dados da conta do usuário
-  public function getMyaccount($userId)
+  // Busca o usuário
+  public function getUser($userEmail, $userId = 0)
   {
-    $databaseName = DB_NAME;
-    $sql = 'SELECT * FROM users WHERE id = :id';
-    $params = ['id' => $userId ];
+    // Busca por e-mail
+    $where = 'WHERE email = :email';
+    $params = ['email' => $userEmail ];
 
-    $this->database->switchDatabase($databaseName);
-    $result = $this->database->select($sql, ['params' => $params, 'database_name' => $databaseName ]);
+    // Busca por id
+    if ($userId) {
+      $where = 'WHERE id = :id';
+      $params = ['id' => $userId ];
+    }
 
-    Logger::log(['method' => 'PanelModel->getMyaccount', 'result' => $result ]);
+    $sql = 'SELECT * FROM users ' . $where;
+    $result = $this->database->select($sql, ['params' => $params ]);
+    $log = $result;
+
+    if ($log) {
+      $log[0]['password'] = '**************';
+    }
+
+    Logger::log(['method' => 'UsersModel->getUser', 'result' => $log ]);
 
     return $result;
   }
 
-  // Atualiza os dados da conta do usuário
-  public function updateMyaccount($newData)
+  // Armazena ID de sessão após o login
+  public function saveSession($userId, $sessionId)
   {
     $sql = 'UPDATE users
-            SET first_name = :first_name, last_name = :last_name, email = :email
-            WHERE id = :id';
+              SET session_id = :session_id
+              WHERE id = :id;';
 
     $params = [
-      'first_name' => $newData['user_first_name'],
-      'last_name' => $newData['user_last_name'],
-      'email' => $newData['user_email'],
-      'id' => $newData['user_id'],
+      'id' => $userId,
+      'session_id' => $sessionId,
     ];
 
     $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'PanelModel->updateMyaccount', 'result' => $result ]);
-
-    return true;
-  }
-
-  // Atualiza senha do conta do usuário
-  public function updateMyaccountPassword($newData)
-  {
-    $sql = 'UPDATE users
-            SET password = :password
-            WHERE id = :id';
-
-    $params = [
-      'password' => password_hash($newData['user_new_password'], PASSWORD_DEFAULT),
-      'id' => $newData['user_id'],
-    ];
-
-    $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'PanelModel->updateMyaccountPassword', 'result' => $result ]);
+    Logger::log(['method' => 'UsersModel->saveSession', 'result' => $result ]);
 
     return $result;
   }

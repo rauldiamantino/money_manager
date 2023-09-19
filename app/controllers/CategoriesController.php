@@ -1,16 +1,19 @@
 <?php
+require_once '../app/models/CategoriesModel.php';
 require_once '../app/controllers/PanelController.php';
 
 class CategoriesController extends PanelController
 {
+  public $categoriesModel;
 
   // Exibe todas as categorias
   public function categories($userId)
   {
     $this->userId = $userId;
+    $this->categoriesModel = new CategoriesModel();
 
     // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout()) {
+    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -43,7 +46,7 @@ class CategoriesController extends PanelController
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'categories/' . $this->userId;
-    $categories = $this->panelModel->getCategories($this->userId);
+    $categories = $this->categoriesModel->getCategories($this->userId);
     $this->activeTab = 'categories';
 
     // View e conteúdo para o menu de navegação
@@ -72,14 +75,14 @@ class CategoriesController extends PanelController
   {
 
     // Verifica se a categoria existe
-    $categoryExists = $this->panelModel->categoryExists($this->userId, ['name' => $category['name'] ]);
+    $categoryExists = $this->categoriesModel->categoryExists($this->userId, ['name' => $category['name'] ]);
 
     if ($categoryExists) {
       return ['error_category' => 'Conta já existe'];
     }
 
     // Cria a categoria
-    $createCategory = $this->panelModel->createCategory($this->userId, $category['name']);
+    $createCategory = $this->categoriesModel->createCategory($this->userId, $category['name']);
 
     if (empty($createCategory)) {
       return ['error_category' => 'Erro ao cadastrar categoria'];
@@ -93,14 +96,14 @@ class CategoriesController extends PanelController
   {
 
     // Verifica se a categoria existe
-    $categoryExists = $this->panelModel->categoryExists($this->userId, ['id' => $category['id'] ]);
+    $categoryExists = $this->categoriesModel->categoryExists($this->userId, ['id' => $category['id'] ]);
 
     if (empty($categoryExists)) {
       return ['error_category' => 'Conta inexistente'];
     }
 
     // Edita a categoria
-    $editCategory = $this->panelModel->editCategory($this->userId, ['id' => $category['id'], 'name' => $category['name'] ]);
+    $editCategory = $this->categoriesModel->editCategory($this->userId, ['id' => $category['id'], 'name' => $category['name'] ]);
 
     if (empty($editCategory)) {
       return ['error_category' => 'Erro ao editar categoria'];
@@ -114,14 +117,14 @@ class CategoriesController extends PanelController
   {
 
     // Não apaga categoria em uso
-    $categoryInUse = $this->panelModel->categoryInUse($this->userId, $category['delete']);
+    $categoryInUse = $this->categoriesModel->categoryInUse($this->userId, $category['delete']);
 
     if ($categoryInUse) {
       return ['error_category' => 'Conta em uso não pode ser apagada'];
     }
 
     // Apaga a categoria
-    $deleteCategory = $this->panelModel->deleteCategory($this->userId, $category['delete']);
+    $deleteCategory = $this->categoriesModel->deleteCategory($this->userId, $category['delete']);
 
     if (empty($deleteCategory)) {
       return ['error_category' => 'Erro ao apagar categoria'];

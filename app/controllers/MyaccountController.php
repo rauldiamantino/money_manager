@@ -1,17 +1,20 @@
 <?php
+require_once '../app/models/MyaccountModel.php';
 require_once '../app/controllers/PanelController.php';
 
 class MyaccountController extends PanelController
 {
+  public $myaccountModel;
 
   // Exibe e altera dados do usuário
   public function myaccount($userId) 
   {
     $this->userId = $userId;
+    $this->myaccountModel = new MyaccountModel();
 
     // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout()) {
-      Logger::log(['method' => 'PanelController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
+    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
+      Logger::log(['method' => 'MyaccountController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
     // Recupera novos dados do formulário
@@ -42,7 +45,7 @@ class MyaccountController extends PanelController
 
     // Atualiza cadastro
     if ($userUpdate['user_first_name']) {
-      $responseUpdate['user'] = $this->usersModel->updateMyaccount($userUpdate);
+      $responseUpdate['user'] = $this->myaccountModel->updateMyaccount($userUpdate);
     }
 
     // Atualiza senha
@@ -51,10 +54,10 @@ class MyaccountController extends PanelController
       if ($userUpdate['user_new_password'] == $userUpdate['user_confirm_new_password']) {
 
         // Altera a senha se o usuário existir
-        $getUser = $this->usersModel->getUser('', $userUpdate['user_id']);
+        $getUser = $this->myaccountModel->getUser('', $userUpdate['user_id']);
 
         if ($getUser) {
-          $responseUpdate['password'] = $this->usersModel->updateMyaccountPassword($userUpdate);
+          $responseUpdate['password'] = $this->myaccountModel->updateMyaccountPassword($userUpdate);
         }
       }
       else {
@@ -85,7 +88,7 @@ class MyaccountController extends PanelController
 
       if ($value === false) {
         $message = ['error_update' => 'Erro ao atualizar cadastro'];
-        Logger::log(['method' => 'PanelController->myaccount', 'result' => ['message' => $message, 'local' => $key ]], 'error');
+        Logger::log(['method' => 'MyaccountController->myaccount', 'result' => ['message' => $message, 'local' => $key ]], 'error');
       }
     endforeach;
 
@@ -96,7 +99,7 @@ class MyaccountController extends PanelController
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'myaccount/' . $this->userId;
-    $myaccount = $this->usersModel->getMyaccount($this->userId);
+    $myaccount = $this->myaccountModel->getUser('', $this->userId);
     $this->activeTab = 'myaccount';
 
     // View e conteúdo para o menu de navegação

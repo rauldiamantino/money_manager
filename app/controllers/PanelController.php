@@ -1,11 +1,9 @@
 <?php
 require_once '../app/models/PanelModel.php';
-require_once '../app/models/UsersModel.php';
 
 class PanelController
 {
   public $panelModel;
-  public $usersModel;
   public $userId;
   public $userFirstName;
   public $userLastName;
@@ -16,7 +14,6 @@ class PanelController
   public function __construct()
   {
     $this->panelModel = new PanelModel();
-    $this->usersModel = new UsersModel();
 
     // Recupera dados de sessão do usuário
     $this->userId = $_SESSION['user']['user_id'] ?? '';
@@ -30,7 +27,7 @@ class PanelController
   {
 
     // Valida se o usuário está logado
-    if ($this->checkSession($userId) or $this->checkLogout()) {
+    if ($this->checkSession($userId) or $this->checkLogout($userId)) {
       Logger::log(['method' => 'PanelController->display', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -78,11 +75,11 @@ class PanelController
   }
 
   // Verifica se o usuário existe e está logado
-  public function checkLogout()
+  public function checkLogout($userId)
   {
-    $userExists = $this->panelModel->checkUserExists($this->userId);
+    $getUser = $this->panelModel->getUser('', $userId);
 
-    if ($userExists and empty($_POST['logout'])) {
+    if ($getUser and empty($_POST['logout'])) {
       return false;
     }
 

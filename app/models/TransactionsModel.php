@@ -28,7 +28,7 @@ class TransactionsModel extends PanelModel
 
     $this->database->switchDatabase($databaseName);
     $result = $this->database->select($sql, ['database_name' => $databaseName]);
-    Logger::log(['method' => 'PanelModel->getTransactions', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->getTransactions', 'result' => $result]);
 
     return $result;
   }
@@ -53,7 +53,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createIncome', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->createIncome', 'result' => $result]);
 
     return $result;
   }
@@ -86,7 +86,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editIncome', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->editIncome', 'result' => $result]);
 
     return $result;
   }
@@ -111,7 +111,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->createExpense', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->createExpense', 'result' => $result]);
 
     return $result;
   }
@@ -144,7 +144,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($databaseName);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->editExpense', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->editExpense', 'result' => $result]);
 
     return $result;
   }
@@ -159,7 +159,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($database_name);
     $result = $this->database->insert($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->changeStatus', 'result' => $result]);
+    Logger::log(['method' => 'TransactionsModel->changeStatus', 'result' => $result]);
 
     return $result;
   }
@@ -174,7 +174,7 @@ class TransactionsModel extends PanelModel
     $this->database->switchDatabase($database_name);
     $result = $this->database->delete($sql, $params);
 
-    Logger::log(['method' => 'PanelModel->deleteTransaction', 'result' => $result], 'error');
+    Logger::log(['method' => 'TransactionsModel->deleteTransaction', 'result' => $result], 'error');
 
     return true;
   }

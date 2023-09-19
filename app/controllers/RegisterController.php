@@ -8,32 +8,10 @@ class RegisterController extends UsersController
   public $message;
   public $registerModel;
 
-  public function __construct()
-  {
-    $this->registerModel = new RegisterModel();
-  }
-
   // Retorna a view conforme rota
   public function start()
   {
-
-    // Valida se o usuário está logado
-    if (isset($_SESSION['user'])) {
-
-      $sessionIdDb = '';
-      $userId = $_SESSION['user']['user_id'];
-
-      $getUser = $this->registerModel->getUser('', $userId);
-
-      if ($getUser) {
-        $sessionIdDb = $getUser[0]['session_id'];
-      }
-
-      if ($sessionIdDb == $_SESSION['user']['session_id']) {
-        header('Location: /panel/' . $userId);
-        exit();
-      }
-    }
+    parent::checkSession();
 
     // Verifica se o form de cadastro foi submetido
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -79,6 +57,7 @@ class RegisterController extends UsersController
   {
 
     // Verifica se o usuário já existe
+    $this->registerModel = new RegisterModel();
     $userExists = $this->registerModel->getUser($this->user['email']);
 
     if ($userExists) {

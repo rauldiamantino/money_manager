@@ -1,15 +1,9 @@
 <?php
 require_once '../app/Database.php';
-require_once '../app/models/Model.php';
+require_once '../app/models/UsersModel.php';
 
-class RegisterModel extends Model
+class RegisterModel extends UsersModel
 {
-  public $database;
-
-  public function __construct()
-  {
-    $this->database = new Database();
-  }
 
   // Cadastra o usuário
   public function registerUser($user)
@@ -25,7 +19,7 @@ class RegisterModel extends Model
     ];
 
     $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'UsersModel->registerUser', 'result' => $result]);
+    Logger::log(['method' => 'RegisterModel->registerUser', 'result' => $result]);
 
     return $result;
   }
@@ -36,7 +30,7 @@ class RegisterModel extends Model
     $sql = 'CREATE DATABASE IF NOT EXISTS ' . $databaseName;
 
     $result = $this->database->createDatabase($sql);
-    Logger::log(['method' => 'UsersModel->createUserDatabase', 'result' => $result]);
+    Logger::log(['method' => 'RegisterModel->createUserDatabase', 'result' => $result]);
 
     return $result;
   }
@@ -79,7 +73,7 @@ class RegisterModel extends Model
       $result = $this->defaultCategory() and $this->defaultAccount() ? true : false;
     }
 
-    Logger::log(['method' => 'UsersModel->createUserTables', 'result' => $result]);
+    Logger::log(['method' => 'RegisterModel->createUserTables', 'result' => $result]);
 
     return $result;
   }

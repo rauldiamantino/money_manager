@@ -1,16 +1,19 @@
-<?php 
+<?php
+require_once '../app/models/TransactionsModel.php';
 require_once '../app/controllers/PanelController.php';
 
 class TransactionsController extends PanelController
 {
+  public $transactionsModel;
 
   // Exibe todas as transações
   public function transactions($userId)
   {
     $this->userId = $userId;
+    $this->transactionsModel = new TransactionsModel();
 
     // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout()) {
+    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'PanelController->transactions', 'result' => 'Usuario Desconectado'], 'alert');
     }
 
@@ -94,7 +97,7 @@ class TransactionsController extends PanelController
 
     // Prepara totais das transações
     $getTransactions = [
-      'items' => $this->panelModel->getTransactions($this->userId), 
+      'items' => $this->transactionsModel->getTransactions($this->userId), 
       'totals' => ['incomes' => 0, 'expenses' => 0],
     ];
 
@@ -128,8 +131,8 @@ class TransactionsController extends PanelController
 
     // View e conteúdo para a página de transações
     $transactionsViewName = 'panel/transactions';
-    $accounts = $this->panelModel->getAccounts($this->userId);
-    $categories = $this->panelModel->getCategories($this->userId);
+    $accounts = $this->transactionsModel->getAccounts($this->userId);
+    $categories = $this->transactionsModel->getCategories($this->userId);
 
     $transactionsViewContent = [
       'transactions' => $getTransactions,
@@ -145,7 +148,7 @@ class TransactionsController extends PanelController
   // Adiciona uma nova receita ao formulário
   public function createIncome($income)
   {
-    $createIncome = $this->panelModel->createIncome($this->userId, $income);
+    $createIncome = $this->transactionsModel->createIncome($this->userId, $income);
 
     if (empty($createIncome)) {
       return ['error_transaction' => 'Erro ao cadastrar receita'];
@@ -157,7 +160,7 @@ class TransactionsController extends PanelController
   // Edita uma receita existente
   public function editIncome($income)
   {
-    $editIncome = $this->panelModel->editIncome($this->userId, $income);
+    $editIncome = $this->transactionsModel->editIncome($this->userId, $income);
 
     if (empty($editIncome)) {
       return ['error_transaction' => 'Erro ao editar receita'];
@@ -169,7 +172,7 @@ class TransactionsController extends PanelController
   // Adiciona uma nova despesa ao formulário
   public function createExpense($expense)
   {
-    $createExpense = $this->panelModel->createExpense($this->userId, $expense);
+    $createExpense = $this->transactionsModel->createExpense($this->userId, $expense);
 
     if (empty($createExpense)) {
       return ['error_transaction' => 'Erro ao cadastrar despesa'];
@@ -181,7 +184,7 @@ class TransactionsController extends PanelController
   // Edita uma despesa existente
   public function editExpense($expense)
   {
-    $editExpense = $this->panelModel->editExpense($this->userId, $expense);
+    $editExpense = $this->transactionsModel->editExpense($this->userId, $expense);
 
     if (empty($editExpense)) {
       return ['error_transaction' => 'Erro ao editar despesa'];
@@ -192,7 +195,7 @@ class TransactionsController extends PanelController
 
   public function deleteTransaction($transaction)
   {
-    $deleteTransaction = $this->panelModel->deleteTransaction($this->userId, $transaction);
+    $deleteTransaction = $this->transactionsModel->deleteTransaction($this->userId, $transaction);
 
     if (empty($deleteTransaction)) {
       return ['error_transaction' => 'Erro ao apagar transação'];
@@ -203,7 +206,7 @@ class TransactionsController extends PanelController
 
   public function changeStatus($transaction)
   {
-    $changeStatus = $this->panelModel->changeStatus($this->userId, $transaction);;
+    $changeStatus = $this->transactionsModel->changeStatus($this->userId, $transaction);;
 
     if (empty($changeStatus)) {
       return ['error_transaction' => 'Erro ao alterar status da transação'];

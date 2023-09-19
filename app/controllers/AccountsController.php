@@ -1,17 +1,20 @@
 <?php
+require_once '../app/models/AccountsModel.php';
 require_once '../app/controllers/PanelController.php';
 
 class AccountsController extends PanelController
 {
+  public $accountsModel;
 
   // Exibe todas as contas
   public function accounts($userId)
   {
     $this->userId = $userId;
+    $this->accountsModel = new AccountsModel();
 
     // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout()) {
-      Logger::log(['method' => 'PanelController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
+    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
+      Logger::log(['method' => 'AccountsController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
     }
     
     $account = [
@@ -38,12 +41,12 @@ class AccountsController extends PanelController
     }
 
     if (empty($message)) {
-      Logger::log(['method' => 'PanelController->accounts', 'result' => $account ]);
+      Logger::log(['method' => 'AccountsController->accounts', 'result' => $account ]);
     }
 
     // Prepara conteúdo para a View
     $this->actionRoute = 'accounts/' . $this->userId;
-    $accounts = $this->panelModel->getAccounts($this->userId);
+    $accounts = $this->accountsModel->getAccounts($this->userId);
     $this->activeTab = 'accounts';
 
     // View e conteúdo para o menu de navegação
@@ -72,14 +75,14 @@ class AccountsController extends PanelController
   {
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($this->userId, ['name' => $account['name'] ]);
+    $accountExists = $this->accountsModel->accountExists($this->userId, ['name' => $account['name'] ]);
 
     if ($accountExists) {
       return ['error_account' => 'Conta já existe'];
     }
 
     // Cria a conta
-    $createAccount = $this->panelModel->createAccount($this->userId, $account['name']);
+    $createAccount = $this->accountsModel->createAccount($this->userId, $account['name']);
 
     if (empty($createAccount)) {
       return ['error_account' => 'Erro ao cadastrar conta'];
@@ -93,14 +96,14 @@ class AccountsController extends PanelController
   {
 
     // Verifica se a conta existe
-    $accountExists = $this->panelModel->accountExists($this->userId, ['id' => $account['id'] ]);
+    $accountExists = $this->accountsModel->accountExists($this->userId, ['id' => $account['id'] ]);
 
     if (empty($accountExists)) {
       return ['error_account' => 'Conta inexistente'];
     }
 
     // Edita a conta
-    $editAccount = $this->panelModel->editAccount($this->userId, ['id' => $account['id'], 'name' => $account['name'] ]);
+    $editAccount = $this->accountsModel->editAccount($this->userId, ['id' => $account['id'], 'name' => $account['name'] ]);
 
     if (empty($editAccount)) {
       return ['error_account' => 'Erro ao editar conta'];
@@ -114,14 +117,14 @@ class AccountsController extends PanelController
   {
 
     // Não apaga conta em uso
-    $accountInUse = $this->panelModel->accountInUse($this->userId, $account['delete']);
+    $accountInUse = $this->accountsModel->accountInUse($this->userId, $account['delete']);
 
     if ($accountInUse) {
       return ['error_account' => 'Conta em uso não pode ser apagada'];
     }
 
     // Apaga a conta
-    $deleteAccount = $this->panelModel->deleteAccount($this->userId, $account['delete']);
+    $deleteAccount = $this->accountsModel->deleteAccount($this->userId, $account['delete']);
 
     if (empty($deleteAccount)) {
       return ['error_account' => 'Erro ao apagar conta'];

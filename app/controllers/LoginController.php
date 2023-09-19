@@ -8,31 +8,10 @@ class LoginController extends UsersController
   public $message;
   public $loginModel;
 
-  public function __construct()
-  {
-    $this->loginModel = new LoginModel();
-  }
-
+  // Retorna a view conforme rota
   public function start()
   {
-
-    // Valida se o usuário está logado
-    if (isset($_SESSION['user'])) {
-
-      $sessionIdDb = '';
-      $userId = $_SESSION['user']['user_id'];
-
-      $getUser = $this->loginModel->getUser('', $userId);
-
-      if ($getUser) {
-        $sessionIdDb = $getUser[0]['session_id'];
-      }
-
-      if ($sessionIdDb == $_SESSION['user']['session_id']) {
-        header('Location: /panel/' . $userId);
-        exit();
-      }
-    }
+    parent::checkSession();
 
     // Verifica se o form de login foi submetido
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -65,6 +44,7 @@ class LoginController extends UsersController
     }
 
     // Verifica se o usuário existe
+    $this->loginModel = new LoginModel();
     $getUser = $this->loginModel->getUser($this->user['email']);
     $this->message = ['error_login' => 'Dados inválidos'];
 
@@ -75,14 +55,18 @@ class LoginController extends UsersController
     // Se o usuário for localizado e a senha estiver correta
     if (password_verify(trim($this->user['password']), $getUser[0]['password'])) {
 
+      // Armazena id da sessão no banco de dados
       $sessionId = session_id();
       $saveSession = $this->loginModel->saveSession($getUser[0]['id'], $sessionId);
+
+      // Gera um novo id para cada login realizado
       session_regenerate_id();
 
       if ($saveSession) {
         $this->user['user_id'] = $getUser[0]['id'];
         $this->message = ['success_login' => 'Dados corretos'];
 
+        // Grava dados do usuário na nova sessão
         $_SESSION['user'] = [
           'session_id' => $sessionId,
           'user_id' => $getUser[0]['id'],

@@ -1,15 +1,9 @@
 <?php
 require_once '../app/Database.php';
-require_once '../app/models/Model.php';
+require_once '../app/models/UsersModel.php';
 
-class LoginModel extends Model
+class LoginModel extends UsersModel
 {
-  public $database;
-
-  public function __construct()
-  {
-    $this->database = new Database();
-  }
 
   // Cadastra o usuário
   public function registerUser($user)
