@@ -84,7 +84,7 @@ class Router
     }
 
     if ($controllerName == 'MyaccountController') {
-      $methodName = 'myaccount';
+      $methodName = 'start';
     }
 
     if ($controllerName == 'PasswordController') {

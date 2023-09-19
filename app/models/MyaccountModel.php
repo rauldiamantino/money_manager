@@ -12,33 +12,15 @@ class MyaccountModel extends Model
             WHERE id = :id';
 
     $params = [
-      'first_name' => $newData['user_first_name'],
-      'last_name' => $newData['user_last_name'],
-      'email' => $newData['user_email'],
-      'id' => $newData['user_id'],
+      'first_name' => $newData['firstName'],
+      'last_name' => $newData['lastName'],
+      'email' => $newData['email'],
+      'id' => $newData['userId'],
     ];
 
     $result = $this->database->insert($sql, $params);
     Logger::log(['method' => 'PanelModel->updateMyaccount', 'result' => $result ]);
 
     return true;
-  }
-
-  // Atualiza senha do conta do usuário
-  public function updateMyaccountPassword($newData)
-  {
-    $sql = 'UPDATE users
-            SET password = :password
-            WHERE id = :id';
-
-    $params = [
-      'password' => password_hash($newData['user_new_password'], PASSWORD_DEFAULT),
-      'id' => $newData['user_id'],
-    ];
-
-    $result = $this->database->insert($sql, $params);
-    Logger::log(['method' => 'PanelModel->updateMyaccountPassword', 'result' => $result ]);
-
-    return $result;
   }
 }

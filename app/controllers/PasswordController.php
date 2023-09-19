@@ -20,6 +20,7 @@ class PasswordController extends PanelController
     // Armazena ID do usuário
     $this->userId = $userId;
 
+    // Recupera formulário de alteração da senha
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $getForm = $this->getForm();
 
@@ -80,6 +81,7 @@ class PasswordController extends PanelController
 
     // Se o usuário for localizado e a senha estiver correta
     if (password_verify(trim($this->form['password']), $getUser[0]['password'])) {
+
       // Aualiza a senha
       $this->form['userId'] = $this->userId;
       $updatePassword = $this->passwordModel->updatePassword($this->form);
@@ -89,11 +91,6 @@ class PasswordController extends PanelController
       }
 
       $this->message = ['success_update' => 'Senha atualizada com sucesso'];
-
-      // Grava dados do usuário na nova sessão
-      $_SESSION['user']['user_id'] = $getUser[0]['id'];
-      $_SESSION['user']['session_id'] = $getUser[0]['session_id'];
-
       return true;
     }
 

@@ -21,6 +21,7 @@ class PanelController
     $this->userFirstName = $_SESSION['user']['user_first_name'] ?? '';
     $this->userLastName = $_SESSION['user']['user_last_name'] ?? '';
     $this->userEmail = $_SESSION['user']['user_email'] ?? '';
+    $this->userEmail = $_SESSION['user']['session_id'] ?? '';
   }
 
   // Exibe visão geral do painel
