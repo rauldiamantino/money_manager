@@ -19,6 +19,9 @@
       <li class="text-center">
         <a href="<?php echo 'myaccount/' . $data['user_id'] ?>" class="dropdown-item py-3">Minha conta</a>
       </li>
+      <li class="text-center">
+        <a href="<?php echo 'myaccount/' . $data['user_id'] ?>" class="dropdown-item py-3">Alterar senha</a>
+      </li>
       <li class="nav-item">
         <form action="<?php echo $data['action_route']; ?>" method="POST" id="logout" class="d-none">
           <input type="hidden" name="logout" value=1>
