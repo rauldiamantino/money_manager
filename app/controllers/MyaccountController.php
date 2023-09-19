@@ -104,9 +104,9 @@ class MyaccountController extends PanelController
     }
 
     // Prepara conteúdo para a View
-    $this->actionRoute = 'myaccount/' . $this->userId;
-    $myaccount = $this->myaccountModel->getUser('', $this->userId);
+    $myaccount = $this->getUser;
     $this->activeTab = 'myaccount';
+    $this->actionRoute = 'myaccount/' . $this->userId;
 
     // View e conteúdo para o menu de navegação
     $navViewName = 'panel/templates/nav';
