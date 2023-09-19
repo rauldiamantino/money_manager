@@ -15,11 +15,11 @@
       <?php } ?>
 
       <div class="form-floating mb-3">
-        <input class="form-control" type="text" name="user_first_name" id="user_first_name" placeholder="username" required autocomplete="off" value="<?php echo $data['myaccount'][0]['first_name'] ?>">
+        <input class="form-control" type="text" name="user_first_name" id="user_first_name" placeholder="username" autocomplete="off" value="<?php echo $data['myaccount']['user_first_name'] ?>">
         <label for="user_first_name" class="small">Nome</label>
       </div>
       <div class="form-floating mb-3">
-        <input class="form-control" type="text" name="user_last_name" id="user_last_name" placeholder="username" required autocomplete="off" value="<?php echo $data['myaccount'][0]['last_name'] ?>">
+        <input class="form-control" type="text" name="user_last_name" id="user_last_name" placeholder="username" autocomplete="off" value="<?php echo $data['myaccount']['user_last_name'] ?>">
         <label for="user_last_name" class="small">Sobrenome</label>
       </div>
       <div class="input-group mb-3">
@@ -29,7 +29,7 @@
           </svg>
         </span>
         <div class="form-floating">
-          <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" required autocomplete="off" value="<?php echo $data['myaccount'][0]['email'] ?>">
+          <input class="form-control" type="email" name="user_email" id="user_email" placeholder="email@email.com" autocomplete="off" value="<?php echo $data['myaccount']['user_email'] ?>">
           <label for="user_email" class="small">Endereço de email</label>
         </div>
       </div>
@@ -37,14 +37,8 @@
     <fieldset class="form-group">
       <div class="input-group mb-3">
         <div class="form-floating">
-          <input class="form-control" type="password" name="user_new_password" placeholder="user_new_password" id="user_new_password" autocomplete="off">
-          <label for="user_new_password" class="small">Nova senha</label>
-        </div>
-      </div>
-      <div class="input-group mb-2">
-        <div class="form-floating">
-          <input class="form-control mb-2" type="password" name="user_confirm_new_password" placeholder="user_confirm_new_password" id="user_confirm_new_password" autocomplete="off">
-          <label for="user_confirm_new_password" class="small">Confirme a nova Senha</label>
+          <input class="form-control" type="password" name="password" placeholder="password" id="password" autocomplete="off">
+          <label for="password" class="small">Senha</label>
         </div>
       </div>
     </fieldset>

@@ -17,13 +17,16 @@
     </a>
     <ul class="dropdown-menu p-0 w-100">
       <li class="text-center">
-        <a href="<?php echo 'myaccount/' . $data['user_id'] ?>" class="dropdown-item py-3">Minha conta</a>
+        <a href="<?php echo 'myaccount/' . $data['user_id'] ?>" class="dropdown-item py-3 small">Minha conta</a>
       </li>
-      <li class="nav-item">
+      <li class="text-center">
+        <a href="<?php echo 'password/' . $data['user_id'] ?>" class="dropdown-item py-3 small">Alterar senha</a>
+      </li>
+      <li class="nav-item border-top border-muted">
         <form action="<?php echo $data['action_route']; ?>" method="POST" id="logout" class="d-none">
           <input type="hidden" name="logout" value=1>
         </form>
-        <button class="dropdown-item text-center py-3" form="logout">Sair</button>
+        <button class="dropdown-item text-center py-1 small" form="logout">Sair</button>
       </li>
     </ul>
   </li>
