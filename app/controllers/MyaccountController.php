@@ -4,6 +4,7 @@ require_once '../app/controllers/PanelController.php';
 
 class MyaccountController extends PanelController
 {
+  public $getUser;
   public $myaccountModel;
 
   // Exibe e altera dados do usuário
@@ -54,9 +55,9 @@ class MyaccountController extends PanelController
       if ($userUpdate['user_new_password'] == $userUpdate['user_confirm_new_password']) {
 
         // Altera a senha se o usuário existir
-        $getUser = $this->myaccountModel->getUser('', $userUpdate['user_id']);
+        $this->getUser = $this->myaccountModel->getUser('', $userUpdate['user_id']);
 
-        if ($getUser) {
+        if ($this->getUser) {
           $responseUpdate['password'] = $this->myaccountModel->updateMyaccountPassword($userUpdate);
         }
       }
@@ -65,6 +66,9 @@ class MyaccountController extends PanelController
       }
     }
 
+    // Recupera usuário atualizado
+    $this->getUser = $this->myaccountModel->getUser('', $userUpdate['user_id']);
+
     // Mensagens para o usuário
     foreach ($responseUpdate as $key => $value) :
 
@@ -72,17 +76,19 @@ class MyaccountController extends PanelController
         $message = ['success_update' => 'Cadastro atualizado com sucesso!'];
 
         // Armazena novos dados do usuário
-        $this->userId = $userUpdate['user_id'];
-        $this->userFirstName = $userUpdate['user_first_name'];
-        $this->userLastName = $userUpdate['user_last_name'];
-        $this->userEmail = $userUpdate['user_email'];
+        $this->userId = $this->getUser[0]['id'];
+        $this->userEmail = $this->getUser[0]['email'];
+        $this->sessionId = $this->getUser[0]['session_id'];
+        $this->userFirstName = $this->getUser[0]['first_name'];
+        $this->userLastName = $this->getUser[0]['last_name'];
         
         // Substitui dados da sessão atual
         $_SESSION['user'] = [
           'user_id' => $this->userId,
+          'user_email' => $this->userEmail,
+          'session_id' => $this->sessionId,
           'user_first_name' => $this->userFirstName,
           'user_last_name' => $this->userLastName,
-          'user_email' => $this->userEmail,
         ];
       }
 

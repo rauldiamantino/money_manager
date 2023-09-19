@@ -9,6 +9,7 @@ class PanelController
   public $userLastName;
   public $userEmail;
   public $activeTab;
+  public $sessionId;
   public $actionRoute;
 
   public function __construct()
