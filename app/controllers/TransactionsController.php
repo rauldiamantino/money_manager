@@ -9,7 +9,6 @@ class TransactionsController extends PanelController
   // Exibe todas as transações
   public function transactions($userId)
   {
-    $this->userId = $userId;
     $this->transactionsModel = new TransactionsModel();
 
     // Valida se o usuário está logado
@@ -48,10 +47,10 @@ class TransactionsController extends PanelController
       $transactions['transaction']['transaction_id'] = $_POST['edit_income'];
 
       if ($transactions['operation']['edit_income']) {
-        $message = $this->editIncome($transactions['transaction']);
+        $message = $this->editIncome($userId, $transactions['transaction']);
       }
       else {
-        $message = $this->createIncome($transactions['transaction']);
+        $message = $this->createIncome($userId, $transactions['transaction']);
       }
     }
 
@@ -65,10 +64,10 @@ class TransactionsController extends PanelController
 
       // Edita despesa
       if ($transactions['operation']['edit_expense']) {
-        $message = $this->editExpense($transactions['transaction']);
+        $message = $this->editExpense($userId, $transactions['transaction']);
       }
       else {
-        $message = $this->createExpense($transactions['transaction']);
+        $message = $this->createExpense($userId, $transactions['transaction']);
       }
     }
 
@@ -80,7 +79,7 @@ class TransactionsController extends PanelController
         'table' => $_POST['delete_transaction_type'] == 'E' ? 'expenses' : 'incomes',
       ];
 
-      $message = $this->deleteTransaction($transactions['transaction']);
+      $message = $this->deleteTransaction($userId, $transactions['transaction']);
     }
 
     // Altera status da transação
@@ -92,12 +91,12 @@ class TransactionsController extends PanelController
         'table' => $_POST['change_status_transaction_type'] == 'E' ? 'expenses' : 'incomes',
       ];
 
-      $message = $this->changeStatus($transactions['transaction']);
+      $message = $this->changeStatus($userId, $transactions['transaction']);
     }
 
     // Prepara totais das transações
     $getTransactions = [
-      'items' => $this->transactionsModel->getTransactions($this->userId), 
+      'items' => $this->transactionsModel->getTransactions($userId), 
       'totals' => ['incomes' => 0, 'expenses' => 0],
     ];
 
@@ -117,26 +116,28 @@ class TransactionsController extends PanelController
     $getTransactions['totals']['balance'] = $getTransactions['totals']['incomes'] - $getTransactions['totals']['expenses'];
 
     // View e conteúdo para o menu de navegação
-    $this->activeTab = 'transactions';
+    $activeTab = 'transactions';
     $navViewName = 'panel/templates/nav';
-    $this->actionRoute = 'transactions/' . $this->userId;
+    $actionRoute = 'transactions/' . $userId;
+
+    $user = $this->transactionsModel->getUser('', $userId);
 
     $navViewContent = [
-      'user_id' => $this->userId,
-      'active_tab' => $this->activeTab,
-      'action_route' => $this->actionRoute,
-      'user_first_name' => $this->userFirstName,
-      'user_last_name' => $this->userLastName,
+      'user_id' => $userId,
+      'active_tab' => $activeTab,
+      'action_route' => $actionRoute,
+      'user_first_name' => $user[0]['first_name'],
+      'user_last_name' => $user[0]['last_name'],
     ];
 
     // View e conteúdo para a página de transações
     $transactionsViewName = 'panel/transactions';
-    $accounts = $this->transactionsModel->getAccounts($this->userId);
-    $categories = $this->transactionsModel->getCategories($this->userId);
+    $accounts = $this->transactionsModel->getAccounts($userId);
+    $categories = $this->transactionsModel->getCategories($userId);
 
     $transactionsViewContent = [
       'transactions' => $getTransactions,
-      'user_id' => $this->userId,
+      'user_id' => $userId,
       'categories' => $categories,
       'accounts' => $accounts,
       'message' => $message,
@@ -146,9 +147,9 @@ class TransactionsController extends PanelController
   }
 
   // Adiciona uma nova receita ao formulário
-  public function createIncome($income)
+  public function createIncome($userId, $income)
   {
-    $createIncome = $this->transactionsModel->createIncome($this->userId, $income);
+    $createIncome = $this->transactionsModel->createIncome($userId, $income);
 
     if (empty($createIncome)) {
       return ['error_transaction' => 'Erro ao cadastrar receita'];
@@ -158,9 +159,9 @@ class TransactionsController extends PanelController
   }
 
   // Edita uma receita existente
-  public function editIncome($income)
+  public function editIncome($userId, $income)
   {
-    $editIncome = $this->transactionsModel->editIncome($this->userId, $income);
+    $editIncome = $this->transactionsModel->editIncome($userId, $income);
 
     if (empty($editIncome)) {
       return ['error_transaction' => 'Erro ao editar receita'];
@@ -170,9 +171,9 @@ class TransactionsController extends PanelController
   }
 
   // Adiciona uma nova despesa ao formulário
-  public function createExpense($expense)
+  public function createExpense($userId, $expense)
   {
-    $createExpense = $this->transactionsModel->createExpense($this->userId, $expense);
+    $createExpense = $this->transactionsModel->createExpense($userId, $expense);
 
     if (empty($createExpense)) {
       return ['error_transaction' => 'Erro ao cadastrar despesa'];
@@ -182,9 +183,9 @@ class TransactionsController extends PanelController
   }
 
   // Edita uma despesa existente
-  public function editExpense($expense)
+  public function editExpense($userId, $expense)
   {
-    $editExpense = $this->transactionsModel->editExpense($this->userId, $expense);
+    $editExpense = $this->transactionsModel->editExpense($userId, $expense);
 
     if (empty($editExpense)) {
       return ['error_transaction' => 'Erro ao editar despesa'];
@@ -193,9 +194,9 @@ class TransactionsController extends PanelController
     return [];
   }
 
-  public function deleteTransaction($transaction)
+  public function deleteTransaction($userId, $transaction)
   {
-    $deleteTransaction = $this->transactionsModel->deleteTransaction($this->userId, $transaction);
+    $deleteTransaction = $this->transactionsModel->deleteTransaction($userId, $transaction);
 
     if (empty($deleteTransaction)) {
       return ['error_transaction' => 'Erro ao apagar transação'];
@@ -204,9 +205,9 @@ class TransactionsController extends PanelController
     return [];
   }
 
-  public function changeStatus($transaction)
+  public function changeStatus($userId, $transaction)
   {
-    $changeStatus = $this->transactionsModel->changeStatus($this->userId, $transaction);;
+    $changeStatus = $this->transactionsModel->changeStatus($userId, $transaction);;
 
     if (empty($changeStatus)) {
       return ['error_transaction' => 'Erro ao alterar status da transação'];

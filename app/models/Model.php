@@ -23,6 +23,7 @@ class Model
       $params = ['id' => $userId ];
     }
 
+    $this->database->switchDatabase(DB_NAME);
     $sql = 'SELECT * FROM users ' . $where;
     $result = $this->database->select($sql, ['params' => $params ]);
     $log = $result;
