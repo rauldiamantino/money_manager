@@ -11,8 +11,15 @@ class Router
   public function __construct()
   {
     // Divide a URI e remove partes vazias ou nulas
-    // $this->uri = $_SERVER['REQUEST_URI'];
-    $this->uri = str_replace('/public', '', $_SERVER['REQUEST_URI']);
+    if (strstr($_SERVER['REQUEST_URI'], '/public')) {
+      define('BASE', dirname($_SERVER['SCRIPT_NAME']));
+      $this->uri = str_replace('/public', '', $_SERVER['REQUEST_URI']);
+    }
+    else {
+      define('BASE', '');
+      $this->uri = $_SERVER['REQUEST_URI'];
+    }
+
     $this->parts = explode('/', $this->uri);
     $this->parts = array_filter($this->parts);
 

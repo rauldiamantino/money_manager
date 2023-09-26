@@ -8,7 +8,6 @@ define('DB_PASSWORD', 'root');
 
 // URL padrão
 // define('BASE', dirname($_SERVER['SCRIPT_NAME']));
-define('BASE', dirname($_SERVER['SCRIPT_NAME']));
 
 // Debug function
 function debug($value) {

@@ -90,7 +90,7 @@ class PanelController
     $this->panelModel->saveSession($this->userId, null);
     session_destroy();
 
-    header('Location: ' . BASE);
+    header('Location: ' . BASE . '/');
     return true;
   }
 }
