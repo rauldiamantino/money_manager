@@ -34,7 +34,7 @@ class PanelController
     }
 
     $this->activeTab = 'overview';
-    $this->actionRoute = '/panel/' . $userId;
+    $this->actionRoute = 'panel/' . $userId;
 
     // View e conteúdo para o menu de navegação
     $navViewName = 'panel/templates/nav';

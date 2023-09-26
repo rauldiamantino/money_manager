@@ -20,7 +20,7 @@ class LoginController extends UsersController
       if ($getForm) {
 
         // Redireciona para o painel
-        header('Location: /panel/' . $this->user['user_id']);
+        header('Location: ' . BASE . '/panel/' . $this->user['user_id']);
         exit();
       }
     }
