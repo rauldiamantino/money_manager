@@ -19,7 +19,7 @@ class UsersController
 
     // Se estiver logado redireciona para o painel
     if ($userId and $sessionDb == $sessionId) {
-      header('Location: /panel/' . $userId);
+      header('Location: panel/' . $userId);
       exit();
     }
   }

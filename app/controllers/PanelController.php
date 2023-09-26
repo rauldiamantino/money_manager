@@ -64,12 +64,12 @@ class PanelController
     }
 
     if ($sessionIdDb != $_SESSION['user']['session_id']) {
-      header('Location: ' . BASE . 'login');
+      header('Location: ' . BASE . '/login');
       return true;
     }
 
     if (empty($_SESSION['user'])) {
-      header('Location: ' . BASE . 'login');
+      header('Location: ' . BASE . '/login');
       return true;
     }
 

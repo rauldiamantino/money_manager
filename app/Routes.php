@@ -11,7 +11,8 @@ class Router
   public function __construct()
   {
     // Divide a URI e remove partes vazias ou nulas
-    $this->uri = $_SERVER['REQUEST_URI'];
+    // $this->uri = $_SERVER['REQUEST_URI'];
+    $this->uri = str_replace('/public', '', $_SERVER['REQUEST_URI']);
     $this->parts = explode('/', $this->uri);
     $this->parts = array_filter($this->parts);
 
@@ -21,24 +22,10 @@ class Router
   // Recupera a rota e chama o controlador
   private function handleRoutes()
   {
-    $params = [];
-    $methodName = '';
-
-    // Rota base
-    if ($this->uri == '/') {
-      $controllerName = 'HomeController';
-      $methodName = 'index';
-    }
-
-    // Remove controlador e método da rota, deixando somente parâmetros
-    if (count($this->parts) > 0) {
-      $controllerName = ucfirst(array_shift($this->parts)) . 'Controller';
-
-      // Verifica se existe rota definida
-      $getMethod = $this->routes($controllerName);
-      $methodName = $getMethod ? $getMethod : strtolower(array_shift($this->parts));
-      $params = $this->parts ?? '';
-    }
+    $route = $this->routes($this->uri);
+    $controllerName = $route['controller'];
+    $methodName = $route['method'];
+    $params = $route['params'] ?? [];
 
     // Chama o controller e se não existir chama a página de erro
     $controllerFilePath = '../app/controllers/' . $controllerName . '.php';
@@ -62,43 +49,45 @@ class Router
     endforeach;
   }
 
-  // Recebe um controlador e retorna o método associado
-  public function routes($controllerName)
+  public function routes($uri)
   {
-    $methodName = '';
-
-    if ($controllerName == 'PanelController') {
-      $methodName = 'display';
+    // Verificação especial para a raiz
+    if ($uri === '/') {
+        return ['controller' => 'HomeController', 'method' => 'index', 'params' => []];
     }
 
-    if ($controllerName == 'LoginController') {
-      $methodName = 'start';
-    }
+    $routes = [
+        '/login' => ['LoginController' => 'start'],
+        '/register' => ['RegisterController' => 'start'],
+        '/panel' => ['PanelController' => 'display'],
+        '/accounts' => ['AccountsController' => 'accounts'],
+        '/myaccount' => ['MyaccountController' => 'start'],
+        '/password' => ['PasswordController' => 'start'],
+        '/categories' => ['CategoriesController' => 'categories'],
+        '/transactions' => ['TransactionsController' => 'transactions'],
+    ];
 
-    if ($controllerName == 'RegisterController') {
-      $methodName = 'start';
-    }
+    foreach ($routes as $key => $value):
 
-    if ($controllerName == 'AccountsController') {
-      $methodName = 'accounts';
-    }
+        // Padroniza rota com barras antes de verificar
+        $pattern = '/^' . preg_quote($key, '/') . '/';
+        $params = [];
 
-    if ($controllerName == 'MyaccountController') {
-      $methodName = 'start';
-    }
+        if (preg_match($pattern, $uri)) {
 
-    if ($controllerName == 'PasswordController') {
-      $methodName = 'start';
-    }
+            // Remove a parte da rota da URI
+            $paramsString = substr($uri, strlen($key));
 
-    if ($controllerName == 'CategoriesController') {
-      $methodName = 'categories';
-    }
+            // Divide a string de parâmetros por barras
+            $params = explode('/', trim($paramsString, '/'));
 
-    if ($controllerName == 'TransactionsController') {
-      $methodName = 'transactions';
-    }
+            // Remove valores vazios
+            $params = array_filter($params);
 
-    return $methodName;
+            return ['controller' => key($value), 'method' => current($value), 'params' => $params ];
+        }
+    endforeach;
+
+    return ['controller' => 'ErrorController', 'method' => 'not_found'];
   }
 }
