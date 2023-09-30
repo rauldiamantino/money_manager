@@ -9,7 +9,10 @@ Após criar sua conta e realizar o login, você pode adicionar receitas e despes
 3. Após realizar a configuração do ambiente, crie o database principal e a tabela users
 4. Depois de ter feito os passos anteriores, acesse a pasta `public` através do localhost no navegador.
 
-<sub>Obs.: Se estiver sendo redirecionado para uma página de erro ao tentar logar ou registrar, volte no passo 3.</sub>
+Importante: 
+- O servidor precisa ser acessado diretamente a partir da pasta `public`, ao acessar o navegador o endereço digitado precisa ser exatamente localhost.
+- Se estiver sendo redirecionado para uma página de erro ao tentar logar ou registrar, volte no passo 3.
+- Informações sobre erros na pasta `app/logs`
 
 ### Criando o database principal e tabela users
 
