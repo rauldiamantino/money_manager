@@ -122,13 +122,13 @@
     <div class="card alert alert-success w-100 m-0 py-0">
       <div class="card-body">
         <h5 class="card-title">Receitas</h5>
-        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['incomes'], 2, ',', '.') ?></p>
+        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['inc'], 2, ',', '.') ?></p>
       </div>
     </div>
     <div class="card alert alert-danger w-100 m-0 py-0">
       <div class="card-body">
         <h5 class="card-title">Despesas</h5>
-        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['expenses'], 2, ',', '.') ?></p>
+        <p class="card-title fs-4 fw-lighter"><span class="fs-6">R$ </span> <?php echo number_format($data['transactions']['totals']['exp'], 2, ',', '.') ?></p>
       </div>
     </div>
     <div class="card alert alert-dark w-100 m-0 py-0">

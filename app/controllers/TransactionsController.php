@@ -115,22 +115,21 @@ class TransactionsController extends PanelController
       $getTransactions['items'] = $this->transactionsModel->getTransactions($userId);
     }
 
-    $getTransactions['totals'] = ['incomes' => 0, 'expenses' => 0];
-
     // Totais
-    foreach ($getTransactions['items'] as $key => $value) :
+    $getTransactions['totals'] = ['inc' => 0, 'exp' => 0];
+    foreach ($getTransactions['items'] as $key => $value):
 
       if ($value['type'] == 'E') {
         $expense_amount = $value['amount'] * -1;
-        $getTransactions['totals']['expenses'] += $expense_amount;
+        $getTransactions['totals']['exp'] += $expense_amount;
       }
 
       if ($value['type'] == 'I') {
-        $getTransactions['totals']['incomes'] += $value['amount'];
+        $getTransactions['totals']['inc'] += $value['amount'];
       }
     endforeach;
 
-    $getTransactions['totals']['balance'] = $getTransactions['totals']['incomes'] - $getTransactions['totals']['expenses'];
+    $getTransactions['totals']['balance'] = $getTransactions['totals']['inc'] - $getTransactions['totals']['exp'];
 
     // View e conteúdo para o menu de navegação
     $activeTab = 'transactions';
