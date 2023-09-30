@@ -5,7 +5,7 @@ class TransactionsModel extends PanelModel
 {
 
   // Obtém receitas e despesas do usuário
-  public function getTransactions($userId)
+  public function getTransactions($userId, $month = '')
   {
     $databaseName = 'm_user_' . $userId;
     $sql = 'SELECT id, date, type, status, amount, created_at, updated_at, description, account_name, category_name
