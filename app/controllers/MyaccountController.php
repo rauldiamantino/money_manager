@@ -12,7 +12,6 @@ class MyaccountController extends PanelController
   // Exibe e altera dados do usuário
   public function start($userId) 
   {
-
     // Valida se o usuário está logado
     if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'MyaccountController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');

@@ -9,20 +9,19 @@ class AccountsController extends PanelController
   // Exibe todas as contas
   public function accounts($userId)
   {
-    $this->accountsModel = new AccountsModel();
-
     // Valida se o usuário está logado
     if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'AccountsController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
     }
-
+    
     $account = [
-      'id' => $_POST['account_id'] ?? 0,
-      'name' => $_POST['account_name'] ?? '',
+      'id' => $_POST['account_id'] ?? 0, 
+      'name' => $_POST['account_name'] ?? '', 
       'delete' => $_POST['delete_account_id'] ?? 0
     ];
 
     $message = [];
+    $this->accountsModel = new AccountsModel();
 
     // Adiciona uma nova conta para o usuário
     if ($account['name'] and empty($account['id'])) {
@@ -43,38 +42,31 @@ class AccountsController extends PanelController
       Logger::log(['method' => 'AccountsController->accounts', 'result' => $account ]);
     }
 
-    // Prepara conteúdo para a View
-    $actionRoute = 'accounts/' . $userId;
-    $accounts = $this->accountsModel->getAccounts($userId);
-    $activeTab = 'accounts';
-
+    // Renderiza menu e conteúdo
     $user = $this->accountsModel->getUser('', $userId);
+    $accounts = $this->accountsModel->getAccounts($userId);
 
-    // View e conteúdo para o menu de navegação
-    $navViewName = 'panel/templates/nav';
-    $navViewContent = [
-      'user_id' => $userId,
-      'active_tab' => $activeTab,
-      'action_route' => $actionRoute,
-      'user_first_name' => $user[0]['first_name'],
-      'user_last_name' => $user[0]['last_name'],
+    $renderView = [
+      'panel/templates/nav' => [
+        'user_id' => $userId,
+        'active_tab' => 'accounts',
+        'action_route' => 'accounts/' . $userId,
+        'user_first_name' => $user[0]['first_name'],
+        'user_last_name' => $user[0]['last_name'],
+      ],
+      'panel/accounts' => [
+        'accounts' => $accounts, 
+        'user_id' => $userId,
+        'message' => $message,
+      ],
     ];
 
-    // View e conteúdo para a página de contas
-    $accountsViewName = 'panel/accounts';
-    $accountsViewContent = [
-      'accounts' => $accounts, 
-      'user_id' => $userId,
-      'message' => $message,
-    ];
-
-    return [ $navViewName => $navViewContent, $accountsViewName => $accountsViewContent ];
+    return $renderView;
   }
   
   // Cria uma nova conta
-  public function createAccount($userId, $account)
+  private function createAccount($userId, $account)
   {
-
     // Verifica se a conta existe
     $accountExists = $this->accountsModel->accountExists($userId, ['name' => $account['name'] ]);
 
@@ -93,9 +85,8 @@ class AccountsController extends PanelController
   }
 
   // Edita uma conta já existente
-  public function editAccount($userId, $account)
+  private function editAccount($userId, $account)
   {
-
     // Verifica se a conta existe
     $accountExists = $this->accountsModel->accountExists($userId, ['id' => $account['id'] ]);
 
@@ -114,9 +105,8 @@ class AccountsController extends PanelController
   }
 
   // Apaga uma conta do banco de dados
-  public function deleteAccount($userId, $account)
+  private function deleteAccount($userId, $account)
   {
-
     // Não apaga conta em uso
     $accountInUse = $this->accountsModel->accountInUse($userId, $account['delete']);
 

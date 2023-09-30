@@ -9,9 +9,6 @@ class CategoriesController extends PanelController
   // Exibe todas as categorias
   public function categories($userId)
   {
-    $userId = $userId;
-    $this->categoriesModel = new CategoriesModel();
-
     // Valida se o usuário está logado
     if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
@@ -24,6 +21,7 @@ class CategoriesController extends PanelController
     ];
 
     $message = [];
+    $this->categoriesModel = new CategoriesModel();
 
     // Adiciona uma nova categoria para o usuário
     if ($category['name'] and empty($category['id'])) {
@@ -44,38 +42,31 @@ class CategoriesController extends PanelController
       Logger::log(['method' => 'PanelController->categories', 'result' => $category ]);
     }
 
-    // Prepara conteúdo para a View
-    $actionRoute = 'categories/' . $userId;
-    $categories = $this->categoriesModel->getCategories($userId);
-    $activeTab = 'categories';
-
+    // Renderiza menu e conteúdo
     $user = $this->categoriesModel->getUser('', $userId);
+    $categories = $this->categoriesModel->getCategories($userId);
 
-    // View e conteúdo para o menu de navegação
-    $navViewName = 'panel/templates/nav';
-    $navViewContent = [
-      'user_id' => $userId,
-      'active_tab' => $activeTab,
-      'action_route' => $actionRoute,
-      'user_first_name' => $user[0]['first_name'],
-      'user_last_name' => $user[0]['last_name'],
+    $renderView = [
+      'panel/templates/nav' => [
+        'user_id' => $userId,
+        'active_tab' => 'categories',
+        'action_route' => 'categories/' . $userId,
+        'user_first_name' => $user[0]['first_name'],
+        'user_last_name' => $user[0]['last_name'],
+      ],
+      'panel/categories' => [
+        'categories' => $categories,
+        'user_id' => $userId,
+        'message' => $message,
+      ],
     ];
 
-    // View e conteúdo para a página de categorias
-    $categoriesViewName = 'panel/categories';
-    $categoriesViewContent = [
-      'categories' => $categories, 
-      'user_id' => $userId,
-      'message' => $message,
-    ];
-
-    return [ $navViewName => $navViewContent, $categoriesViewName => $categoriesViewContent ];
+    return $renderView;
   }
 
   // Cria uma nova categoria
-  public function createCategory($userId, $category)
+  private function createCategory($userId, $category)
   {
-
     // Verifica se a categoria existe
     $categoryExists = $this->categoriesModel->categoryExists($userId, ['name' => $category['name'] ]);
 
@@ -94,9 +85,8 @@ class CategoriesController extends PanelController
   }
 
   // Edita uma categoria já existente
-  public function editCategory($userId, $category)
+  private function editCategory($userId, $category)
   {
-
     // Verifica se a categoria existe
     $categoryExists = $this->categoriesModel->categoryExists($userId, ['id' => $category['id'] ]);
 
@@ -115,9 +105,8 @@ class CategoriesController extends PanelController
   }
 
   // Apaga uma categoria do banco de dados
-  public function deleteCategory($userId, $category)
+  private function deleteCategory($userId, $category)
   {
-
     // Não apaga categoria em uso
     $categoryInUse = $this->categoriesModel->categoryInUse($userId, $category['delete']);
 

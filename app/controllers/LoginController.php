@@ -4,11 +4,8 @@ require_once '../app/controllers/UsersController.php';
 
 class LoginController extends UsersController
 {
-  public $user;
   public $message;
-  public $loginModel;
 
-  // Retorna a view conforme rota
   public function start()
   {
     parent::checkSession();
@@ -18,34 +15,30 @@ class LoginController extends UsersController
       $getForm = $this->getForm();
 
       if ($getForm) {
-
-        // Redireciona para o painel
-        header('Location: ' . BASE . '/panel/' . $this->user['user_id']);
+        // Redireciona para o painel os dados estiverem corretos
+        header('Location: ' . BASE . '/panel/' . $getForm['user_id']);
         exit();
       }
     }
 
-    $renderView = [
-      'login' => ['message' => $this->message ],
-    ];
-
+    $renderView = ['login' => ['message' => $this->message ]];
     return $renderView;
   }
 
   private function getForm()
   {
-    $this->user['email'] = $_POST['user_email'] ?? '';
-    $this->user['password'] = trim($_POST['user_password']) ?? '';
+    $user['email'] = $_POST['user_email'] ?? '';
+    $user['password'] = trim($_POST['user_password']) ?? '';
 
     // Não aceita campos vazios
-    if (in_array('', $this->user, true)) {
+    if (in_array('', $user, true)) {
       $this->message = ['error_login' => 'Todos os campos precisam ser preenchidos'];
       return false;
     }
 
     // Verifica se o usuário existe
-    $this->loginModel = new LoginModel();
-    $getUser = $this->loginModel->getUser($this->user['email']);
+    $loginModel = new LoginModel();
+    $getUser = $loginModel->getUser($user['email']);
     $this->message = ['error_login' => 'Dados inválidos'];
 
     if (empty($getUser)) {
@@ -53,20 +46,20 @@ class LoginController extends UsersController
     }
 
     // Se o usuário for localizado e a senha estiver correta
-    if (password_verify(trim($this->user['password']), $getUser[0]['password'])) {
+    if (password_verify(trim($user['password']), $getUser[0]['password'])) {
 
-      // Armazena id da sessão no banco de dados
+      // Armazena id da sessão
       $sessionId = session_id();
-      $saveSession = $this->loginModel->saveSession($getUser[0]['id'], $sessionId);
+      $saveSession = $loginModel->saveSession($getUser[0]['id'], $sessionId);
 
-      // Gera um novo id para cada login realizado
+      // Gera um novo id
       session_regenerate_id();
 
       if ($saveSession) {
-        $this->user['user_id'] = $getUser[0]['id'];
+        $user['user_id'] = $getUser[0]['id'];
         $this->message = ['success_login' => 'Dados corretos'];
 
-        // Grava dados do usuário na nova sessão
+        // Atuaiza sessão
         $_SESSION['user'] = [
           'session_id' => $sessionId,
           'user_id' => $getUser[0]['id'],
@@ -75,7 +68,7 @@ class LoginController extends UsersController
           'user_last_name' => $getUser[0]['last_name'],
         ];
 
-        return true;
+        return $user;
       }
     }
 
