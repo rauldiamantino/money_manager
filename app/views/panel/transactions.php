@@ -1,17 +1,19 @@
-<link rel="stylesheet" href="/css/transactions.css">
+<link rel="stylesheet" href="<?php echo BASE . '/css/transactions.css'?>">
 
 <section class="container mt-4">
   <h1 class="mb-4 text-center">Receitas e Despesas</h1>
 
-  <div class="mb-2 d-flex gap-3 position-relative">
-    <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_income" id="link_add_income">
-      <i class="bi bi-file-earmark-plus"></i>
-      Nova Receita
-    </a>
-    <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_expense" id="link_add_expense">
-      <i class="bi bi-file-earmark-plus"></i>
-      Nova Despesa
-    </a>
+  <div class="mb-2 d-flex gap-3 justify-content-between align-items-center position-relative">
+    <div class="d-flex gap-4">
+      <a href="" class="link-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_income" id="link_add_income">
+        <i class="bi bi-file-earmark-plus"></i>
+        Nova Receita
+      </a>
+      <a href="" class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover link_add_transaction" data-toggle="modal" data-target="#modal_expense" id="link_add_expense">
+        <i class="bi bi-file-earmark-plus"></i>
+        Nova Despesa
+      </a>
+    </div>
 
     <?php if (isset($data['message']['error_transaction'])) { ?>
       <div class="position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-danger text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['error_transaction'] ?></div>
@@ -20,6 +22,36 @@
     <?php if (isset($data['message']['success'])) { ?>
       <div class="d-none position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
     <?php } ?>
+
+    <div class="bg-primary rounded">
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Filtrar
+        </button>
+        <ul class="dropdown-menu">
+          <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="form_filter_transactions">
+            <li class="small">
+              <label for="filter_all_transactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                <input type="radio" name="filter_transactions" id="filter_all_transactions" role="button" value=A <?php echo $data['filter_check']['all'] ?>>
+                <span>Todas as transações</span>
+              </label>
+            </li>
+            <li class="small">
+              <label for="filter_incomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                <input type="radio" name="filter_transactions" id="filter_incomes" role="button" value=I <?php echo $data['filter_check']['incomes'] ?>>
+                <span>Receitas</span>
+              </label>
+            </li>
+            <li class="small">
+              <label for="filter_expenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                <input type="radio" name="filter_transactions" id="filter_expenses" role="button" value=E <?php echo $data['filter_check']['expenses'] ?>>
+                <span>Despesas</span>
+              </label>
+            </li>
+          </form>
+        </ul>
+      </div>
+      </div>
   </div>
 
   <table class="table table-hover">
@@ -232,4 +264,4 @@
   </div>
 </div>
 
-<script src="/js/transactions.js"></script>
+<script src="<?php echo BASE . '/js/transactions.js'?>"></script>

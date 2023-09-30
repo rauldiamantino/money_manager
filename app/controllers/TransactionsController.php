@@ -18,7 +18,7 @@ class TransactionsController extends PanelController
 
     $message = [];
 
-    // Recupera informações da transação
+    // Nova transação
     $transactions = [
       'operation' => [
         'add_income' => $_POST['add_income'] ?? 0,
@@ -94,14 +94,32 @@ class TransactionsController extends PanelController
       $message = $this->changeStatus($userId, $transactions['transaction']);
     }
 
-    // Prepara totais das transações
-    $getTransactions = [
-      'items' => $this->transactionsModel->getTransactions($userId), 
-      'totals' => ['incomes' => 0, 'expenses' => 0],
-    ];
+    // Recupera filtro da sessão se o formulário não for submetido
+    $filterTransactions = $_POST['filter_transactions'] ? $_POST['filter_transactions'] : $_SESSION['user']['check'];
+    $_SESSION['user']['check'] = $filterTransactions;
 
+    $filterChecked = [];
+    $getTransactions = [];
+
+    // Recupera transações do filtro
+    if ($filterTransactions == 'I') {
+      $filterChecked = ['incomes' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getIncomes($userId);
+    }
+    elseif ($filterTransactions == 'E') {
+      $filterChecked = ['expenses' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getExpenses($userId);
+    }
+    else {
+      $filterChecked = ['all' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getTransactions($userId);
+    }
+
+    $getTransactions['totals'] = ['incomes' => 0, 'expenses' => 0];
+
+    // Totais
     foreach ($getTransactions['items'] as $key => $value) :
-      
+
       if ($value['type'] == 'E') {
         $expense_amount = $value['amount'] * -1;
         $getTransactions['totals']['expenses'] += $expense_amount;
@@ -110,7 +128,6 @@ class TransactionsController extends PanelController
       if ($value['type'] == 'I') {
         $getTransactions['totals']['incomes'] += $value['amount'];
       }
-
     endforeach;
 
     $getTransactions['totals']['balance'] = $getTransactions['totals']['incomes'] - $getTransactions['totals']['expenses'];
@@ -141,6 +158,7 @@ class TransactionsController extends PanelController
       'categories' => $categories,
       'accounts' => $accounts,
       'message' => $message,
+      'filter_check' => $filterChecked,
     ];
 
     return [ $navViewName => $navViewContent, $transactionsViewName => $transactionsViewContent ];

@@ -129,3 +129,17 @@ recovery_modal(document)
 links_add_transaction.forEach(link => {
   link.addEventListener('click', clear_modal);
 })
+
+//---------------------- Envia formulário ao selecionar item do filtro de transações ----------------------//
+const filter_transactions = document.querySelector('#form_filter_transactions')
+const filters = filter_transactions.querySelectorAll('input')
+
+filters.forEach(filter => {
+  console.log(filter)
+  filter.addEventListener('click', () => {
+
+    if (filter.checked) {
+      filter_transactions.submit()
+    }
+  })
+})
