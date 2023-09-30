@@ -18,7 +18,7 @@ Importante:
 Database:
  ```
  host: localhost
- database name: estudo_mvc
+ database name: money_manager
  user: root
  password: root
  ```
