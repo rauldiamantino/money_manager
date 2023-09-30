@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/categories.css">
+<link rel="stylesheet" href="<?php echo BASE . '/css/categories.css'?>">
 
 <section class="container mt-4">
   <h1 class="mb-4 text-center">Categorias</h1>
@@ -81,4 +81,4 @@
     </div>
   </div>
 </div>
-<script src="/js/categories.js"></script>
+<script src="<?php echo BASE . '/js/categories.js'?>"></script>

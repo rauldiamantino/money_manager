@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/accounts.css">
+<link rel="stylesheet" href="<?php echo BASE . '/css/accounts.css'?>">
 
 <section class="container mt-4">
   <h1 class="mb-4 text-center">Contas</h1>
@@ -78,5 +78,4 @@
     </div>
   </div>
 </div>
-
-<script src="/js/accounts.js"></script>
+<script src="<?php echo BASE . '/js/accounts.js'?>"></script>
