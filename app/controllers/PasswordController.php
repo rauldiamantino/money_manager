@@ -4,42 +4,36 @@ require_once '../app/controllers/PanelController.php';
 
 class PasswordController extends PanelController
 {
-  public $form;
   public $message;
-  public $passwordModel;
 
   // Exibe e altera dados do usuário
   public function start($userId) 
   {
-
     // Valida se o usuário está logado
     if (parent::checkSession($userId) or parent::checkLogout($userId)) {
       Logger::log(['method' => 'PasswordController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
     }
-
-    // Armazena ID do usuário
-    $this->userId = $userId;
 
     // Recupera formulário de alteração da senha
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $getForm = $this->getForm();
 
       if ($getForm) {
-        $this->updatePassword();
+        $this->updatePassword($getForm, $userId);
       }
     }
 
     // Prepara view para tela de senha
     $renderView = [
       'panel/templates/nav' => [
-        'user_id' => $this->userId,
+        'user_id' => $userId,
         'active_tab' => 'password',
-        'action_route' => 'password/' . $this->userId,
-        'user_first_name' => $this->userFirstName,
-        'user_last_name' => $this->userLastName,
+        'action_route' => 'password/' . $userId,
+        'user_first_name' => $_SESSION['user']['user_first_name'],
+        'user_last_name' => $_SESSION['user']['user_last_name'],
       ],
       'panel/password' => [
-        'user_id' => $this->userId,
+        'user_id' => $userId,
         'message' => $this->message,
       ],
     ];
@@ -49,30 +43,29 @@ class PasswordController extends PanelController
 
   private function getForm()
   {
-    $this->form['password'] = $_POST['password'] ?? '';
-    $this->form['newPassword'] = $_POST['user_new_password'] ?? '';
-    $this->form['confirmNewPassword'] = $_POST['user_confirm_new_password'] ?? '';
+    $form['password'] = $_POST['password'] ?? '';
+    $form['newPassword'] = $_POST['user_new_password'] ?? '';
+    $form['confirmNewPassword'] = $_POST['user_confirm_new_password'] ?? '';
 
     // Não aceita campos vazios
-    if (in_array('', $this->form, true)) {
+    if (in_array('', $form, true)) {
       $this->message = ['error_update' => 'Todos os campos precisam ser preenchidos'];
       return false;
     }
 
-    if ($this->form['newPassword'] == $this->form['confirmNewPassword']) {
-      return true;
+    if ($form['newPassword'] == $form['confirmNewPassword']) {
+      return $form;
     }
 
     $this->message = ['error_update' => 'As senhas não coincidem'];
     return false;
   }
 
-  private function updatePassword()
+  private function updatePassword($form, $userId)
   {
-
     // Verifica se o usuário já existe
-    $this->passwordModel = new PasswordModel();
-    $getUser = $this->passwordModel->getUser('', $this->userId);
+    $passwordModel = new PasswordModel();
+    $getUser = $passwordModel->getUser('', $userId);
     $this->message = ['error_update' => 'Erro ao atualizar a senha'];
 
     if (empty($getUser)) {
@@ -80,11 +73,11 @@ class PasswordController extends PanelController
     }
 
     // Se o usuário for localizado e a senha estiver correta
-    if (password_verify(trim($this->form['password']), $getUser[0]['password'])) {
+    if (password_verify(trim($form['password']), $getUser[0]['password'])) {
 
       // Aualiza a senha
-      $this->form['userId'] = $this->userId;
-      $updatePassword = $this->passwordModel->updatePassword($this->form);
+      $form['userId'] = $userId;
+      $updatePassword = $passwordModel->updatePassword($form);
 
       if (empty($updatePassword)) {
         return false;
