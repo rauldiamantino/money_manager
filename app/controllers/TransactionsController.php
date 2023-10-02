@@ -94,24 +94,29 @@ class TransactionsController extends PanelController
       $message = $this->changeStatus($userId, $transactions['transaction']);
     }
 
+    //------------------------------------------------ Filtros ------------------------------------------------//
+
     // Recupera filtro da sessão se o formulário não for submetido
-    $filterTransactions = $_POST['filter_transactions'] ? $_POST['filter_transactions'] : $_SESSION['user']['check'];
-    $_SESSION['user']['check'] = $filterTransactions;
+    $filterTransactions = $_POST['filter_transactions'] ? $_POST['filter_transactions'] : $_SESSION['user']['filters']['transactions'];
+    $filterMonths = $_POST['filter_months'] ? $_POST['filter_months'] : $_SESSION['user']['filters'];
+    $_SESSION['user']['filters']['transactions'] = $filterTransactions;
+
+    debug($_SESSION);
 
     $filterChecked = [];
     $getTransactions = [];
 
     // Recupera transações do filtro
     if ($filterTransactions == 'I') {
-      $filterChecked = ['incomes' => 'checked'];
+      $filterChecked['transactions'] = ['incomes' => 'checked'];
       $getTransactions['items'] = $this->transactionsModel->getIncomes($userId);
     }
     elseif ($filterTransactions == 'E') {
-      $filterChecked = ['expenses' => 'checked'];
+      $filterChecked['transactions'] = ['expenses' => 'checked'];
       $getTransactions['items'] = $this->transactionsModel->getExpenses($userId);
     }
     else {
-      $filterChecked = ['all' => 'checked'];
+      $filterChecked['transactions'] = ['all' => 'checked'];
       $getTransactions['items'] = $this->transactionsModel->getTransactions($userId);
     }
 
@@ -157,7 +162,7 @@ class TransactionsController extends PanelController
       'categories' => $categories,
       'accounts' => $accounts,
       'message' => $message,
-      'filter_check' => $filterChecked,
+      'filters' => $filterChecked,
     ];
 
     return [ $navViewName => $navViewContent, $transactionsViewName => $transactionsViewContent ];

@@ -23,6 +23,10 @@
       <div class="d-none position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
     <?php } ?>
 
+    <?php 
+    debug($data['filters']);
+    ?>
+
     <div class="bg-primary rounded">
       <div class="btn-group">
         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -32,26 +36,26 @@
           <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="form_filter_transactions">
             <li class="small">
               <label for="filter_all_transactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_all_transactions" role="button" value=A <?php echo $data['filter_check']['all'] ?>>
+                <input type="radio" name="filter_transactions" id="filter_all_transactions" role="button" value=A <?php echo $data['filters']['transactions']['all'] ?>>
                 <span>Todas as transações</span>
               </label>
             </li>
             <li class="small">
               <label for="filter_incomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_incomes" role="button" value=I <?php echo $data['filter_check']['incomes'] ?>>
+                <input type="radio" name="filter_transactions" id="filter_incomes" role="button" value=I <?php echo $data['filters']['transactions']['incomes'] ?>>
                 <span>Receitas</span>
               </label>
             </li>
             <li class="small">
               <label for="filter_expenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_expenses" role="button" value=E <?php echo $data['filter_check']['expenses'] ?>>
+                <input type="radio" name="filter_transactions" id="filter_expenses" role="button" value=E <?php echo $data['filters']['transactions']['expenses'] ?>>
                 <span>Despesas</span>
               </label>
             </li>
           </form>
         </ul>
       </div>
-      </div>
+    </div>
   </div>
 
   <table class="table table-hover">
