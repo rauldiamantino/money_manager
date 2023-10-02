@@ -95,7 +95,6 @@ class TransactionsController extends PanelController
     }
 
     //------------------------------------------------ Filtros ------------------------------------------------//
-
     // Recupera filtro da sessão se o formulário não for submetido
     $filters = [
       'date' => [
@@ -111,6 +110,20 @@ class TransactionsController extends PanelController
     // Prepara Filtros
     $filterChecked = ['currentDate' => ['year' => $filters['date']['year'] ?? date('Y'), 'month' => sprintf('%02d', $filters['date']['month'] ?? date('m'))]];
     $filterChecked['selectedDate'] = implode('-', $filterChecked['currentDate']);
+    $filterChecked['nameMonths'] = [
+        1 => 'Janeiro',
+        2 => 'Fevereiro',
+        3 => 'Março',
+        4 => 'Abril',
+        5 => 'Maio',
+        6 => 'Junho',
+        7 => 'Julho',
+        8 => 'Agosto',
+        9 => 'Setembro',
+        10 => 'Outubro',
+        11 => 'Novembro',
+        12 => 'Dezembro'
+    ];
 
     // Recupera transações
     $getTransactions = [];

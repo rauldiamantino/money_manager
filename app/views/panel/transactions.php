@@ -2,6 +2,21 @@
 
 <section class="container mt-4">
   <h1 class="mb-4 text-center">Receitas e Despesas</h1>
+  <div class="d-flex justify-content-center">
+    <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" class="d-flex gap-3" id="formFilterDate">
+      <select name="filterMonth" id="filterMonth" class="form-select dateFilters">
+        <?php
+        foreach ($data['filters']['nameMonths'] as $month => $monthName) :
+          $selected = ($data['filters']['currentDate']['month'] == $month) ? 'selected' : '';
+          echo '<option value=' . $month . ' ' . $selected . '>' . $monthName . '</option>';
+        endforeach;
+        ?>
+      </select>
+      <div>
+        <input type="number" name="filterYear" id="filterYear" min="2020" max="2100" value="<?php echo $data['filters']['currentDate']['year']?>" class="form-control dateFilters">
+      </div>
+    </form>
+  </div>
 
   <div class="mb-2 d-flex gap-3 justify-content-between align-items-center position-relative">
     <div class="d-flex gap-4">
@@ -24,18 +39,6 @@
     <?php } ?>
 
     <div class="d-flex gap-3">
-      <div>
-        <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" class="d-flex gap-3" id="formFilterDate">
-          <div class="">
-            <label for="filterMonth">Mês</label>
-            <input type="number" name="filterMonth" id="filterMonth" min="1" max="12" value="<?php echo $data['filters']['currentDate']['month']?>">
-          </div>
-          <div>
-            <label for="filterYear">Ano</label>
-            <input type="number" name="filterYear" id="filterYear" min="2020" max="2100" value="<?php echo $data['filters']['currentDate']['year']?>">
-          </div>
-        </form>
-      </div>
       <div>
         <div class="btn-group rounded">
           <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

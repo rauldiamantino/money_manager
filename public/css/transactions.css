@@ -1,3 +1,7 @@
 .table .col-10-css {
   width: 40px;
 }
+
+#filterYear {
+  min-width: 90px;
+}
