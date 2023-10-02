@@ -128,8 +128,11 @@ recovery_modal(document)
 
 links_add_transaction.forEach(link => link.addEventListener('click', clear_modal))
 
-//---------------------- Envia formulário ao selecionar item do filtro de transações ----------------------//
-const filter_transactions = document.querySelector('#form_filter_transactions')
-const filters = filter_transactions.querySelectorAll('input')
+//---------------------- Envia formulário ao selecionar filtro ----------------------//
+const formFilterType = document.querySelector('#formFilterType')
+const formFilterDate = document.querySelector('#formFilterDate')
+const typeFilters = formFilterType.querySelectorAll('input')
+const dateFilters = formFilterDate.querySelectorAll('.dateFilters')
 
-filters.forEach(filter => filter.addEventListener('click', () => filter_transactions.submit()))
+typeFilters.forEach(type => type.addEventListener('click', () => formFilterType.submit()))
+dateFilters.forEach(date => date.addEventListener('change', () => formFilterDate.submit()))

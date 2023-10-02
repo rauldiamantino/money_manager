@@ -5,9 +5,9 @@ class TransactionsModel extends PanelModel
 {
 
   // Obtém receitas e despesas do usuário
-  public function getTransactions($userId)
+  public function getTransactions($userId, $date)
   {
-    $databaseName = 'm_user_' . $userId;
+    $params = ['params' => ['date' => $date], 'databaseName' => 'm_user_' . $userId ];
     $sql = 'SELECT id, date, type, status, amount, created_at, updated_at, description, account_name, category_name
             FROM
             (
@@ -24,19 +24,20 @@ class TransactionsModel extends PanelModel
               LEFT JOIN categories ON incomes.category_id = categories.id
             )
             AS combined_data
+            WHERE DATE_FORMAT(date, "%Y-%m") = :date
             ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
-    $this->database->switchDatabase($databaseName);
-    $result = $this->database->select($sql, ['database_name' => $databaseName]);
+    $this->database->switchDatabase($params['databaseName']);
+    $result = $this->database->select($sql, $params);
     Logger::log(['method' => 'TransactionsModel->getTransactions', 'result' => $result]);
 
     return $result;
   }
 
   // Obtém receitas usuário
-  public function getIncomes($userId)
+  public function getIncomes($userId, $date)
   {
-    $databaseName = 'm_user_' . $userId;
+    $params = ['params' => ['date' => $date], 'databaseName' => 'm_user_' . $userId ];
     $sql = 'SELECT id, date, type, status, amount, created_at, updated_at, description, account_name, category_name
             FROM
             (
@@ -47,19 +48,20 @@ class TransactionsModel extends PanelModel
               LEFT JOIN categories ON incomes.category_id = categories.id
             )
             AS combined_data
+            WHERE DATE_FORMAT(date, "%Y-%m") = :date
             ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
-    $this->database->switchDatabase($databaseName);
-    $result = $this->database->select($sql, ['database_name' => $databaseName]);
+    $this->database->switchDatabase($params['databaseName']);
+    $result = $this->database->select($sql, $params);
     Logger::log(['method' => 'TransactionsModel->getIncomes', 'result' => $result]);
 
     return $result;
   }
 
   // Obtém despesas do usuário
-  public function getExpenses($userId)
+  public function getExpenses($userId, $date)
   {
-    $databaseName = 'm_user_' . $userId;
+    $params = ['params' => ['date' => $date], 'databaseName' => 'm_user_' . $userId ];
     $sql = 'SELECT id, date, type, status, amount, created_at, updated_at, description, account_name, category_name
             FROM
             (
@@ -70,10 +72,11 @@ class TransactionsModel extends PanelModel
               LEFT JOIN categories ON expenses.category_id = categories.id
             )
             AS combined_data
+            WHERE DATE_FORMAT(date, "%Y-%m") = :date
             ORDER BY combined_data.date ASC, combined_data.created_at ASC;';
 
-    $this->database->switchDatabase($databaseName);
-    $result = $this->database->select($sql, ['database_name' => $databaseName]);
+    $this->database->switchDatabase($params['databaseName']);
+    $result = $this->database->select($sql, $params);
     Logger::log(['method' => 'TransactionsModel->getExpenses', 'result' => $result]);
 
     return $result;

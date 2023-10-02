@@ -2,6 +2,21 @@
 
 <section class="container mt-4">
   <h1 class="mb-4 text-center">Receitas e Despesas</h1>
+  <div class="d-flex justify-content-center">
+    <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" class="d-flex gap-3" id="formFilterDate">
+      <select name="filterMonth" id="filterMonth" class="form-select dateFilters">
+        <?php
+        foreach ($data['filters']['nameMonths'] as $month => $monthName) :
+          $selected = ($data['filters']['currentDate']['month'] == $month) ? 'selected' : '';
+          echo '<option value=' . $month . ' ' . $selected . '>' . $monthName . '</option>';
+        endforeach;
+        ?>
+      </select>
+      <div>
+        <input type="number" name="filterYear" id="filterYear" min="2020" max="2100" value="<?php echo $data['filters']['currentDate']['year']?>" class="form-control dateFilters">
+      </div>
+    </form>
+  </div>
 
   <div class="mb-2 d-flex gap-3 justify-content-between align-items-center position-relative">
     <div class="d-flex gap-4">
@@ -23,35 +38,37 @@
       <div class="d-none position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
     <?php } ?>
 
-    <div class="bg-primary rounded">
-      <div class="btn-group">
-        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Filtrar
-        </button>
-        <ul class="dropdown-menu">
-          <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="form_filter_transactions">
-            <li class="small">
-              <label for="filter_all_transactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_all_transactions" role="button" value=A <?php echo $data['filter_check']['all'] ?>>
-                <span>Todas as transações</span>
-              </label>
-            </li>
-            <li class="small">
-              <label for="filter_incomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_incomes" role="button" value=I <?php echo $data['filter_check']['incomes'] ?>>
-                <span>Receitas</span>
-              </label>
-            </li>
-            <li class="small">
-              <label for="filter_expenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_expenses" role="button" value=E <?php echo $data['filter_check']['expenses'] ?>>
-                <span>Despesas</span>
-              </label>
-            </li>
-          </form>
-        </ul>
+    <div class="d-flex gap-3">
+      <div>
+        <div class="btn-group rounded">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filtrar
+          </button>
+          <ul class="dropdown-menu">
+            <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="formFilterType">
+              <li class="small">
+                <label for="filterAllTransactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterAllTransactions" role="button" value=A <?php echo $data['filters']['type']['all'] ?>>
+                  <span>Todas as transações</span>
+                </label>
+              </li>
+              <li class="small">
+                <label for="filterIncomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterIncomes" role="button" value=I <?php echo $data['filters']['type']['incomes'] ?>>
+                  <span>Receitas</span>
+                </label>
+              </li>
+              <li class="small">
+                <label for="filterExpenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterExpenses" role="button" value=E <?php echo $data['filters']['type']['expenses'] ?>>
+                  <span>Despesas</span>
+                </label>
+              </li>
+            </form>
+          </ul>
+        </div>
       </div>
-      </div>
+    </div>
   </div>
 
   <table class="table table-hover">
