@@ -97,27 +97,35 @@ class TransactionsController extends PanelController
     //------------------------------------------------ Filtros ------------------------------------------------//
 
     // Recupera filtro da sessão se o formulário não for submetido
-    $filterTransactions = $_POST['filter_transactions'] ? $_POST['filter_transactions'] : $_SESSION['user']['filters']['transactions'];
-    $filterMonths = $_POST['filter_months'] ? $_POST['filter_months'] : $_SESSION['user']['filters'];
-    $_SESSION['user']['filters']['transactions'] = $filterTransactions;
+    $filters = [
+      'date' => [
+        'month' => $_POST['filterMonth'] ? $_POST['filterMonth'] : $_SESSION['user']['filters']['date']['month'],
+        'year' => $_POST['filterYear'] ? $_POST['filterYear'] : $_SESSION['user']['filters']['date']['year'],
+      ],
+      'type' => $_POST['filterTransactions'] ? $_POST['filterTransactions'] : $_SESSION['user']['filters']['type'],
+    ];
 
-    debug($_SESSION);
+    // Guarda na sessão os filtros escolhidos
+    $_SESSION['user']['filters'] = $filters;
 
-    $filterChecked = [];
+    // Prepara Filtros
+    $filterChecked = ['currentDate' => ['year' => $filters['date']['year'] ?? date('Y'), 'month' => sprintf('%02d', $filters['date']['month'] ?? date('m'))]];
+    $filterChecked['selectedDate'] = implode('-', $filterChecked['currentDate']);
+
+    // Recupera transações
     $getTransactions = [];
 
-    // Recupera transações do filtro
-    if ($filterTransactions == 'I') {
-      $filterChecked['transactions'] = ['incomes' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getIncomes($userId);
+    if ($filters['type'] == 'I') {
+      $filterChecked['type'] = ['incomes' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getIncomes($userId, $filterChecked['selectedDate']);
     }
-    elseif ($filterTransactions == 'E') {
-      $filterChecked['transactions'] = ['expenses' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getExpenses($userId);
+    elseif ($filters['type'] == 'E') {
+      $filterChecked['type'] = ['expenses' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getExpenses($userId, $filterChecked['selectedDate']);
     }
     else {
-      $filterChecked['transactions'] = ['all' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getTransactions($userId);
+      $filterChecked['type'] = ['all' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getTransactions($userId, $filterChecked['selectedDate']);
     }
 
     // Totais

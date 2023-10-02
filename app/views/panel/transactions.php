@@ -23,37 +23,47 @@
       <div class="d-none position-absolute top-50 start-50 translate-middle col-md-8 col-lg-6 col-xl-4 mx-auto alert alert-success text-center small p-1 rounded-0" id="alert_transaction"><?php echo $data['message']['success'] ?></div>
     <?php } ?>
 
-    <?php 
-    debug($data['filters']);
-    ?>
-
-    <div class="bg-primary rounded">
-      <div class="btn-group">
-        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Filtrar
-        </button>
-        <ul class="dropdown-menu">
-          <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="form_filter_transactions">
-            <li class="small">
-              <label for="filter_all_transactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_all_transactions" role="button" value=A <?php echo $data['filters']['transactions']['all'] ?>>
-                <span>Todas as transações</span>
-              </label>
-            </li>
-            <li class="small">
-              <label for="filter_incomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_incomes" role="button" value=I <?php echo $data['filters']['transactions']['incomes'] ?>>
-                <span>Receitas</span>
-              </label>
-            </li>
-            <li class="small">
-              <label for="filter_expenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
-                <input type="radio" name="filter_transactions" id="filter_expenses" role="button" value=E <?php echo $data['filters']['transactions']['expenses'] ?>>
-                <span>Despesas</span>
-              </label>
-            </li>
-          </form>
-        </ul>
+    <div class="d-flex gap-3">
+      <div>
+        <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" class="d-flex gap-3" id="formFilterDate">
+          <div class="">
+            <label for="filterMonth">Mês</label>
+            <input type="number" name="filterMonth" id="filterMonth" min="1" max="12" value="<?php echo $data['filters']['currentDate']['month']?>">
+          </div>
+          <div>
+            <label for="filterYear">Ano</label>
+            <input type="number" name="filterYear" id="filterYear" min="2020" max="2100" value="<?php echo $data['filters']['currentDate']['year']?>">
+          </div>
+        </form>
+      </div>
+      <div>
+        <div class="btn-group rounded">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filtrar
+          </button>
+          <ul class="dropdown-menu">
+            <form action="<?php echo 'transactions/' . $data['user_id'] ?>" method="post" id="formFilterType">
+              <li class="small">
+                <label for="filterAllTransactions" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterAllTransactions" role="button" value=A <?php echo $data['filters']['type']['all'] ?>>
+                  <span>Todas as transações</span>
+                </label>
+              </li>
+              <li class="small">
+                <label for="filterIncomes" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterIncomes" role="button" value=I <?php echo $data['filters']['type']['incomes'] ?>>
+                  <span>Receitas</span>
+                </label>
+              </li>
+              <li class="small">
+                <label for="filterExpenses" class="dropdown-item d-flex align-items-center gap-2" role="button">
+                  <input type="radio" name="filterTransactions" id="filterExpenses" role="button" value=E <?php echo $data['filters']['type']['expenses'] ?>>
+                  <span>Despesas</span>
+                </label>
+              </li>
+            </form>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
