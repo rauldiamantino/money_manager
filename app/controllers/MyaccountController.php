@@ -49,11 +49,12 @@ class MyaccountController extends PanelController
 
   private function getForm()
   {
-    $form['password'] = $_POST['password'] ?? '';
-    $form['firstName'] = $_POST['user_first_name'] ?? '';
-    $form['lastName'] = $_POST['user_last_name'] ?? '';
-    $form['email'] = $_POST['user_email'] ?? '';
-
+    $form = [
+      'password' => $_POST['password'] ?? '',
+      'firstName' => $_POST['user_first_name'] ?? '',
+      'lastName' => $_POST['user_last_name'] ?? '',
+      'email' => $_POST['user_email'] ?? '',
+    ];
 
     // Não aceita campos vazios
     if (in_array('', $form, true)) {

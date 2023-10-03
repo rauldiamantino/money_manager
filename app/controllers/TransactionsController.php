@@ -11,10 +11,9 @@ class TransactionsController extends PanelController
   {
     $this->transactionsModel = new TransactionsModel();
 
-    // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
-      Logger::log(['method' => 'PanelController->transactions', 'result' => 'Usuario Desconectado'], 'alert');
-    }
+    // Valida sessão e login
+    parent::checkLogout($userId);
+    parent::checkSession($userId);
 
     $message = [];
 
@@ -95,22 +94,23 @@ class TransactionsController extends PanelController
     }
 
     //------------------------------------------------ Filtros ------------------------------------------------//
-    // Recupera filtro da sessão se o formulário não for submetido
-    $filters = [
-      'date' => [
-        'month' => $_POST['filterMonth'] ? $_POST['filterMonth'] : $_SESSION['user']['filters']['date']['month'],
-        'year' => $_POST['filterYear'] ? $_POST['filterYear'] : $_SESSION['user']['filters']['date']['year'],
-      ],
-      'type' => $_POST['filterTransactions'] ? $_POST['filterTransactions'] : $_SESSION['user']['filters']['type'],
+
+    // Recupera filtros da sessão caso o usuário ainda não tenha feito nenhuma escolha
+    $year = $_POST['filterYear'] ? $_POST['filterYear'] : $_SESSION['user']['filters']['date']['year'];
+    $month = $_POST['filterMonth'] ? $_POST['filterMonth'] : $_SESSION['user']['filters']['date']['month'];
+    $type = $_POST['filterTransactions'] ? $_POST['filterTransactions'] : $_SESSION['user']['filters']['type'];
+
+    $filterSelected = [
+      'type' => $type,
+      'date' => ['year' => $year, 'month' => $month ],
     ];
 
     // Guarda na sessão os filtros escolhidos
-    $_SESSION['user']['filters'] = $filters;
+    $_SESSION['user']['filters'] = $filterSelected;
 
     // Prepara Filtros
-    $filterChecked = ['currentDate' => ['year' => $filters['date']['year'] ?? date('Y'), 'month' => sprintf('%02d', $filters['date']['month'] ?? date('m'))]];
-    $filterChecked['selectedDate'] = implode('-', $filterChecked['currentDate']);
-    $filterChecked['nameMonths'] = [
+    $filters = [
+      'nameMonths' => [
         1 => 'Janeiro',
         2 => 'Fevereiro',
         3 => 'Março',
@@ -122,23 +122,31 @@ class TransactionsController extends PanelController
         9 => 'Setembro',
         10 => 'Outubro',
         11 => 'Novembro',
-        12 => 'Dezembro'
+        12 => 'Dezembro',
+      ],
+      'currentDate' => [
+        'year' => $filterSelected['date']['year'] ?? date('Y'),
+        'month' => sprintf('%02d', $filterSelected['date']['month'] ?? date('m')),
+      ],
     ];
+
+    // Ajusta data para consultar o Banco de Dados
+    $filters['selectedDate'] = implode('-', $filters['currentDate']);
 
     // Recupera transações
     $getTransactions = [];
 
-    if ($filters['type'] == 'I') {
-      $filterChecked['type'] = ['incomes' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getIncomes($userId, $filterChecked['selectedDate']);
+    if ($filterSelected['type'] == 'I') {
+      $filters['type'] = ['incomes' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getIncomes($userId, $filters['selectedDate']);
     }
-    elseif ($filters['type'] == 'E') {
-      $filterChecked['type'] = ['expenses' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getExpenses($userId, $filterChecked['selectedDate']);
+    elseif ($filterSelected['type'] == 'E') {
+      $filters['type'] = ['expenses' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getExpenses($userId, $filters['selectedDate']);
     }
     else {
-      $filterChecked['type'] = ['all' => 'checked'];
-      $getTransactions['items'] = $this->transactionsModel->getTransactions($userId, $filterChecked['selectedDate']);
+      $filters['type'] = ['all' => 'checked'];
+      $getTransactions['items'] = $this->transactionsModel->getTransactions($userId, $filters['selectedDate']);
     }
 
     // Totais
@@ -183,7 +191,7 @@ class TransactionsController extends PanelController
       'categories' => $categories,
       'accounts' => $accounts,
       'message' => $message,
-      'filters' => $filterChecked,
+      'filters' => $filters,
     ];
 
     return [ $navViewName => $navViewContent, $transactionsViewName => $transactionsViewContent ];

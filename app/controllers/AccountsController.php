@@ -9,10 +9,9 @@ class AccountsController extends PanelController
   // Exibe todas as contas
   public function accounts($userId)
   {
-    // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
-      Logger::log(['method' => 'AccountsController->accounts', 'result' => 'Usuario Desconectado'], 'alert');
-    }
+    // Valida sessão e login
+    parent::checkLogout($userId);
+    parent::checkSession($userId);
     
     $account = [
       'id' => $_POST['account_id'] ?? 0, 

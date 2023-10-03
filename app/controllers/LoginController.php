@@ -15,7 +15,7 @@ class LoginController extends UsersController
       $getForm = $this->getForm();
 
       if ($getForm) {
-        // Redireciona para o painel os dados estiverem corretos
+        // Redireciona para o painel se os dados estiverem corretos
         header('Location: ' . BASE . '/panel/' . $getForm['user_id']);
         exit();
       }
@@ -27,8 +27,10 @@ class LoginController extends UsersController
 
   private function getForm()
   {
-    $user['email'] = $_POST['user_email'] ?? '';
-    $user['password'] = trim($_POST['user_password']) ?? '';
+    $user = [
+      'email' => $_POST['user_email'] ?? '',
+      'password' => trim($_POST['user_password']) ?? '',
+    ];
 
     // Não aceita campos vazios
     if (in_array('', $user, true)) {

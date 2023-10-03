@@ -9,10 +9,9 @@ class PasswordController extends PanelController
   // Exibe e altera dados do usuário
   public function start($userId) 
   {
-    // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
-      Logger::log(['method' => 'PasswordController->myaccount', 'result' => 'Usuario Desconectado'], 'alert');
-    }
+    // Valida sessão e login
+    parent::checkLogout($userId);
+    parent::checkSession($userId);
 
     // Recupera formulário de alteração da senha
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {

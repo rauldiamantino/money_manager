@@ -9,10 +9,9 @@ class CategoriesController extends PanelController
   // Exibe todas as categorias
   public function categories($userId)
   {
-    // Valida se o usuário está logado
-    if (parent::checkSession($userId) or parent::checkLogout($userId)) {
-      Logger::log(['method' => 'PanelController->categories', 'result' => 'Usuario Desconectado'], 'alert');
-    }
+    // Valida sessão e login
+    parent::checkLogout($userId);
+    parent::checkSession($userId);
 
     $category = [
       'id' => $_POST['category_id'] ?? 0,
@@ -71,7 +70,7 @@ class CategoriesController extends PanelController
     $categoryExists = $this->categoriesModel->categoryExists($userId, ['name' => $category['name'] ]);
 
     if ($categoryExists) {
-      return ['error_category' => 'Conta já existe'];
+      return ['error_category' => 'Categoria já existe'];
     }
 
     // Cria a categoria
@@ -91,7 +90,7 @@ class CategoriesController extends PanelController
     $categoryExists = $this->categoriesModel->categoryExists($userId, ['id' => $category['id'] ]);
 
     if (empty($categoryExists)) {
-      return ['error_category' => 'Conta inexistente'];
+      return ['error_category' => 'Categoria inexistente'];
     }
 
     // Edita a categoria
@@ -111,7 +110,7 @@ class CategoriesController extends PanelController
     $categoryInUse = $this->categoriesModel->categoryInUse($userId, $category['delete']);
 
     if ($categoryInUse) {
-      return ['error_category' => 'Conta em uso não pode ser apagada'];
+      return ['error_category' => 'Categoria em uso não pode ser apagada'];
     }
 
     // Apaga a categoria
