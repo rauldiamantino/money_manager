@@ -6,7 +6,7 @@ class TransactionsController extends PanelController
 {
   public $transactionsModel;
 
-  // Exibe todas as transações
+  // Exibe transações
   public function transactions($userId)
   {
     $this->transactionsModel = new TransactionsModel();
@@ -39,8 +39,6 @@ class TransactionsController extends PanelController
 
     // Adiciona ou edita uma receita
     if ($transactions['operation']['add_income']) {
-
-      // Campos específicos para uma receita
       $transactions['transaction']['type'] = 'I';
       $transactions['transaction']['amount'] = $_POST['transaction_amount'];
       $transactions['transaction']['transaction_id'] = $_POST['edit_income'];
@@ -55,8 +53,6 @@ class TransactionsController extends PanelController
 
     // Adiciona ou edita uma despesa
     if ($transactions['operation']['add_expense']) {
-
-      // Campos específicos para uma despesa
       $transactions['transaction']['type'] = 'E';
       $transactions['transaction']['amount'] = -1 * $_POST['transaction_amount'];
       $transactions['transaction']['transaction_id'] = $_POST['edit_expense'];
@@ -72,7 +68,6 @@ class TransactionsController extends PanelController
 
     // Apaga transação
     if ($transactions['operation']['delete_transaction']) {
-
       $transactions['transaction'] = [
         'id' => $_POST['delete_transaction_id'],
         'table' => $_POST['delete_transaction_type'] == 'E' ? 'expenses' : 'incomes',
@@ -100,10 +95,7 @@ class TransactionsController extends PanelController
     $month = $_POST['filterMonth'] ? $_POST['filterMonth'] : $_SESSION['user']['filters']['date']['month'];
     $type = $_POST['filterTransactions'] ? $_POST['filterTransactions'] : $_SESSION['user']['filters']['type'];
 
-    $filterSelected = [
-      'type' => $type,
-      'date' => ['year' => $year, 'month' => $month ],
-    ];
+    $filterSelected = ['type' => $type, 'date' => ['year' => $year, 'month' => $month ]];
 
     // Guarda na sessão os filtros escolhidos
     $_SESSION['user']['filters'] = $filterSelected;
@@ -165,39 +157,33 @@ class TransactionsController extends PanelController
 
     $getTransactions['totals']['balance'] = $getTransactions['totals']['inc'] - $getTransactions['totals']['exp'];
 
-    // View e conteúdo para o menu de navegação
-    $activeTab = 'transactions';
-    $navViewName = 'panel/templates/nav';
-    $actionRoute = 'transactions/' . $userId;
-
+    // Prepara renderização da view
     $user = $this->transactionsModel->getUser('', $userId);
-
-    $navViewContent = [
-      'user_id' => $userId,
-      'active_tab' => $activeTab,
-      'action_route' => $actionRoute,
-      'user_first_name' => $user[0]['first_name'],
-      'user_last_name' => $user[0]['last_name'],
-    ];
-
-    // View e conteúdo para a página de transações
-    $transactionsViewName = 'panel/transactions';
     $accounts = $this->transactionsModel->getAccounts($userId);
     $categories = $this->transactionsModel->getCategories($userId);
 
-    $transactionsViewContent = [
-      'transactions' => $getTransactions,
-      'user_id' => $userId,
-      'categories' => $categories,
-      'accounts' => $accounts,
-      'message' => $message,
-      'filters' => $filters,
+    $renderView = [
+      'panel/templates/nav' => [
+        'user_id' => $userId,
+        'active_tab' => 'transactions',
+        'action_route' => 'transactions/' . $userId,
+        'user_first_name' => $user[0]['first_name'],
+        'user_last_name' => $user[0]['last_name'],
+      ],
+      'panel/transactions' => [
+        'transactions' => $getTransactions,
+        'user_id' => $userId,
+        'categories' => $categories,
+        'accounts' => $accounts,
+        'message' => $message,
+        'filters' => $filters,
+      ],
     ];
 
-    return [ $navViewName => $navViewContent, $transactionsViewName => $transactionsViewContent ];
+    return $renderView;
   }
 
-  // Adiciona uma nova receita ao formulário
+  // Adiciona uma nova receita
   public function createIncome($userId, $income)
   {
     $createIncome = $this->transactionsModel->createIncome($userId, $income);
@@ -221,7 +207,7 @@ class TransactionsController extends PanelController
     return [];
   }
 
-  // Adiciona uma nova despesa ao formulário
+  // Adiciona uma nova despesa
   public function createExpense($userId, $expense)
   {
     $createExpense = $this->transactionsModel->createExpense($userId, $expense);
