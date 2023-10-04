@@ -15,6 +15,13 @@ class TransactionsController extends PanelController
     parent::checkLogout($userId);
     parent::checkSession($userId);
 
+    $getOperation = [];
+
+    // Verifica se houve requisições do usuário
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $getOperation = $this->getOperation();
+    }
+
     $message = [];
 
     // Nova transação
@@ -181,6 +188,30 @@ class TransactionsController extends PanelController
     ];
 
     return $renderView;
+  }
+
+  // Tipo de operação requisitada
+  private function getOperation()
+  {
+    $operations = [
+      'add_income' => $_POST['add_income'] ?? 0,
+      'add_expense' => $_POST['add_expense'] ?? 0,
+      'edit_income' => $_POST['edit_income'] ?? 0,
+      'edit_expense' => $_POST['edit_expense'] ?? 0,
+      'delete_transaction' => $_POST['delete_transaction_id'] ?? 0,
+      'change_status' => $_POST['change_status_transaction_id'] ?? 0,
+    ];
+
+    $operationRequest = [];
+
+    // Recupera somente operação requisitada
+    foreach ($operations as $key => $value):
+      if ($value) {
+        $operationRequest[$key] = $value;
+      }
+    endforeach;
+
+    return $operationRequest;
   }
 
   // Adiciona uma nova receita
