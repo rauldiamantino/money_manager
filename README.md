@@ -10,7 +10,14 @@ Nessa aplicação você poderá:
 
  **Tecnologias**: PHP 8, JavaScript, Bootstrap e CSS. 
 
- [video.webm](https://github.com/rauldiamantino/money_manager/assets/100098231/9a23332a-e126-4263-9840-01320826b090)
+Vídeo:
+
+[video.webm](https://github.com/rauldiamantino/money_manager/assets/100098231/62312811-9080-4d4e-bc92-10d9638f8bda)
+
+
+Print:
+![image](https://github.com/rauldiamantino/money_manager/assets/100098231/14c3af2d-d66a-4a58-8f14-8aaed9d3407b)
+
 
  ---
 
