@@ -1,6 +1,15 @@
 ## Money Manager
+**Tecnologias**: PHP 8, JavaScript, Bootstrap e CSS. 
 
-Após criar sua conta e realizar o login, você pode adicionar receitas e despesas, além de organizá-las por contas e categorias.
+ Nessa aplicação você poderá:
+
+ - Criar sua conta;
+ - Realizar Login;
+ - Cadastrar Receitas e Despesas;
+ - Organizar transações por categorias e contas;
+ - Exibir transações por meses.
+
+ ---
 
 ## Requisitos e Instalação:
 
