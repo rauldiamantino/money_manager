@@ -1,13 +1,16 @@
 ## Money Manager
-**Tecnologias**: PHP 8, JavaScript, Bootstrap e CSS. 
 
- Nessa aplicação você poderá:
+Nessa aplicação você poderá:
 
  - Criar sua conta;
  - Realizar Login;
  - Cadastrar Receitas e Despesas;
  - Organizar transações por categorias e contas;
  - Exibir transações por meses.
+
+ **Tecnologias**: PHP 8, JavaScript, Bootstrap e CSS. 
+
+ [video.webm](https://github.com/rauldiamantino/money_manager/assets/100098231/9a23332a-e126-4263-9840-01320826b090)
 
  ---
 
